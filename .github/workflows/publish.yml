@@ -6,6 +6,9 @@ on:
       - "[0-9]+.[0-9]+.[0-9]+"
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 permissions:
   contents: read
   packages: write
@@ -14,12 +17,12 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # Version comes from package.json "packageManager" (pnpm/action-setup forbids duplicating it)
       - uses: pnpm/action-setup@v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: "22"
           registry-url: https://npm.pkg.github.com
