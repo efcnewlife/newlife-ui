@@ -1,20 +1,42 @@
-# newlife-ui
+# @efcnewlife/newlife-ui
 
 Shared React UI components for Newlife Portal. Built with TypeScript, Tailwind CSS v4 design tokens (consumed by the host app), `clsx`, and `tailwind-merge`.
 
-## Install
+**Package name:** `@efcnewlife/newlife-ui` (GitHub Packages / npm scope `efcnewlife`).
 
-From a sibling repo (local development):
+## Install (consumers)
+
+Registry is GitHub Packages. In the consuming app, add `.npmrc`:
+
+```ini
+@efcnewlife:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+```
+
+Create a PAT with `read:packages`, then:
+
+```bash
+export NODE_AUTH_TOKEN=ghp_xxxxxxxx
+pnpm add @efcnewlife/newlife-ui
+```
 
 ```json
 {
   "dependencies": {
-    "newlife-ui": "file:../newlife-ui"
+    "@efcnewlife/newlife-ui": "^0.1.0"
   }
 }
 ```
 
-After publishing to your registry, pin a semver range instead of `file:`.
+### Local development (same machine, before publish)
+
+Point to the sibling repo:
+
+```json
+"@efcnewlife/newlife-ui": "file:../newlife-ui"
+```
+
+The `package.json` in this repo must keep `"name": "@efcnewlife/newlife-ui"`.
 
 ## Build
 
@@ -25,16 +47,33 @@ pnpm run build
 
 Outputs `dist/` (ESM + `.d.ts`).
 
+## Publish (maintainers)
+
+1. Bump `version` in `package.json` (semver).
+2. Commit and push a tag: `git tag v0.1.1 && git push origin v0.1.1`  
+   Or run **Actions → Publish to GitHub Packages → Run workflow** after setting version (tag-based publish is the default trigger).
+3. Ensure repository secret **`PACKAGE_TOKEN`** is a PAT with `write:packages` (and `read:packages`).
+
+The workflow (`.github/workflows/publish.yml`) runs `pnpm publish` with `NODE_AUTH_TOKEN: ${{ secrets.PACKAGE_TOKEN }}`.
+
+Manual publish from your machine:
+
+```bash
+export NODE_AUTH_TOKEN=ghp_xxxxxxxx   # PAT with write:packages
+pnpm run build
+npm publish
+```
+
 ## Host app setup
 
 ### Tailwind v4
 
 Design tokens (`@theme` colors, fonts, etc.) stay in the **host** application (e.g. `src/index.css`). The library only emits class names; it does not ship a duplicate theme.
 
-Register the built package so Tailwind scans classes used inside `newlife-ui` (production builds otherwise purge those classes). In the host CSS (see Newlife Portal `src/index.css`):
+Register the built package so Tailwind scans classes used inside the package (production builds otherwise purge those classes). In the host CSS:
 
 ```css
-@source "../node_modules/newlife-ui/dist";
+@source "../node_modules/@efcnewlife/newlife-ui/dist";
 ```
 
 Adjust the relative path if your `node_modules` layout differs.
@@ -59,15 +98,3 @@ Ensure these match your app:
 ### `Select` copy
 
 Pass a `labels` prop for translated placeholder, aria, and empty states (defaults are English).
-
-## Publishing (CI / registry)
-
-1. Bump version in `package.json` (semver).
-2. `pnpm run build`
-3. Publish to your private npm registry or GitHub Packages, for example:
-
-```bash
-npm publish --access restricted
-```
-
-Configure `publishConfig` in `package.json` or `.npmrc` for your registry scope. Consumers should depend on a fixed or caret range and run `pnpm install` in CI with registry auth.
