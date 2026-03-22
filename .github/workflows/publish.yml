@@ -77,6 +77,10 @@ jobs:
             } > "${out}"
           fi
 
+      # softprops/action-gh-release@v2 still declares `runs.using: node20`, so GitHub may show a Node 20
+      # deprecation notice on the run summary. The action author is working on a Node 24 upgrade; until a
+      # new release ships, `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24` (workflow env above) opts JS actions into Node 24.
+      # https://github.com/softprops/action-gh-release/pull/670
       - name: Create or update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
