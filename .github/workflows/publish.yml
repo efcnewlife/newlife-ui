@@ -19,6 +19,15 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Ensure package version matches git tag
+        if: github.ref_type == 'tag'
+        run: |
+          pkg_version=$(node -p "require('./package.json').version")
+          if [ "${pkg_version}" != "${GITHUB_REF_NAME}" ]; then
+            echo "::error::package.json version (${pkg_version}) does not match tag (${GITHUB_REF_NAME})"
+            exit 1
+          fi
+
       # Version comes from package.json "packageManager" (pnpm/action-setup forbids duplicating it)
       - uses: pnpm/action-setup@v4
 
