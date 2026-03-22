@@ -9,13 +9,13 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
-permissions:
-  contents: read
-  packages: write
-
 jobs:
   publish:
+    name: Publish package
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v5
 
@@ -38,3 +38,50 @@ jobs:
         run: pnpm publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
+
+  release:
+    name: Create GitHub Release
+    needs: publish
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build release notes from CHANGELOG
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME}"
+          file="CHANGELOG.md"
+          out="release_body.md"
+          rm -f extracted.md
+          if [[ -f "${file}" ]]; then
+            awk -v ver="${tag}" '
+              /^## \[/ {
+                if (p) exit
+                if ($0 ~ "\\[" ver "\\]") { p=1; print; next }
+                next
+              }
+              p { print }
+            ' "${file}" > extracted.md || true
+          fi
+          if [[ -f extracted.md ]] && [[ -s extracted.md ]]; then
+            mv extracted.md "${out}"
+          else
+            {
+              echo "## Summary"
+              echo ""
+              echo "No \`CHANGELOG.md\` section found for \`${tag}\`. Add \`## [${tag}]\` (Keep a Changelog style) before tagging, or rely on the auto-generated list below."
+              echo ""
+            } > "${out}"
+          fi
+
+      - name: Create or update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          body_path: release_body.md
+          generate_release_notes: true
+          make_latest: true
