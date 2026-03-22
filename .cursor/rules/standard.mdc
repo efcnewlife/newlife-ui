@@ -1,0 +1,75 @@
+---
+description: Project development standards for newlife-ui (shared React UI library)
+globs:
+alwaysApply: true
+---
+# Project Rules — newlife-ui
+
+## Scope
+
+- **Repository:** `@efcnewlife/newlife-ui` — shared React UI for Newlife Portal consumers.
+- **Stack:** TypeScript, React 18–19 (peer), `tsup` (ESM + `.d.ts`), `pnpm`, Tailwind-oriented class names (design tokens live in the **host** app).
+
+## Basic
+
+- Use **English** for all comments and user-facing default copy in components unless a prop (e.g. `labels`) is explicitly for i18n.
+- Do not use non-ASCII characters in comments, identifiers, or slugs in this repo.
+- **Package manager:** `pnpm` only; lockfile is `pnpm-lock.yaml` (`packageManager` in `package.json` is authoritative for CI).
+- Run checks with: `pnpm install --frozen-lockfile`, `pnpm run typecheck`, `pnpm run build`.
+
+## Code layout and naming
+
+- **Directories:** `kebab-case` under `src/` (e.g. `date-picker`, `buttons-group`).
+- **React components:** `PascalCase` for component names and public types intended as components.
+- **Modules:** prefer `index.tsx` (or `index.ts`) as the public entry for a folder; re-export from [`src/index.ts`](src/index.ts).
+- **Utilities:** `camelCase` for functions and variables (e.g. `cn` in [`src/cn.ts`](src/cn.ts)).
+- **Shared class names:** use `clsx` + `tailwind-merge` via the library `cn` helper where appropriate.
+
+## Tailwind and host apps
+
+- The library **does not** ship a duplicate Tailwind v4 theme; hosts own `@theme` / tokens.
+- Hosts must register Tailwind `@source` over this package’s `dist` so utilities used inside the library are not purged (see [`README.md`](README.md)).
+- Keep **peer dependencies** accurate in `package.json` (`react`, `react-dom`, `react-icons`, `flatpickr`, etc.).
+
+## Git workflow (mandatory)
+
+- **All changes that should land on `main` go through a Pull Request.** Do not treat a local `git merge` into `main` as the official integration step.
+- **Forbidden as a substitute for GitHub merge:** merging a topic branch into **local** `main` and pushing `main` without the same commits having been merged via PR (unless you immediately reset and redo via PR).
+- **Standard flow:** push topic branch → open PR (base = `main`) → wait for **CI / Verify** (`.github/workflows/ci.yml`) → merge on GitHub.
+- **Release versioning and changelog** follow the **Release workflow** below; the **default** is a dedicated `chore: release x.y.z` PR (not mixed with feature work).
+- If local `main` accidentally contains unpublished commits, realign with: `git fetch origin && git checkout main && git reset --hard origin/main`, then keep work on a topic branch and open a PR.
+
+## Release workflow (maintainers)
+
+**Default (recommended): dedicated release PR**
+
+1. Merge all feature work to `main` via PRs with **Verify** green.
+2. Open a **`chore: release x.y.z` PR** whose changes are **primarily** (or only): bump **`version`** in [`package.json`](package.json), add **`## [x.y.z]`** in [`CHANGELOG.md`](CHANGELOG.md) (Keep a Changelog style; you may move bullets from `## [Unreleased]`), and adjust **Unreleased** as needed.
+3. Merge that PR on GitHub after **Verify** is green.
+4. On your machine: `git pull origin main`, then `git tag x.y.z && git push origin x.y.z` (**no `v` prefix**). Tag the **merge commit on `origin/main`**, not an unmerged branch tip.
+
+**Optional exception:** for a **tiny** patch release, you may include `version` + `CHANGELOG` in the **last feature PR** instead of a separate release PR; still require PR + **Verify**. The team **defaults** to the dedicated release PR above.
+
+- **SemVer** in `package.json`; **tags are `x.y.z` only — no `v` prefix** (matches `.github/workflows/publish.yml` tag filter).
+- The **`## [x.y.z]`** header **must** equal the tag and `package.json` `version`.
+- Pushing a semver tag triggers **publish** (GitHub Packages) and **GitHub Release** (notes from `CHANGELOG` for that version plus auto-generated PR list). `workflow_dispatch` without a tag can publish a package but **does not** create a GitHub Release.
+- **Secrets:** `PACKAGE_TOKEN` (PAT with `write:packages`) for publish; release job uses `GITHUB_TOKEN` with `contents: write` on that job.
+- **Local `npm publish` / `pnpm publish`:** only for exceptional manual publishes; normal releases rely on Actions after the tag push.
+
+### What not to do on a developer machine (release hygiene)
+
+- Do **not** merge into local `main` instead of using a PR (see Git workflow).
+- Do **not** push a release tag that points at a commit **not** on `origin/main` after merge (avoid publishing a tarball that does not match what the team merged).
+- Do **not** create tags with a `v` prefix (they will not match the publish workflow tag pattern).
+- Do **not** bump `package.json` without a matching `CHANGELOG.md` section for that version (release notes extraction expects `## [x.y.z]`).
+
+## CI and automation boundaries
+
+- **CI:** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs `typecheck` and `build` on PRs targeting `main` and on pushes to `main`.
+- **Publish:** [`.github/workflows/publish.yml`](.github/workflows/publish.yml) includes a check that **tag name equals `package.json` version** when publishing from a tag.
+- **Agents / automation:** do not run `git commit`, `git merge` into `main`, `git push`, or `git tag` **unless the user explicitly asks** for that step; prefer editing files and letting the human run git and open PRs.
+
+## Dependencies and tooling
+
+- Prefer **minimal runtime dependencies**; use **peerDependencies** for React ecosystem packages consumed by hosts.
+- Do not add Alembic, Poetry, or Python tooling conventions — those apply to `newlife-core-api`, not this repo.
