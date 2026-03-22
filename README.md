@@ -49,10 +49,15 @@ Outputs `dist/` (ESM + `.d.ts`).
 
 ## Publish (maintainers)
 
+Recommended flow: merge the release PR (version bump + `CHANGELOG.md`), then tag and push the tag (no `v` prefix).
+
 1. Bump `version` in `package.json` (semver).
-2. Commit and push a tag: `git tag v0.1.1 && git push origin v0.1.1`  
-   Or run **Actions → Publish to GitHub Packages → Run workflow** after setting version (tag-based publish is the default trigger).
-3. Ensure repository secret **`PACKAGE_TOKEN`** is a PAT with `write:packages` (and `read:packages`).
+2. Add a **`## [x.y.z]`** section in `CHANGELOG.md` for that version (template: Summary, Breaking changes, Added, Changed, Fixed, Host app / consumers). The tag **must match** the bracketed version (e.g. tag `0.2.0` ↔ `## [0.2.0]`).
+3. Commit, push, then: `git tag 0.2.0 && git push origin 0.2.0`
+4. **Actions** runs on tag push: publishes to GitHub Packages and **creates or updates** the GitHub Release. Release body = your `CHANGELOG` section **plus** GitHub’s auto-generated merged-PR list below it.
+5. Repository secret **`PACKAGE_TOKEN`**: PAT with `write:packages` (and `read:packages`). The GitHub Release step uses the default `GITHUB_TOKEN` (`contents: write` on that job only).
+
+Manual **Actions → Run workflow** (no tag) still publishes from the branch’s `package.json` but **does not** create a GitHub Release (releases are tag-only).
 
 The workflow (`.github/workflows/publish.yml`) runs `pnpm publish` with `NODE_AUTH_TOKEN: ${{ secrets.PACKAGE_TOKEN }}`.
 
