@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-03-21
+
+### Summary
+
+Patch release: `Button` consumer `className` ordering and stricter publish guard (package version must match the pushed tag).
+
+### Fixed
+
+- **Button**: Apply consumer `className` after built-in variant and size classes so hosts can override styles as intended.
+
+### Changed
+
+- **CI**: Fail publish job when `package.json` `version` does not equal the semver tag name.
+
+### Breaking changes
+
+None.
+
 ## [0.1.0] - 2026-03-21
 
 First public release. Covers all commits from initial extract through CI workflow updates on this date (`43fbfe8` … `16fbce4`).
