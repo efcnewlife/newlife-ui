@@ -2,7 +2,20 @@ import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { MdCheck, MdClose, MdKeyboardArrowDown } from "react-icons/md";
 import { cn } from "../cn";
-import Label from "../label";
+import FormField from "../form-field";
+import {
+  comboboxCheckboxChecked,
+  comboboxCheckboxUnchecked,
+  comboboxOptionDefault,
+  comboboxOptionFocused,
+  comboboxSpinner,
+  fieldBase,
+  fieldDisabled,
+  fieldError,
+  fieldSuccess,
+  surfaceContainerHigh,
+  textMuted,
+} from "../theme/role-classes";
 
 export interface ComboBoxOption<T = any> {
   value: T;
@@ -25,6 +38,7 @@ interface ComboBoxPropsBase<T = any> {
   hint?: string;
   required?: boolean;
   className?: string;
+  wrapperClassName?: string;
   inputClassName?: string;
   displayValue?: (option: ComboBoxOption<T> | null) => string;
   filterFunction?: (option: ComboBoxOption<T>, query: string) => boolean;
@@ -72,7 +86,7 @@ const defaultRenderOption = <T,>(option: ComboBoxOption<T>): React.ReactNode => 
         <img
           src={option.imageUrl}
           alt=""
-          className="size-6 shrink-0 rounded-full bg-gray-100 outline -outline-offset-1 outline-black/5 dark:bg-gray-700 dark:outline-white/10"
+          className="size-6 shrink-0 rounded-full bg-surface-variant outline -outline-offset-1 outline-black/5"
         />
       ) : (
         option.icon && <div className="size-6 shrink-0 flex items-center justify-center">{option.icon}</div>
@@ -87,9 +101,7 @@ function OptionCheckbox({ checked, disabled }: { checked: boolean; disabled?: bo
     <span
       className={cn(
         "flex size-5 shrink-0 items-center justify-center rounded border transition-colors",
-        checked
-          ? "border-transparent bg-brand-500 text-white dark:bg-brand-400"
-          : "border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800",
+        checked ? comboboxCheckboxChecked : comboboxCheckboxUnchecked,
         disabled && "opacity-50"
       )}
       role="checkbox"
@@ -115,6 +127,7 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
     hint,
     required = false,
     className = "",
+    wrapperClassName,
     inputClassName = "",
     displayValue = defaultDisplayValue,
     filterFunction = defaultFilterFunction,
@@ -323,17 +336,13 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
   // status style
   let stateClasses = "";
   if (disabled) {
-    stateClasses =
-      "text-gray-500 border-gray-300 opacity-40 bg-gray-100 cursor-not-allowed dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700";
+    stateClasses = fieldDisabled;
   } else if (error && error !== undefined) {
-    stateClasses =
-      "border-error-500 focus:border-error-300 focus:ring-error-500/20 dark:text-error-400 dark:border-error-500 dark:focus:border-error-800";
+    stateClasses = fieldError;
   } else if (success) {
-    stateClasses =
-      "border-success-500 focus:border-success-300 focus:ring-success-500/20 dark:text-success-400 dark:border-success-500 dark:focus:border-success-800";
+    stateClasses = fieldSuccess;
   } else {
-    stateClasses =
-      "bg-transparent text-gray-800 border-gray-300 focus:border-brand-300 focus:ring-brand-500/20 dark:border-gray-700 dark:text-white/90 dark:focus:border-brand-800";
+    stateClasses = fieldBase;
   }
 
   const hasClearButton =
@@ -342,7 +351,7 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
   const rightPadding = hasClearButton ? "pr-16" : "pr-10";
 
   const inputClasses = cn(
-    "block w-full rounded-lg border appearance-none shadow-theme-xs focus:outline-hidden focus:ring-3 dark:bg-gray-900 dark:text-white/90 placeholder:text-gray-400 dark:placeholder:text-white/30",
+    "block w-full rounded-lg border appearance-none shadow-theme-xs focus:outline-hidden focus:ring-3 placeholder:text-on-surface-variant",
     sizeClasses[size],
     stateClasses,
     rightPadding,
@@ -352,12 +361,14 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
   const allOptions = canCreate ? [{ value: null, label: query } as ComboBoxOption<T>, ...filteredOptions] : filteredOptions;
 
   return (
-    <>
-      {label && (
-        <Label htmlFor={id}>
-          {label} {required && <span className="text-red-500">*</span>}
-        </Label>
-      )}
+    <FormField
+      id={id}
+      label={label}
+      required={required}
+      error={error}
+      hint={hint}
+      wrapperClassName={wrapperClassName}
+    >
       <div className={cn("relative", className)} ref={comboboxRef}>
         <div className="relative">
           <input
@@ -388,10 +399,10 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
                 type="button"
                 onClick={handleClear}
                 disabled={disabled}
-                className="hover:text-gray-600 dark:hover:text-gray-300 focus:outline-hidden"
+                className="text-on-surface-variant hover:text-on-surface focus:outline-hidden"
                 aria-label="Clear selection"
               >
-                <MdClose className="size-4 text-gray-400" />
+                <MdClose className={`size-4 ${textMuted}`} />
               </button>
             )}
             <button
@@ -402,7 +413,7 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
               aria-label="Toggle options"
             >
               <MdKeyboardArrowDown
-                className={cn("size-5 text-gray-400 transition-transform duration-200", isOpen && "rotate-180")}
+                className={cn(`size-5 ${textMuted} transition-transform duration-200`, isOpen && "rotate-180")}
                 aria-hidden="true"
               />
             </button>
@@ -412,7 +423,7 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
         {/* drop down options */}
         <div
           className={cn(
-            "absolute z-50 mt-1 w-full overflow-auto rounded-lg bg-white py-1 text-base shadow-theme-lg outline outline-black/5 dark:bg-gray-800 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10 sm:text-sm",
+            `absolute z-50 mt-1 w-full overflow-auto rounded-lg py-1 text-base shadow-theme-lg outline outline-black/5 sm:text-sm ${surfaceContainerHigh}`,
             "transition-all duration-200 ease-out origin-top",
             isOpen
               ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
@@ -422,8 +433,8 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
         >
           <div ref={optionsRef} className="max-h-56 overflow-auto">
             {loading ? (
-              <div className="flex items-center justify-center gap-2 px-3 py-6 text-sm text-gray-500 dark:text-gray-400">
-                <span className="size-5 animate-spin rounded-full border-2 border-gray-300 border-t-brand-500 dark:border-gray-600 dark:border-t-brand-400" />
+              <div className={`flex items-center justify-center gap-2 px-3 py-6 text-sm ${textMuted}`}>
+                <span className={`size-5 animate-spin rounded-full border-2 ${comboboxSpinner}`} />
                 loading...
               </div>
             ) : allOptions.length > 0 ? (
@@ -433,8 +444,8 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
                     data-option-index={0}
                     className={cn(
                       "cursor-default flex items-center gap-2 px-3 py-2 select-none transition-colors",
-                      focusedIndex === 0 ? "bg-brand-600 text-white dark:bg-brand-500" : "text-gray-900 dark:text-white",
-                      "hover:bg-brand-600 hover:text-white dark:hover:bg-brand-500"
+                      focusedIndex === 0 ? comboboxOptionFocused : comboboxOptionDefault,
+                      "hover:bg-primary hover:text-on-primary"
                     )}
                     onClick={handleCreate}
                     onMouseEnter={() => setFocusedIndex(0)}
@@ -457,11 +468,11 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
                       className={cn(
                         "cursor-default flex items-center gap-2 px-3 py-2 select-none transition-colors",
                         focusedIndex === optionIndex
-                          ? "bg-brand-600 text-white dark:bg-brand-500"
+                          ? comboboxOptionFocused
                           : option.disabled
-                          ? "text-gray-400 cursor-not-allowed dark:text-gray-600"
-                          : "text-gray-900 dark:text-white",
-                        !option.disabled && "hover:bg-brand-600 hover:text-white dark:hover:bg-brand-500"
+                          ? `${textMuted} cursor-not-allowed opacity-60`
+                          : comboboxOptionDefault,
+                        !option.disabled && "hover:bg-primary hover:text-on-primary"
                       )}
                       onClick={() => !option.disabled && handleSelect(option)}
                       onMouseEnter={() => !option.disabled && setFocusedIndex(optionIndex)}
@@ -476,13 +487,10 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
                 })}
               </>
             ) : (
-              <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 text-center">No option found</div>
+              <div className={`px-3 py-2 text-sm ${textMuted} text-center`}>No option found</div>
             )}
           </div>
         </div>
-        {error && <p className="mt-1.5 text-xs text-error-500 dark:text-error-400">{error}</p>}
-        {hint && !error && <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">{hint}</p>}
-
         {/* Hidden form input */}
         {multiple ? (
           valueArray.map((v) => (
@@ -492,7 +500,7 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
           <input type="hidden" name={name} value={value != null ? String(value) : ""} />
         )}
       </div>
-    </>
+    </FormField>
   );
 };
 

@@ -1,5 +1,14 @@
 import { cn } from "../cn";
 import { ReactNode } from "react";
+import {
+  buttonGroupActivePrimary,
+  buttonGroupActiveSecondary,
+  buttonGroupContainer,
+  buttonGroupInactivePrimary,
+  buttonGroupInactiveSecondary,
+  borderOutlineVariant,
+  textOnSurface,
+} from "../theme/role-classes";
 
 export interface ButtonGroupButton {
   text: string;
@@ -26,78 +35,67 @@ const ButtonGroup = ({ variant = "primary", buttons, className, minWidth = "309p
     const isFirstButton = index === 0;
     const isLastButton = index === lastIndex;
 
-    let className = baseClasses;
+    let buttonClassName = baseClasses;
     switch (variant) {
       case "primary":
         if (isActive) {
           if (isFirstButton) {
-            className = cn(className, "border-r border-brand-500 dark:border-brand-600");
+            buttonClassName = cn(buttonClassName, `border-r ${borderOutlineVariant}`, buttonGroupActivePrimary);
           } else if (isLastButton) {
-            className = cn(className, "border-l border-brand-500 dark:border-brand-600");
+            buttonClassName = cn(buttonClassName, `border-l ${borderOutlineVariant}`, buttonGroupActivePrimary);
           } else {
-            className = cn(className, "border-x border-brand-500 dark:border-brand-600");
+            buttonClassName = cn(buttonClassName, `border-x ${borderOutlineVariant}`, buttonGroupActivePrimary);
           }
-          className = cn(className, "bg-brand-500 text-white dark:bg-brand-600");
         } else {
           if (isFirstButton) {
-            className = cn(className, "border-r border-gray-200 dark:border-gray-600");
+            buttonClassName = cn(buttonClassName, `border-r ${borderOutlineVariant}`);
           } else if (isLastButton) {
-            className = cn(className, "border-l border-gray-200 dark:border-gray-600");
+            buttonClassName = cn(buttonClassName, `border-l ${borderOutlineVariant}`);
           } else {
-            className = cn(className, "border-x border-gray-200 dark:border-gray-600");
+            buttonClassName = cn(buttonClassName, `border-x ${borderOutlineVariant}`);
           }
-          className = cn(
-            className,
-            "bg-white text-brand-500 hover:bg-brand-500 hover:text-white dark:bg-transparent dark:text-brand-500 dark:hover:bg-brand-700 dark:hover:text-white"
-          );
+          buttonClassName = cn(buttonClassName, buttonGroupInactivePrimary);
         }
-        className = cn(className, button.className);
+        buttonClassName = cn(buttonClassName, button.className);
         break;
       case "secondary":
         if (isActive) {
           if (isFirstButton) {
-            className = cn(className, "border-r border-gray-200 dark:border-gray-600");
+            buttonClassName = cn(buttonClassName, `border-r ${borderOutlineVariant}`, buttonGroupActiveSecondary);
           } else if (isLastButton) {
-            className = cn(className, "border-l border-gray-200 dark:border-gray-600");
+            buttonClassName = cn(buttonClassName, `border-l ${borderOutlineVariant}`, buttonGroupActiveSecondary);
           } else {
-            className = cn(className, "border-x border-gray-200 dark:border-gray-600");
+            buttonClassName = cn(buttonClassName, `border-x ${borderOutlineVariant}`, buttonGroupActiveSecondary);
           }
-          className = cn(className, "bg-white text-gray-800 dark:bg-white/10 dark:text-gray-200");
         } else {
           if (isFirstButton) {
-            className = cn(className, "border-r border-gray-200 dark:border-white/10");
+            buttonClassName = cn(buttonClassName, `border-r ${borderOutlineVariant}`);
           } else if (isLastButton) {
-            className = cn(className, "border-l border-gray-200 dark:border-white/10");
+            buttonClassName = cn(buttonClassName, `border-l ${borderOutlineVariant}`);
           } else {
-            className = cn(className, "border-x border-gray-200 dark:border-white/10");
+            buttonClassName = cn(buttonClassName, `border-x ${borderOutlineVariant}`);
           }
-          className = cn(
-            className,
-            "bg-transparent text-gray-700 hover:bg-gray-50 dark:bg-transparent dark:text-gray-400 dark:hover:bg-white/10"
-          );
+          buttonClassName = cn(buttonClassName, buttonGroupInactiveSecondary);
         }
-        className = cn(className, button.className);
+        buttonClassName = cn(buttonClassName, button.className);
         break;
       default:
-        className = cn(
+        buttonClassName = cn(
           baseClasses,
-          "text-gray-700 hover:bg-gray-50 dark:bg-white/[0.03] dark:text-gray-200 dark:hover:bg-white/[0.03]",
+          buttonGroupInactiveSecondary,
           button.className
         );
         break;
     }
 
-    return className;
+    return buttonClassName;
   };
 
   const renderIcon = (button: ButtonGroupButton) => {
     if (!button.icon) return null;
 
-    // For secondary variant, wrap icon in span with specific styling
     if (variant === "secondary") {
-      return (
-        <span className="fill-gray-800 group-hover:fill-gray-800 dark:fill-gray-200 dark:group-hover:fill-gray-200">{button.icon}</span>
-      );
+      return <span className={textOnSurface}>{button.icon}</span>;
     }
 
     return button.icon;
@@ -131,7 +129,7 @@ const ButtonGroup = ({ variant = "primary", buttons, className, minWidth = "309p
   return (
     <div className={cn("max-w-full pb-3 overflow-x-auto custom-scrollbar", className)}>
       <div style={{ minWidth }}>
-        <div className="inline-flex items-center border rounded-lg border-gray-200 dark:border-white/10">
+        <div className={`inline-flex items-center ${buttonGroupContainer}`}>
           {buttons.map((button, index) => {
             const isActive = button.active !== undefined ? button.active : index === 0;
             const buttonClassName = getButtonClassName(button, index, isActive);

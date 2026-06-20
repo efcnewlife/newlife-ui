@@ -1,0 +1,60 @@
+/**
+ * Color role mappings for @efcnewlife/newlife-ui components.
+ *
+ * Host must define recommended primitives (brand-*, gray-*, success-*, etc.)
+ * before importing this file, OR import theme/reference.css for full defaults.
+ *
+ * Usage (after @import "tailwindcss" and your primitives):
+ *   @import "@efcnewlife/newlife-ui/theme/required-roles.css";
+ */
+@theme {
+  /* Accent roles */
+  --color-primary: var(--color-brand-500);
+  --color-on-primary: var(--color-white);
+  --color-primary-hover: var(--color-brand-600);
+  --color-primary-container: var(--color-brand-50);
+  --color-on-primary-container: var(--color-brand-700);
+
+  /* Surface roles */
+  --color-surface: var(--color-white);
+  --color-on-surface: var(--color-gray-800);
+  --color-on-surface-variant: var(--color-gray-500);
+  --color-surface-variant: var(--color-gray-100);
+  --color-surface-container: var(--color-gray-50);
+  --color-surface-container-high: var(--color-gray-dark, #1a2231);
+  --color-surface-dim: var(--color-gray-50);
+
+  /* Semantic — error */
+  --color-error: var(--color-error-500);
+  --color-on-error: var(--color-white);
+  --color-error-container: var(--color-error-50);
+  --color-on-error-container: var(--color-error-700);
+
+  /* Semantic — success */
+  --color-success: var(--color-success-500);
+  --color-on-success: var(--color-white);
+  --color-success-container: var(--color-success-50);
+  --color-on-success-container: var(--color-success-700);
+
+  /* Semantic — warning */
+  --color-warning: var(--color-warning-500);
+  --color-on-warning: var(--color-white);
+  --color-warning-container: var(--color-warning-50);
+  --color-on-warning-container: var(--color-warning-700);
+
+  /* Semantic — info (maps from legacy blue-light scale) */
+  --color-info: var(--color-blue-light-500);
+  --color-on-info: var(--color-white);
+  --color-info-container: var(--color-blue-light-50);
+  --color-on-info-container: var(--color-blue-light-700);
+
+  /* Outline roles */
+  --color-outline: var(--color-gray-300);
+  --color-outline-variant: var(--color-gray-200);
+  --color-outline-focus: var(--color-brand-300);
+
+  /* Inverse roles */
+  --color-inverse-surface: #1e2634;
+  --color-inverse-on-surface: rgb(255 255 255 / 0.9);
+  --color-inverse-primary: var(--color-brand-200);
+}
