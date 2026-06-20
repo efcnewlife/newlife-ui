@@ -6,6 +6,57 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-20
+
+### Summary
+
+Adopt M3-aligned color roles across all components; ship theme contract CSS and documentation for host integration. Add **Storybook** and **Vitest** for component development, **`FormField`** for consistent form layout, **`Slider`**, and **`Alert`** sizing/width options.
+
+### Added
+
+- **`theme/reference.css`**: full primitive palette + color role mappings (light + dark baseline).
+- **`theme/required-roles.css`**: role mappings only for hosts with existing primitives.
+- **`theme/token-contract.md`**: required roles, pairing rules, deprecated tokens.
+- **`theme/preview.html`**: local role preview page.
+- **`src/theme/role-classes.ts`**: centralized Tailwind class maps for components.
+- Package exports: `@efcnewlife/newlife-ui/theme/reference.css`, `theme/required-roles.css`.
+- Docs in **newlife-docs**: color system and host theme integration guides.
+- **`Slider`**: range input built on `@base-ui/react/slider` with M3 role styling; supports single value, range, multiple thumbs, vertical orientation, and disabled state.
+- Runtime dependency **`@base-ui/react`** for Slider headless behavior.
+- Exported **`FormField`** wrapper for custom host fields (label, error, hint, `wrapperClassName`); exported **`FormFieldProps`**.
+- **`wrapperClassName`** on Input, TextArea, PhoneInput, Select, ComboBox, DatePicker, and TimePicker.
+- **`Alert`**: optional `size` (`sm` | `md` | `lg`), `width` (`auto` | `full` | `sm` | `md` | `lg` | `xl`, default `full`), and `messageLines` (default `3`, minimum `1`); exported **`AlertSize`**, **`AlertWidth`**.
+- **Storybook 8** with Tailwind v4 + `theme/reference.css`; co-located `*.stories.tsx` for all exported components; stories use explicit `render` callbacks.
+- Storybook **Color theme** toolbar: **Light** and **Dark** presets (`.storybook/apply-storybook-theme.ts`).
+- **Vitest** + Testing Library (`pnpm run test`, `pnpm run test:watch`); unit/render tests under `tests/`.
+- CI **Verify** job runs `test` and `build-storybook`.
+
+### Changed
+
+- **All components** now use semantic color roles (`primary`, `on-surface`, `error-container`, etc.) instead of `brand-*`, `gray-*`, `blue-light-*`, or hardcoded hex.
+- **`Switch.color`**: `"primary"` | `"neutral"` preferred; `"blue"` | `"gray"` deprecated aliases.
+- Composite form fields (Input, TextArea, PhoneInput, Select, ComboBox, DatePicker, TimePicker) now render a single wrapper DOM node via **`FormField`** instead of a React Fragment root; use **`wrapperClassName`** for field-level layout.
+- Storybook color theme toolbar simplified to **Light** / **Dark** only (removed Portal/Booking accent presets).
+
+### Fixed
+
+- **Storybook / dark themes**: dark presets use plain CSS variables on `.dark` selectors (nested `@theme` was merged into `:root` by Tailwind v4, so presets looked identical).
+- **`Select` dropdown options**: panel uses `surface` background instead of `surface-container-high`; option hover/focus/selected colors align with `ComboBox` (readable contrast in light theme).
+- **Storybook `Modal` / `ModalForm`**: fullscreen layout and portal-style panel sizing (`max-w-lg mx-4 p-6`) matching host usage; default stories open via trigger button.
+
+### Breaking changes
+
+- **Host apps** must define color roles (import `reference.css` or `required-roles.css`) **before** upgrading to `0.2.0`, or component colors will not render.
+- Composite form fields no longer expose a Fragment root; host CSS that relied on direct sibling selectors between label and control may need updating (use **`wrapperClassName`** instead).
+
+### Host app / consumers
+
+1. Add `@import "@efcnewlife/newlife-ui/theme/reference.css"` (or `required-roles.css`) to host CSS after Tailwind.
+2. Keep `@source` on `newlife-ui/dist`.
+3. Bump to `@efcnewlife/newlife-ui@^0.2.0`.
+4. Audit form-field layout CSS after the **`FormField`** wrapper change; use **`wrapperClassName`** on inputs or export **`FormField`** for custom fields.
+5. See newlife-docs: `color_system.md`, `host_theme_integration.md`.
+
 ## [0.1.1] - 2026-03-21
 
 ### Summary
