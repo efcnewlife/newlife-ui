@@ -1,6 +1,7 @@
 import type React from "react";
 import { useEffect, useRef } from "react";
 import { cn } from "../cn";
+import { surfacePanel } from "../theme/role-classes";
 
 interface DropdownProps {
   isOpen: boolean;
@@ -39,10 +40,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   return (
     <div
       ref={dropdownRef}
-      className={cn(
-        "absolute z-40 right-0 mt-2 rounded-xl border border-gray-200 bg-white shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark",
-        className
-      )}
+      className={cn("absolute z-40 right-0 mt-2 rounded-xl", surfacePanel, className)}
     >
       {children}
     </div>

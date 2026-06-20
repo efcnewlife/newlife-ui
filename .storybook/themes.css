@@ -1,0 +1,20 @@
+/**
+ * Storybook-only accent presets. Base primitives + roles come from theme/reference.css.
+ * Use plain CSS variables on selectors (not nested @theme) so toggling html classes works.
+ */
+
+.theme-booking {
+  --color-primary: #1865d8;
+  --color-primary-hover: #1452ad;
+  --color-on-primary: var(--color-white);
+  --color-primary-container: #e9f3f5;
+  --color-on-primary-container: #1e283f;
+}
+
+.theme-booking.dark {
+  --color-primary: #1865d8;
+  --color-primary-hover: #3d7ee0;
+  --color-on-primary: var(--color-white);
+  --color-primary-container: color-mix(in srgb, #1865d8 18%, transparent);
+  --color-on-primary-container: #9cb9ff;
+}

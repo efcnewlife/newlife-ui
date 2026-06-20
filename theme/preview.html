@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>newlife-ui color roles preview</title>
+    <link rel="stylesheet" href="./reference.css" />
+    <style>
+      @import "tailwindcss";
+      body {
+        font-family: system-ui, sans-serif;
+        padding: 2rem;
+        background: var(--color-surface-dim);
+        color: var(--color-on-surface);
+      }
+      .grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+      .card {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        min-width: 140px;
+      }
+      h2 {
+        margin: 1.5rem 0 0.75rem;
+        font-size: 1rem;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Color roles preview</h1>
+    <p>Open this file after editing <code>reference.css</code>. Requires Tailwind v4 CLI or host build for utilities.</p>
+
+    <h2>Accent</h2>
+    <div class="grid">
+      <div class="card bg-primary text-on-primary">primary / on-primary</div>
+      <div class="card bg-primary-container text-on-primary-container">primary-container</div>
+    </div>
+
+    <h2>Surface</h2>
+    <div class="grid">
+      <div class="card bg-surface text-on-surface border border-outline">surface</div>
+      <div class="card bg-surface-variant text-on-surface-variant">surface-variant</div>
+      <div class="card bg-surface-container-high text-on-surface">surface-container-high</div>
+    </div>
+
+    <h2>Semantic containers</h2>
+    <div class="grid">
+      <div class="card bg-success-container text-on-success-container border border-success">success</div>
+      <div class="card bg-error-container text-on-error-container border border-error">error</div>
+      <div class="card bg-warning-container text-on-warning-container border border-warning">warning</div>
+      <div class="card bg-info-container text-on-info-container border border-info">info</div>
+    </div>
+
+    <h2>Inverse</h2>
+    <div class="grid">
+      <div class="card bg-inverse-surface text-inverse-on-surface">inverse-surface</div>
+    </div>
+  </body>
+</html>

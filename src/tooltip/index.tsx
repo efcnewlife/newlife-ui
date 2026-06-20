@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { useHtmlDarkClass } from "../hooks/use-html-dark-class";
+import { inversePanel, surfacePanel } from "../theme/role-classes";
 
 export type TooltipPlacement = "top" | "right" | "bottom" | "left";
 type TooltipTheme = "light" | "dark" | "auto";
@@ -99,8 +100,8 @@ export default function Tooltip({
     };
   }, [timeoutId]);
 
-  const bubbleClass = isDark ? "bg-[#1E2634] text-white" : "bg-white text-gray-700";
-  const arrowBg = isDark ? "bg-[#1E2634]" : "bg-white";
+  const bubbleClass = isDark ? inversePanel : surfacePanel;
+  const arrowBg = isDark ? "bg-inverse-surface" : "bg-surface";
 
   return (
     <div className={`relative group ${className}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>

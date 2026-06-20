@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@source "../src/**/*.{ts,tsx}";
+
+@import "../theme/reference.css";
+
+body {
+  font-family: system-ui, sans-serif;
+  background: var(--color-surface-dim);
+  color: var(--color-on-surface);
+}

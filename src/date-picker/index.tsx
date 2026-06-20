@@ -1,9 +1,10 @@
 import { cn } from "../cn";
-import Label from "../label";
+import FormField from "../form-field";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
 import { useEffect, useRef } from "react";
 import { MdCalendarToday } from "react-icons/md";
+import { fieldBase, fieldDisabled, fieldError, textMuted } from "../theme/role-classes";
 
 type DateOption = flatpickr.Options.DateOption;
 
@@ -19,6 +20,7 @@ type PropsType = {
   error?: string;
   required?: boolean;
   disabled?: boolean;
+  wrapperClassName?: string;
 };
 
 export default function DatePicker({
@@ -33,6 +35,7 @@ export default function DatePicker({
   error,
   required,
   disabled,
+  wrapperClassName,
 }: PropsType) {
   const flatpickrRef = useRef<flatpickr.Instance | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -113,27 +116,20 @@ export default function DatePicker({
   }, [disabled]);
 
   const inputClasses = cn(
-    "h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 bg-transparent text-gray-800 border-gray-300 focus:border-brand-300 focus:ring-brand-500/20 dark:border-gray-700 dark:focus:border-brand-800",
-    error && "border-error-500 focus:border-error-300 focus:ring-error-500/20 dark:border-error-500 dark:focus:border-error-800",
-    disabled && "opacity-40 bg-gray-100 cursor-not-allowed dark:bg-gray-800"
+    fieldBase,
+    error && fieldError,
+    disabled && fieldDisabled
   );
 
   return (
-    <div>
-      {label && (
-        <Label htmlFor={id}>
-          {label} {required && <span className="text-red-500">*</span>}
-        </Label>
-      )}
-
+    <FormField id={id} label={label} required={required} error={error} wrapperClassName={wrapperClassName}>
       <div className="relative">
         <input ref={inputRef} id={id} placeholder={placeholder} className={inputClasses} disabled={disabled} readOnly />
 
-        <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
+        <span className={`absolute -translate-y-1/2 pointer-events-none right-3 top-1/2 ${textMuted}`}>
           <MdCalendarToday className="size-6" />
         </span>
       </div>
-      {error && <p className="mt-1.5 text-xs text-error-500 dark:text-error-400">{error}</p>}
-    </div>
+    </FormField>
   );
 }

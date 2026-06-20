@@ -24,6 +24,8 @@
 
 - [ ] `pnpm run typecheck`
 - [ ] `pnpm run build`
+- [ ] `pnpm run test`
+- [ ] `pnpm run build-storybook` (if stories or Storybook config changed)
 
 ## Changelog
 

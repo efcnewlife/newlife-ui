@@ -1,5 +1,12 @@
 import React from "react";
-import Label from "../label";
+import FormField from "../form-field";
+import { cn } from "../cn";
+import {
+  textareaBase,
+  textareaDisabled,
+  textareaError,
+  textareaSuccess,
+} from "../theme/role-classes";
 
 interface TextareaProps {
   id: string;
@@ -9,10 +16,12 @@ interface TextareaProps {
   value?: string;
   onChange?: (value: string) => void;
   className?: string;
+  wrapperClassName?: string;
   disabled?: boolean;
   error?: string | undefined;
   hint?: string;
   required?: boolean;
+  success?: boolean;
 }
 
 const TextArea: React.FC<TextareaProps> = ({
@@ -23,10 +32,12 @@ const TextArea: React.FC<TextareaProps> = ({
   value = "",
   onChange,
   className = "",
+  wrapperClassName,
   disabled = false,
   error = undefined,
   hint = "",
   required = false,
+  success = false,
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (onChange) {
@@ -34,23 +45,25 @@ const TextArea: React.FC<TextareaProps> = ({
     }
   };
 
-  let textareaClasses = `w-full rounded-lg border px-4 py-2.5 text-sm shadow-theme-xs focus:outline-hidden ${className} `;
+  let textareaClasses = cn(textareaBase, className);
 
   if (disabled) {
-    textareaClasses += ` bg-gray-100 opacity-50 text-gray-500 border-gray-300 cursor-not-allowed opacity40 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700`;
-  } else if (error && error !== undefined) {
-    textareaClasses += ` bg-transparent border-gray-300 focus:border-error-300 focus:ring-3 focus:ring-error-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-error-800`;
-  } else {
-    textareaClasses += ` bg-transparent text-gray-900 dark:text-gray-300 text-gray-900 border-gray-300 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800`;
+    textareaClasses = cn(textareaClasses, textareaDisabled);
+  } else if (error) {
+    textareaClasses = cn(textareaClasses, textareaError);
+  } else if (success) {
+    textareaClasses = cn(textareaClasses, textareaSuccess);
   }
 
   return (
-    <>
-      {label && (
-        <Label htmlFor={id}>
-          {label} {required && <span className="text-red-500">*</span>}
-        </Label>
-      )}
+    <FormField
+      id={id}
+      label={label}
+      required={required}
+      error={error}
+      hint={hint}
+      wrapperClassName={wrapperClassName}
+    >
       <div className="relative">
         <textarea
           id={id}
@@ -62,9 +75,7 @@ const TextArea: React.FC<TextareaProps> = ({
           className={textareaClasses}
         />
       </div>
-      {error && <p className="mt-1.5 text-xs text-error-500 dark:text-error-400">{error}</p>}
-      {hint && !error && <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">{hint}</p>}
-    </>
+    </FormField>
   );
 };
 
