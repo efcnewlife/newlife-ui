@@ -1,5 +1,4 @@
 import type React from "react";
-import { textOnSurface } from "../theme/role-classes";
 
 export type DropdownLinkComponentProps = {
   to: string;
@@ -25,7 +24,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
   to,
   onClick,
   onItemClick,
-  baseClassName = `block w-full text-left px-4 py-2 text-sm ${textOnSurface} hover:bg-surface-variant`,
+  baseClassName = "block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900",
   className = "",
   children,
   LinkComponent,

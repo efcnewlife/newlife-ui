@@ -1,8 +1,7 @@
 import React from "react";
-import { progressFill, textOnSurface, textMuted } from "../theme/role-classes";
 
 interface ProgressBarProps {
-  progress: number;
+  progress: number; // 0-100
   size?: "sm" | "md" | "lg" | "xl";
   label?: "none" | "outside" | "inside";
   className?: string;
@@ -18,16 +17,16 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ progress, size = "sm", label 
     xl: "h-5",
   };
 
-  const baseClasses = "relative w-full bg-surface-variant rounded-full";
-  const progressClasses = `absolute left-0 h-full ${progressFill} rounded-full`;
+  const baseClasses = "relative w-full bg-gray-200 rounded-full dark:bg-gray-800";
+  const progressClasses = "absolute left-0 h-full bg-brand-500 rounded-full";
 
   const renderLabel = () => {
     if (label === "outside") {
-      return <span className={`ml-3 text-sm font-medium ${textOnSurface}`}>{safeProgress}%</span>;
+      return <span className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-400">{safeProgress}%</span>;
     }
     if (label === "inside") {
       return (
-        <span className="absolute inset-0 flex items-center justify-center text-on-primary font-medium text-[10px] leading-tight">
+        <span className="absolute inset-0 flex items-center justify-center text-white font-medium text-[10px] leading-tight">
           {safeProgress}%
         </span>
       );

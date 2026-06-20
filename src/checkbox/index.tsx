@@ -1,7 +1,6 @@
 import type React from "react";
 import { MdCheck } from "react-icons/md";
 import Tooltip, { type TooltipPlacement } from "../tooltip";
-import { checkboxBase, textOnSurface } from "../theme/role-classes";
 
 interface CheckboxProps {
   label?: string;
@@ -14,8 +13,6 @@ interface CheckboxProps {
   tooltipPlacement?: TooltipPlacement;
 }
 
-const checkboxInputClass = (className: string) => `${checkboxBase} ${className}`;
-
 const Checkbox: React.FC<CheckboxProps> = ({
   label,
   checked,
@@ -26,36 +23,48 @@ const Checkbox: React.FC<CheckboxProps> = ({
   tooltip = false,
   tooltipPlacement = "right",
 }) => {
-  const labelContent = (
-    <>
+  return tooltip ? (
+    <Tooltip content={label} placement={tooltipPlacement}>
+      <label className={`flex items-center space-x-3 group cursor-pointer ${disabled ? "cursor-not-allowed opacity-60" : ""} ${className}`}>
+        <div className="relative w-5 h-5">
+          <input
+            id={id}
+            type="checkbox"
+            className={`w-5 h-5 appearance-none cursor-pointer dark:border-gray-700 border border-gray-300 checked:border-transparent rounded-md checked:bg-brand-500 disabled:opacity-60 ${className}`}
+            checked={checked}
+            onChange={(e) => onChange(e.target.checked)}
+            disabled={disabled}
+          />
+          {checked && (
+            <MdCheck
+              className="absolute transform -translate-x-1/2 -translate-y-1/2 pointer-events-none top-1/2 left-1/2 text-white"
+              size={20}
+            />
+          )}
+        </div>
+        {label && <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{label}</span>}
+      </label>
+    </Tooltip>
+  ) : (
+    <label className={`flex items-center space-x-3 group cursor-pointer ${disabled ? "cursor-not-allowed opacity-60" : ""} ${className}`}>
       <div className="relative w-5 h-5">
         <input
           id={id}
           type="checkbox"
-          className={checkboxInputClass(className)}
+          className={`w-5 h-5 appearance-none cursor-pointer dark:border-gray-700 border border-gray-300 checked:border-transparent rounded-md checked:bg-brand-500 disabled:opacity-60 ${className}`}
           checked={checked}
           onChange={(e) => onChange(e.target.checked)}
           disabled={disabled}
         />
         {checked && (
           <MdCheck
-            className="absolute transform -translate-x-1/2 -translate-y-1/2 pointer-events-none top-1/2 left-1/2 text-on-primary"
+            className="absolute transform -translate-x-1/2 -translate-y-1/2 pointer-events-none top-1/2 left-1/2 text-white"
             size={20}
           />
         )}
       </div>
-      {label && <span className={`text-sm font-medium ${textOnSurface}`}>{label}</span>}
-    </>
-  );
-
-  const labelClass = `flex items-center space-x-3 group cursor-pointer ${disabled ? "cursor-not-allowed opacity-60" : ""} ${className}`;
-
-  return tooltip ? (
-    <Tooltip content={label} placement={tooltipPlacement}>
-      <label className={labelClass}>{labelContent}</label>
-    </Tooltip>
-  ) : (
-    <label className={labelClass}>{labelContent}</label>
+      {label && <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{label}</span>}
+    </label>
   );
 };
 

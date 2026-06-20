@@ -1,8 +1,7 @@
 import { cn } from "../cn";
-import FormField from "../form-field";
+import Label from "../label";
 import { ChangeEvent } from "react";
 import { MdAccessTime } from "react-icons/md";
-import { fieldBase, fieldDisabled, fieldError, textMuted } from "../theme/role-classes";
 
 interface TimePickerProps {
   id: string;
@@ -17,7 +16,6 @@ interface TimePickerProps {
   max?: string;
   step?: number;
   className?: string;
-  wrapperClassName?: string;
 }
 
 const TimePicker = ({
@@ -33,18 +31,22 @@ const TimePicker = ({
   max,
   step,
   className,
-  wrapperClassName,
 }: TimePickerProps) => {
   const inputClasses = cn(
-    fieldBase,
-    "pr-11",
-    error && fieldError,
-    disabled && fieldDisabled,
+    "h-11 w-full rounded-lg border appearance-none px-4 py-2.5 pr-11 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 bg-transparent text-gray-800 border-gray-300 focus:border-brand-300 focus:ring-brand-500/20 dark:border-gray-700 dark:focus:border-brand-800",
+    error && "border-error-500 focus:border-error-300 focus:ring-error-500/20 dark:border-error-500 dark:focus:border-error-800",
+    disabled && "opacity-40 bg-gray-100 cursor-not-allowed dark:bg-gray-800",
     className
   );
 
   return (
-    <FormField id={id} label={label} required={required} error={error} wrapperClassName={wrapperClassName}>
+    <div>
+      {label && (
+        <Label htmlFor={id}>
+          {label} {required && <span className="text-red-500">*</span>}
+        </Label>
+      )}
+
       <div className="relative">
         <input
           type="time"
@@ -59,11 +61,12 @@ const TimePicker = ({
           className={inputClasses}
         />
 
-        <span className={`absolute -translate-y-1/2 pointer-events-none right-3 top-1/2 ${textMuted}`}>
+        <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
           <MdAccessTime className="size-6" />
         </span>
       </div>
-    </FormField>
+      {error && <p className="mt-1.5 text-xs text-error-500 dark:text-error-400">{error}</p>}
+    </div>
   );
 };
 

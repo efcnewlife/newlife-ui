@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { PopoverPosition } from "../types/enums";
-import { inversePanelHeader, surfacePanel, textOnSurface } from "../theme/role-classes";
 
 interface PopoverProps {
   title: React.ReactNode;
@@ -85,9 +84,9 @@ export default function Popover({
       </div>
       {isOpen && (
         <div ref={popoverRef} className={`absolute z-99999 ${positionClasses[position]}`} style={{ width: width }}>
-          <div className={`w-full rounded-xl shadow-2xl ${surfacePanel}`}>
-            <div className={`relative rounded-t-xl px-5 py-3 ${inversePanelHeader}`}>
-              <h3 className={`text-base font-semibold ${textOnSurface}`}>{title}</h3>
+          <div className="w-full bg-white rounded-xl shadow-2xl dark:bg-[#1E2634]">
+            <div className="relative rounded-t-xl border-b border-gray-200 bg-gray-100 px-5 py-3 dark:border-white/[0.03] dark:bg-[#252D3A]">
+              <h3 className="text-base font-semibold text-gray-800 dark:text-white/90">{title}</h3>
             </div>
             {children}
           </div>

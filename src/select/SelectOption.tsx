@@ -1,6 +1,5 @@
 import type React from "react";
 import { cn } from "../cn";
-import { textMuted, textOnSurface } from "../theme/role-classes";
 
 interface SelectOptionProps {
   value: string | number;
@@ -16,7 +15,9 @@ export const SelectOption: React.FC<SelectOptionProps> = ({ value, label, disabl
     <div
       className={cn(
         "flex items-center gap-2 px-4 py-2 text-sm transition-colors",
-        disabled ? `${textMuted} cursor-not-allowed opacity-60` : `${textOnSurface} hover:bg-surface-variant`,
+        disabled
+          ? "text-gray-400 cursor-not-allowed dark:text-gray-600"
+          : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700",
         className
       )}
       data-value={value}

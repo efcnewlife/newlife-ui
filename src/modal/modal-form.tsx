@@ -1,7 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { MdClose } from "react-icons/md";
 import { modalStackManager } from "./modalStack";
-import { modalCloseButton, modalSurface, overlayScrim, textOnSurface } from "../theme/role-classes";
 
 interface ModalFormProps {
   isOpen: boolean;
@@ -91,17 +90,20 @@ export const ModalForm = forwardRef<ModalFormHandle, ModalFormProps>(function Mo
 
   // if there is footer，use flex layout, let body scrollable,footer fixed at bottom
   const hasFooter = !!footer;
-  const contentWrapperClasses = hasFooter ? `flex flex-col ${modalSurface}` : "";
+  const contentWrapperClasses = hasFooter ? "flex flex-col bg-white dark:bg-gray-900" : "";
 
   return (
     <div className="fixed inset-0 flex items-center justify-center overflow-y-auto modal z-99999">
-      {!isFullscreen && <div className={`fixed inset-0 h-full w-full ${overlayScrim}`} onClick={onClose}></div>}
+      {!isFullscreen && <div className="fixed inset-0 h-full w-full bg-gray-400/60" onClick={onClose}></div>}
       <div ref={modalRef} className={`${contentClasses} ${contentWrapperClasses} ${className}`} onClick={(e) => e.stopPropagation()}>
         {(title || showCloseButton) && (
           <div className="flex items-center justify-between pb-2 shrink-0">
-            {title && <h3 className={`text-lg font-semibold ${textOnSurface}`}>{title}</h3>}
+            {title && <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>}
             {showCloseButton && (
-              <button onClick={onClose} className={`flex h-8 w-8 items-center justify-center rounded-full sm:h-11 sm:w-11 ${modalCloseButton}`}>
+              <button
+                onClick={onClose}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-400 transition-colors hover:bg-red-200 hover:text-red-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-red-700 dark:hover:text-red-500 sm:h-11 sm:w-11"
+              >
                 <MdClose className="w-6 h-6" />
               </button>
             )}

@@ -47,38 +47,6 @@ pnpm run build
 
 Outputs `dist/` (ESM + `.d.ts`).
 
-## Development
-
-Component development uses **Storybook** (visual) and **Vitest** (unit/render tests). Both load `theme/reference.css` via Tailwind v4 so M3 color roles render correctly without a host app.
-
-```bash
-pnpm install
-pnpm run typecheck
-pnpm run build
-pnpm run test
-pnpm run storybook          # http://localhost:6006
-pnpm run build-storybook    # static output in storybook-static/
-```
-
-Stories live next to components as `*.stories.tsx`. Tests live under `tests/`.
-
-### Storybook color themes
-
-Use the **Color theme** toolbar (top bar) to toggle **Light** or **Dark** M3 role mappings from `theme/reference.css`:
-
-| Preset | What it does |
-|--------|----------------|
-| **Light** | Default roles from `reference.css` |
-| **Dark** | Adds `.dark` on `<html>` for dark role remap |
-
-Implementation: `.storybook/apply-storybook-theme.ts` toggles the `dark` class on `<html>`. Per-story default:
-
-```tsx
-export const OnDark: Story = {
-  globals: { colorTheme: "dark" },
-};
-```
-
 ## Publish (maintainers)
 
 Recommended flow: merge the release PR (version bump + `CHANGELOG.md`), then tag and push the tag (no `v` prefix).
@@ -105,31 +73,15 @@ npm publish
 
 ### Tailwind v4
 
-Design tokens (`@theme` colors, fonts, etc.) stay in the **host** application (e.g. `src/index.css`). The library emits **M3-aligned color role** class names (`bg-primary`, `text-on-surface`, etc.).
+Design tokens (`@theme` colors, fonts, etc.) stay in the **host** application (e.g. `src/index.css`). The library only emits class names; it does not ship a duplicate theme.
 
-Register the built package so Tailwind scans classes used inside the package:
+Register the built package so Tailwind scans classes used inside the package (production builds otherwise purge those classes). In the host CSS:
 
 ```css
 @source "../node_modules/@efcnewlife/newlife-ui/dist";
 ```
 
-### Color system (0.2.0+)
-
-Components require **color roles** defined in the host. The package ships reference theme files:
-
-```css
-/* Full defaults (primitives + roles) */
-@import "@efcnewlife/newlife-ui/theme/reference.css";
-
-/* Or roles only, if you already define brand/gray scales */
-@import "@efcnewlife/newlife-ui/theme/required-roles.css";
-```
-
-Import **after** `@import "tailwindcss"`. Override brand or roles in your own `@theme` block.
-
-**Breaking for hosts:** upgrade CSS **before** bumping to `0.2.0`. See `theme/token-contract.md` in this repo and [newlife-docs host integration guide](https://github.com/efcnewlife/newlife-docs).
-
-`Switch.color`: prefer `"primary"` | `"neutral"`; `"blue"` and `"gray"` remain as deprecated aliases.
+Adjust the relative path if your `node_modules` layout differs.
 
 ### Peer dependencies
 
@@ -151,7 +103,3 @@ Ensure these match your app:
 ### `Select` copy
 
 Pass a `labels` prop for translated placeholder, aria, and empty states (defaults are English).
-
-### Form fields
-
-Composite inputs (`Input`, `TextArea`, `PhoneInput`, `Select`, `ComboBox`, `DatePicker`, `TimePicker`) wrap label, control, and messages in a single DOM node via **`FormField`**. Use **`wrapperClassName`** for field-level layout (e.g. `space-y-1.5`); **`className`** still applies to the native input or trigger as before. Export **`FormField`** directly when building custom fields in host apps.

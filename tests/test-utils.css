@@ -1,5 +1,0 @@
-@import "tailwindcss";
-
-@source "../src/**/*.{ts,tsx}";
-
-@import "../theme/reference.css";

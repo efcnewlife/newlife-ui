@@ -18,24 +18,17 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
-    },
-    "./theme/reference.css": "./theme/reference.css",
-    "./theme/required-roles.css": "./theme/required-roles.css"
+    }
   },
   "files": [
-    "dist",
-    "theme"
+    "dist"
   ],
   "sideEffects": [
     "**/*.css"
   ],
   "scripts": {
     "build": "tsup",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
+    "typecheck": "tsc -p tsconfig.build.json --noEmit",
     "prepublishOnly": "pnpm run build"
   },
   "keywords": [],
@@ -48,32 +41,17 @@
     "flatpickr": "^4.0.0"
   },
   "dependencies": {
-    "@base-ui/react": "^1.6.0",
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.0.1"
   },
   "devDependencies": {
-    "@storybook/addon-a11y": "^8.6.14",
-    "@storybook/addon-essentials": "^8.6.14",
-    "@storybook/react": "^8.6.14",
-    "@storybook/react-vite": "^8.6.14",
-    "@tailwindcss/vite": "^4.0.0",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.2.0",
-    "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.0.12",
     "@types/react-dom": "^19.0.4",
-    "@vitejs/plugin-react": "^4.3.4",
-    "flatpickr": "^4.6.13",
-    "jsdom": "^26.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
-    "storybook": "^8.6.14",
-    "tailwindcss": "^4.0.0",
+    "flatpickr": "^4.6.13",
     "tsup": "^8.4.0",
-    "typescript": "~5.7.2",
-    "vite": "^6.1.0",
-    "vitest": "^3.0.5"
+    "typescript": "~5.7.2"
   }
 }
