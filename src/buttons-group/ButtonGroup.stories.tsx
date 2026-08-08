@@ -22,6 +22,29 @@ export const Primary: Story = {
   render: (args) => <ButtonGroup {...args} />,
 };
 
+export const IconOnly: Story = {
+  args: {
+    variant: "primary",
+    minWidth: "auto",
+    buttons: [
+      {
+        text: "List",
+        icon: <MdViewList className="size-4" />,
+        iconOnly: true,
+        active: true,
+        className: "h-9 w-9 justify-center px-0 py-0",
+      },
+      {
+        text: "Grid",
+        icon: <MdGridView className="size-4" />,
+        iconOnly: true,
+        className: "h-9 w-9 justify-center px-0 py-0",
+      },
+    ],
+  },
+  render: (args) => <ButtonGroup {...args} />,
+};
+
 export const Secondary: Story = {
   args: {
     variant: "secondary",

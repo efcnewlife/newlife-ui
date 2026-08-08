@@ -14,6 +14,8 @@ export interface ButtonGroupButton {
   text: string;
   icon?: ReactNode;
   iconPosition?: "left" | "right";
+  /** When true, render icon only; `text` is used for aria-label / title. */
+  iconOnly?: boolean;
   onClick?: () => void;
   disabled?: boolean;
   active?: boolean;
@@ -105,6 +107,10 @@ const ButtonGroup = ({ variant = "primary", buttons, className, minWidth = "309p
     const icon = renderIcon(button);
     const iconPosition = button.iconPosition || "left";
 
+    if (button.iconOnly && icon) {
+      return icon;
+    }
+
     if (!icon) {
       return button.text;
     }
@@ -141,6 +147,8 @@ const ButtonGroup = ({ variant = "primary", buttons, className, minWidth = "309p
                 className={buttonClassName}
                 onClick={button.onClick}
                 disabled={button.disabled}
+                aria-label={button.iconOnly ? button.text : undefined}
+                title={button.iconOnly ? button.text : undefined}
               >
                 {renderButtonContent(button)}
               </button>
