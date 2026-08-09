@@ -15,7 +15,7 @@ alwaysApply: true
 - Use **English** for all comments and user-facing default copy in components unless a prop (e.g. `labels`) is explicitly for i18n.
 - Do not use non-ASCII characters in comments, identifiers, or slugs in this repo.
 - **Package manager:** `pnpm` only; lockfile is `pnpm-lock.yaml` (`packageManager` in `package.json` is authoritative for CI).
-- Run checks with: `pnpm install --frozen-lockfile`, `pnpm run typecheck`, `pnpm run build`.
+- Run checks with: `pnpm install --frozen-lockfile`, `pnpm run typecheck`, `pnpm run build`, `pnpm run test`. Optionally `pnpm run build-storybook` before merging UI-heavy PRs.
 
 ## Code layout and naming
 
