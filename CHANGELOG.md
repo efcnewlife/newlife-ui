@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-08-08
+
+### Summary
+
+Add **`iconOnly`** support to **`ButtonGroup`** for compact icon toggles (e.g. list / calendar view switchers), with accessibility via `aria-label` / `title` from `text`.
+
+### Added
+
+- **`ButtonGroupButton.iconOnly`**: when `true` and an `icon` is provided, render the icon only; keep `text` for `aria-label` and `title`.
+- Storybook **`ButtonGroup` / IconOnly** story demonstrating square icon-only toggles.
+
 ## [0.2.0] - 2026-06-20
 
 ### Summary
