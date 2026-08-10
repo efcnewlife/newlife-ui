@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **`DateTimePicker`**: standalone date+time field with UTC Day.js stored values, optional display `timezone`, `minDate` / `maxDate` / `minDateTime` / `maxDateTime`, `clearable` (default `true`), `minuteStep` (default `1`), `timePrecision` (`minutes` | `seconds`), and `ampm` (default 24h). `onChange` returns `(value, meta)` with `validationError` and `source`.
+- Runtime dependency **`dayjs`** (with utc / timezone plugins used internally).
+- Exported picker types: `DatePickerProps`, `DateTimePickerProps`, `PickerChangeMeta`.
+
+### Changed
+
+- **`DatePicker`**: controlled `value` / `defaultValue` / `onChange` now use Day.js values and `PickerChangeMeta` instead of `YYYY-MM-DD` strings and flatpickr `(dates, dateStr, instance)`. Optional `timezone` for zone-aware calendar dates.
+
+### Breaking changes
+
+- **`DatePicker` value API**: hosts must pass Day.js (`Dayjs | Dayjs[] | null`) instead of `YYYY-MM-DD` strings; `onChange` no longer receives flatpickr `dateStr` / `instance`.
+- **`DatePicker` `defaultDate`**: renamed to **`defaultValue`**.
+
 ### Fixed
 
 - **`ComboBox` dropdown**: panel uses `surface` background (same as `Select`) for readable contrast in light theme.

@@ -7,6 +7,7 @@ import ButtonGroup from "../../src/buttons-group";
 import Checkbox from "../../src/checkbox";
 import ComboBox from "../../src/combobox";
 import DatePicker from "../../src/date-picker";
+import DateTimePicker from "../../src/date-time-picker";
 import { Dropdown } from "../../src/dropdown/Dropdown";
 import { DropdownItem } from "../../src/dropdown/DropdownItem";
 import FileInput from "../../src/file-input";
@@ -47,6 +48,7 @@ describe("component smoke renders", () => {
         <PhoneInput countries={[{ name: "US", code: "+1" }]} />
         <TimePicker id="time" label="Time" />
         <DatePicker id="date" label="Date" />
+        <DateTimePicker id="datetime" label="Date time" />
         <Select id="select" options={[{ value: "a", label: "A" }]} />
         <ComboBox id="combo" options={[{ value: "a", label: "A" }]} />
         <Tabs tabs={[{ value: "a", label: "A" }]} value="a" onChange={() => undefined} />

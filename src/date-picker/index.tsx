@@ -1,73 +1,175 @@
 import { cn } from "../cn";
 import FormField from "../form-field";
+import { dayjs, type Dayjs } from "../lib/dayjs";
+import {
+  calendarStringToDayjs,
+  dayjsOrNullToFlatpickr,
+  dayjsToCalendarString,
+} from "../picker/datetime";
+import type { PickerChangeMeta, PickerValidationError } from "../picker/types";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
 import { useEffect, useRef } from "react";
 import { MdCalendarToday } from "react-icons/md";
 import { fieldBase, fieldDisabled, fieldError, textMuted } from "../theme/role-classes";
 
-type DateOption = flatpickr.Options.DateOption;
+export type DatePickerMode = "single" | "multiple" | "range" | "time";
 
-type PropsType = {
+export type DatePickerValue = Dayjs | Dayjs[] | null;
+
+export interface DatePickerProps {
   id: string;
-  mode?: "single" | "multiple" | "range" | "time";
-  onChange?: (selectedDates: Date[], dateStr: string, instance: flatpickr.Instance) => void;
-  value?: string; // YYYY-MM-DD format
-  defaultDate?: DateOption;
-  minDate?: string | Date; // YYYY-MM-DD format or Date
+  mode?: DatePickerMode;
+  onChange?: (value: DatePickerValue, meta: PickerChangeMeta) => void;
+  value?: DatePickerValue;
+  defaultValue?: DatePickerValue;
+  timezone?: string;
+  minDate?: Dayjs | Date | string;
+  maxDate?: Dayjs | Date | string;
   label?: string;
   placeholder?: string;
   error?: string;
   required?: boolean;
   disabled?: boolean;
   wrapperClassName?: string;
+}
+
+const toDayjsBound = (value: Dayjs | Date | string | undefined): Dayjs | undefined => {
+  if (value == null) {
+    return undefined;
+  }
+  if (dayjs.isDayjs(value)) {
+    return value;
+  }
+  return dayjs(value);
+};
+
+const selectedDatesToValue = (
+  selectedDates: Date[],
+  mode: DatePickerMode,
+  timezone?: string
+): DatePickerValue => {
+  if (selectedDates.length === 0) {
+    return null;
+  }
+
+  const mapped = selectedDates.map((date) =>
+    calendarStringToDayjs(dayjs(date).format("YYYY-MM-DD"), timezone)
+  );
+
+  if (mode === "single" || mode === "time") {
+    return mapped[0] ?? null;
+  }
+
+  return mapped;
+};
+
+const validateDateValue = (
+  value: DatePickerValue,
+  minDate?: Dayjs,
+  maxDate?: Dayjs
+): PickerValidationError => {
+  if (value == null) {
+    return null;
+  }
+
+  const values = Array.isArray(value) ? value : [value];
+  for (const item of values) {
+    if (!item.isValid()) {
+      return "invalidDate";
+    }
+    if (minDate && item.startOf("day").isBefore(minDate.startOf("day"))) {
+      return "minDate";
+    }
+    if (maxDate && item.startOf("day").isAfter(maxDate.startOf("day"))) {
+      return "maxDate";
+    }
+  }
+
+  return null;
 };
 
 export default function DatePicker({
   id,
-  mode,
+  mode = "single",
   onChange,
   value,
-  defaultDate,
+  defaultValue,
+  timezone,
   minDate,
+  maxDate,
   label,
   placeholder,
   error,
   required,
   disabled,
   wrapperClassName,
-}: PropsType) {
+}: DatePickerProps) {
   const flatpickrRef = useRef<flatpickr.Instance | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const onChangeRef = useRef(onChange);
+  const timezoneRef = useRef(timezone);
+  const minDateRef = useRef(toDayjsBound(minDate));
+  const maxDateRef = useRef(toDayjsBound(maxDate));
 
-  // Keep onChange ref up to date
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
 
-  // Initialize flatpickr
   useEffect(() => {
-    if (!inputRef.current) return;
+    timezoneRef.current = timezone;
+  }, [timezone]);
 
-    const options: flatpickr.Options.Options = {
-      mode: mode || "single",
-      static: true,
-      monthSelectorType: "static",
-      dateFormat: "Y-m-d",
-      defaultDate: value !== undefined && value !== "" ? value : defaultDate,
-      onChange: (selectedDates, dateStr, instance) => {
-        if (onChangeRef.current) {
-          onChangeRef.current(selectedDates, dateStr, instance);
-        }
-      },
-      disableMobile: true, // Use desktop version on mobile
-    };
+  useEffect(() => {
+    minDateRef.current = toDayjsBound(minDate);
+  }, [minDate]);
 
-    if (minDate) {
-      options.minDate = minDate;
+  useEffect(() => {
+    maxDateRef.current = toDayjsBound(maxDate);
+  }, [maxDate]);
+
+  useEffect(() => {
+    if (!inputRef.current) {
+      return;
     }
 
+    const initial =
+      value !== undefined
+        ? dayjsOrNullToFlatpickr(value, timezone)
+        : dayjsOrNullToFlatpickr(defaultValue, timezone);
+
+    const options: flatpickr.Options.Options = {
+      mode,
+      static: true,
+      monthSelectorType: "static",
+      dateFormat: mode === "time" ? "H:i" : "Y-m-d",
+      defaultDate: initial,
+      onChange: (selectedDates) => {
+        if (!onChangeRef.current) {
+          return;
+        }
+
+        const nextValue = selectedDatesToValue(selectedDates, mode, timezoneRef.current);
+        const validationError = validateDateValue(
+          nextValue,
+          minDateRef.current,
+          maxDateRef.current
+        );
+
+        onChangeRef.current(nextValue, {
+          validationError,
+          source: "view",
+        });
+      },
+      disableMobile: true,
+    };
+
+    if (minDate != null) {
+      options.minDate = dayjsToCalendarString(toDayjsBound(minDate)!, timezone);
+    }
+    if (maxDate != null) {
+      options.maxDate = dayjsToCalendarString(toDayjsBound(maxDate)!, timezone);
+    }
     if (disabled) {
       options.clickOpens = false;
     }
@@ -82,51 +184,88 @@ export default function DatePicker({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, id, disabled]);
 
-  // Update value when it changes externally
   useEffect(() => {
-    if (flatpickrRef.current && !Array.isArray(flatpickrRef.current)) {
-      if (value !== undefined && value !== "") {
-        const currentValue = flatpickrRef.current.input.value;
-        if (currentValue !== value) {
-          flatpickrRef.current.setDate(value, false);
-        }
-      } else if (value === "") {
-        flatpickrRef.current.clear();
-      }
+    if (!flatpickrRef.current || Array.isArray(flatpickrRef.current)) {
+      return;
     }
-  }, [value]);
 
-  // Update minDate when it changes
-  useEffect(() => {
-    if (flatpickrRef.current && !Array.isArray(flatpickrRef.current) && minDate !== undefined) {
-      flatpickrRef.current.set("minDate", minDate);
+    if (value === undefined) {
+      return;
     }
-  }, [minDate]);
 
-  // Update disabled state
+    if (value == null) {
+      flatpickrRef.current.clear();
+      return;
+    }
+
+    const next = dayjsOrNullToFlatpickr(value, timezone);
+    if (next == null) {
+      return;
+    }
+    const current = flatpickrRef.current.input.value;
+    const nextDisplay = Array.isArray(next) ? next.join(" to ") : next;
+    if (nextDisplay && current !== nextDisplay) {
+      flatpickrRef.current.setDate(next, false);
+    }
+  }, [value, timezone]);
+
   useEffect(() => {
-    if (flatpickrRef.current && !Array.isArray(flatpickrRef.current)) {
-      if (disabled) {
-        flatpickrRef.current.close();
-        flatpickrRef.current.set("clickOpens", false);
-      } else {
-        flatpickrRef.current.set("clickOpens", true);
-      }
+    if (!flatpickrRef.current || Array.isArray(flatpickrRef.current)) {
+      return;
+    }
+    if (minDate !== undefined) {
+      flatpickrRef.current.set(
+        "minDate",
+        dayjsToCalendarString(toDayjsBound(minDate)!, timezone)
+      );
+    }
+  }, [minDate, timezone]);
+
+  useEffect(() => {
+    if (!flatpickrRef.current || Array.isArray(flatpickrRef.current)) {
+      return;
+    }
+    if (maxDate !== undefined) {
+      flatpickrRef.current.set(
+        "maxDate",
+        dayjsToCalendarString(toDayjsBound(maxDate)!, timezone)
+      );
+    }
+  }, [maxDate, timezone]);
+
+  useEffect(() => {
+    if (!flatpickrRef.current || Array.isArray(flatpickrRef.current)) {
+      return;
+    }
+    if (disabled) {
+      flatpickrRef.current.close();
+      flatpickrRef.current.set("clickOpens", false);
+    } else {
+      flatpickrRef.current.set("clickOpens", true);
     }
   }, [disabled]);
 
-  const inputClasses = cn(
-    fieldBase,
-    error && fieldError,
-    disabled && fieldDisabled
-  );
+  const inputClasses = cn(fieldBase, error && fieldError, disabled && fieldDisabled);
 
   return (
-    <FormField id={id} label={label} required={required} error={error} wrapperClassName={wrapperClassName}>
+    <FormField
+      id={id}
+      label={label}
+      required={required}
+      error={error}
+      wrapperClassName={wrapperClassName}
+    >
       <div className="relative">
-        <input ref={inputRef} id={id} placeholder={placeholder} className={inputClasses} disabled={disabled} readOnly />
+        <input
+          ref={inputRef}
+          id={id}
+          placeholder={placeholder}
+          className={inputClasses}
+          disabled={disabled}
+          readOnly
+        />
 
-        <span className={`absolute -translate-y-1/2 pointer-events-none right-3 top-1/2 ${textMuted}`}>
+        <span className={cn("absolute -translate-y-1/2 pointer-events-none right-3 top-1/2", textMuted)}>
           <MdCalendarToday className="size-6" />
         </span>
       </div>

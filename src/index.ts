@@ -32,6 +32,13 @@ export { Dropdown } from "./dropdown/Dropdown";
 export { DropdownItem } from "./dropdown/DropdownItem";
 export type { DropdownLinkComponentProps } from "./dropdown/DropdownItem";
 export { default as DatePicker } from "./date-picker";
+export type { DatePickerProps, DatePickerMode, DatePickerValue } from "./date-picker";
+export { default as DateTimePicker } from "./date-time-picker";
+export type {
+  DateTimePickerProps,
+  DateTimePickerTimePrecision,
+} from "./date-time-picker";
+export type { PickerChangeMeta, PickerChangeSource, PickerValidationError } from "./picker/types";
 export { default as TimePicker } from "./time-picker";
 export { default as PhoneInput } from "./phone-input";
 export { default as FileInput } from "./file-input";
