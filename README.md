@@ -137,7 +137,7 @@ Ensure these match your app:
 
 - `react`, `react-dom`
 - `react-icons`
-- `flatpickr` (used by `DatePicker`)
+- `flatpickr` (used by `DateTimePicker`; date-line `DateCalendar` / `DateField` / `DatePicker` do not require it)
 
 ### Notifications
 

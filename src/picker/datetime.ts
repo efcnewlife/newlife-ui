@@ -85,6 +85,43 @@ export const dayjsOrNullToFlatpickr = (
   return dayjsToCalendarString(value, timezone);
 };
 
+export const toDayjsBound = (
+  value: Dayjs | Date | string | null | undefined
+): Dayjs | undefined => {
+  if (value == null) {
+    return undefined;
+  }
+  if (dayjs.isDayjs(value)) {
+    return value;
+  }
+  return dayjs(value);
+};
+
+export const validateCalendarDate = (
+  value: Dayjs | null,
+  options: {
+    minDate?: Dayjs | null;
+    maxDate?: Dayjs | null;
+    timezone?: string;
+  } = {}
+): PickerValidationError => {
+  if (value == null) {
+    return null;
+  }
+  if (!value.isValid()) {
+    return "invalidDate";
+  }
+
+  const dayKey = dayjsToCalendarString(value, options.timezone);
+  if (options.minDate && dayKey < dayjsToCalendarString(options.minDate, options.timezone)) {
+    return "minDate";
+  }
+  if (options.maxDate && dayKey > dayjsToCalendarString(options.maxDate, options.timezone)) {
+    return "maxDate";
+  }
+  return null;
+};
+
 const calendarDayKey = (value: Dayjs, displayTimezone: string): string => {
   if (displayTimezone === "system") {
     return value.local().format("YYYY-MM-DD");

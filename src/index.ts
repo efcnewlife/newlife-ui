@@ -31,8 +31,17 @@ export { default as Popover } from "./popover";
 export { Dropdown } from "./dropdown/Dropdown";
 export { DropdownItem } from "./dropdown/DropdownItem";
 export type { DropdownLinkComponentProps } from "./dropdown/DropdownItem";
+export { default as DateCalendar } from "./date-calendar";
+export type {
+  DateCalendarLabels,
+  DateCalendarProps,
+  DateCalendarView,
+  WeekStartsOn,
+} from "./date-calendar";
+export { default as DateField } from "./date-field";
+export type { DateFieldProps } from "./date-field";
 export { default as DatePicker } from "./date-picker";
-export type { DatePickerProps, DatePickerMode, DatePickerValue } from "./date-picker";
+export type { DatePickerProps, DatePickerValue } from "./date-picker";
 export { default as DateTimePicker } from "./date-time-picker";
 export type {
   DateTimePickerProps,

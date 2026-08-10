@@ -13,7 +13,16 @@ describe("DatePicker", () => {
     expect(screen.getByLabelText("Start date")).toHaveValue("2026-06-20");
   });
 
-  it("calls onChange with a Day.js value and picker change meta", async () => {
+  it("renders a trailing calendar icon", () => {
+    const { container } = render(
+      <DatePicker id="start-date" label="Start date" value={dayjs("2026-06-20")} />
+    );
+
+    expect(container.querySelector("svg")).not.toBeNull();
+    expect(screen.getByRole("button", { name: /open calendar/i })).toBeInTheDocument();
+  });
+
+  it("opens DateCalendar and commits selection via onChange with view meta", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
@@ -26,24 +35,32 @@ describe("DatePicker", () => {
       />
     );
 
-    const input = screen.getByLabelText("Start date");
-    await user.click(input);
-
-    const dayButton = document.querySelector(
-      ".flatpickr-calendar.open .flatpickr-day:not(.prevMonthDay):not(.nextMonthDay)"
-    ) as HTMLElement | null;
-    expect(dayButton).toBeTruthy();
-    await user.click(dayButton!);
+    await user.click(screen.getByRole("button", { name: /open calendar/i }));
+    await user.click(screen.getByRole("button", { name: "June 15, 2026" }));
 
     expect(onChange).toHaveBeenCalled();
     const [value, meta] = onChange.mock.calls[0];
     expect(dayjs.isDayjs(value)).toBe(true);
-    expect(value.format("YYYY-MM-DD")).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(value.format("YYYY-MM-DD")).toBe("2026-06-15");
     expect(meta).toEqual(
       expect.objectContaining({
-        source: expect.stringMatching(/^(field|view|unknown)$/),
+        source: "view",
+        validationError: null,
       })
     );
-    expect(meta).toHaveProperty("validationError");
+  });
+
+  it("does not expose multiple, range, or time modes", () => {
+    render(
+      <DatePicker
+        id="start-date"
+        label="Start date"
+        value={dayjs("2026-06-20")}
+        // @ts-expect-error mode is removed from the public API
+        mode="range"
+      />
+    );
+
+    expect(screen.queryByText(/to/i)).not.toBeInTheDocument();
   });
 });

@@ -1,28 +1,18 @@
-import { cn } from "../cn";
-import FormField from "../form-field";
-import { dayjs, type Dayjs } from "../lib/dayjs";
-import {
-  calendarStringToDayjs,
-  dayjsOrNullToFlatpickr,
-  dayjsToCalendarString,
-} from "../picker/datetime";
-import type { PickerChangeMeta, PickerValidationError } from "../picker/types";
-import flatpickr from "flatpickr";
-import "flatpickr/dist/flatpickr.css";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MdCalendarToday } from "react-icons/md";
-import { fieldBase, fieldDisabled, fieldError, textMuted } from "../theme/role-classes";
-
-export type DatePickerMode = "single" | "multiple" | "range" | "time";
-
-export type DatePickerValue = Dayjs | Dayjs[] | null;
+import { cn } from "../cn";
+import DateCalendar from "../date-calendar";
+import type { DateCalendarLabels, WeekStartsOn } from "../date-calendar";
+import DateField from "../date-field";
+import type { Dayjs } from "../lib/dayjs";
+import type { PickerChangeMeta } from "../picker/types";
+import { textMuted } from "../theme/role-classes";
 
 export interface DatePickerProps {
   id: string;
-  mode?: DatePickerMode;
-  onChange?: (value: DatePickerValue, meta: PickerChangeMeta) => void;
-  value?: DatePickerValue;
-  defaultValue?: DatePickerValue;
+  value?: Dayjs | null;
+  defaultValue?: Dayjs | null;
+  onChange?: (value: Dayjs | null, meta: PickerChangeMeta) => void;
   timezone?: string;
   minDate?: Dayjs | Date | string;
   maxDate?: Dayjs | Date | string;
@@ -32,69 +22,19 @@ export interface DatePickerProps {
   required?: boolean;
   disabled?: boolean;
   wrapperClassName?: string;
+  weekStartsOn?: WeekStartsOn;
+  showSubmitButton?: boolean;
+  onSubmit?: () => void;
+  labels?: DateCalendarLabels;
 }
 
-const toDayjsBound = (value: Dayjs | Date | string | undefined): Dayjs | undefined => {
-  if (value == null) {
-    return undefined;
-  }
-  if (dayjs.isDayjs(value)) {
-    return value;
-  }
-  return dayjs(value);
-};
-
-const selectedDatesToValue = (
-  selectedDates: Date[],
-  mode: DatePickerMode,
-  timezone?: string
-): DatePickerValue => {
-  if (selectedDates.length === 0) {
-    return null;
-  }
-
-  const mapped = selectedDates.map((date) =>
-    calendarStringToDayjs(dayjs(date).format("YYYY-MM-DD"), timezone)
-  );
-
-  if (mode === "single" || mode === "time") {
-    return mapped[0] ?? null;
-  }
-
-  return mapped;
-};
-
-const validateDateValue = (
-  value: DatePickerValue,
-  minDate?: Dayjs,
-  maxDate?: Dayjs
-): PickerValidationError => {
-  if (value == null) {
-    return null;
-  }
-
-  const values = Array.isArray(value) ? value : [value];
-  for (const item of values) {
-    if (!item.isValid()) {
-      return "invalidDate";
-    }
-    if (minDate && item.startOf("day").isBefore(minDate.startOf("day"))) {
-      return "minDate";
-    }
-    if (maxDate && item.startOf("day").isAfter(maxDate.startOf("day"))) {
-      return "maxDate";
-    }
-  }
-
-  return null;
-};
+export type DatePickerValue = Dayjs | null;
 
 export default function DatePicker({
   id,
-  mode = "single",
-  onChange,
   value,
-  defaultValue,
+  defaultValue = null,
+  onChange,
   timezone,
   minDate,
   maxDate,
@@ -104,171 +44,105 @@ export default function DatePicker({
   required,
   disabled,
   wrapperClassName,
+  weekStartsOn,
+  showSubmitButton,
+  onSubmit,
+  labels,
 }: DatePickerProps) {
-  const flatpickrRef = useRef<flatpickr.Instance | null>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const onChangeRef = useRef(onChange);
-  const timezoneRef = useRef(timezone);
-  const minDateRef = useRef(toDayjsBound(minDate));
-  const maxDateRef = useRef(toDayjsBound(maxDate));
+  const isControlled = value !== undefined;
+  const [uncontrolledValue, setUncontrolledValue] = useState<Dayjs | null>(defaultValue);
+  const selectedValue = isControlled ? value : uncontrolledValue;
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    onChangeRef.current = onChange;
-  }, [onChange]);
-
-  useEffect(() => {
-    timezoneRef.current = timezone;
-  }, [timezone]);
-
-  useEffect(() => {
-    minDateRef.current = toDayjsBound(minDate);
-  }, [minDate]);
-
-  useEffect(() => {
-    maxDateRef.current = toDayjsBound(maxDate);
-  }, [maxDate]);
-
-  useEffect(() => {
-    if (!inputRef.current) {
+    if (!open) {
       return;
     }
 
-    const initial =
-      value !== undefined
-        ? dayjsOrNullToFlatpickr(value, timezone)
-        : dayjsOrNullToFlatpickr(defaultValue, timezone);
-
-    const options: flatpickr.Options.Options = {
-      mode,
-      static: true,
-      monthSelectorType: "static",
-      dateFormat: mode === "time" ? "H:i" : "Y-m-d",
-      defaultDate: initial,
-      onChange: (selectedDates) => {
-        if (!onChangeRef.current) {
-          return;
-        }
-
-        const nextValue = selectedDatesToValue(selectedDates, mode, timezoneRef.current);
-        const validationError = validateDateValue(
-          nextValue,
-          minDateRef.current,
-          maxDateRef.current
-        );
-
-        onChangeRef.current(nextValue, {
-          validationError,
-          source: "view",
-        });
-      },
-      disableMobile: true,
-    };
-
-    if (minDate != null) {
-      options.minDate = dayjsToCalendarString(toDayjsBound(minDate)!, timezone);
-    }
-    if (maxDate != null) {
-      options.maxDate = dayjsToCalendarString(toDayjsBound(maxDate)!, timezone);
-    }
-    if (disabled) {
-      options.clickOpens = false;
-    }
-
-    flatpickrRef.current = flatpickr(inputRef.current, options);
-
-    return () => {
-      if (flatpickrRef.current && !Array.isArray(flatpickrRef.current)) {
-        flatpickrRef.current.destroy();
+    const handlePointerDown = (event: MouseEvent) => {
+      if (rootRef.current && !rootRef.current.contains(event.target as Node)) {
+        setOpen(false);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, id, disabled]);
 
-  useEffect(() => {
-    if (!flatpickrRef.current || Array.isArray(flatpickrRef.current)) {
-      return;
-    }
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => document.removeEventListener("mousedown", handlePointerDown);
+  }, [open]);
 
-    if (value === undefined) {
-      return;
+  const handleChange = (next: Dayjs | null, meta: PickerChangeMeta) => {
+    if (!isControlled) {
+      setUncontrolledValue(next);
     }
+    onChange?.(next, meta);
+  };
 
-    if (value == null) {
-      flatpickrRef.current.clear();
-      return;
+  const handleCalendarChange = (next: Dayjs | null, meta: PickerChangeMeta) => {
+    handleChange(next, meta);
+    if (!showSubmitButton) {
+      setOpen(false);
     }
+  };
 
-    const next = dayjsOrNullToFlatpickr(value, timezone);
-    if (next == null) {
-      return;
-    }
-    const current = flatpickrRef.current.input.value;
-    const nextDisplay = Array.isArray(next) ? next.join(" to ") : next;
-    if (nextDisplay && current !== nextDisplay) {
-      flatpickrRef.current.setDate(next, false);
-    }
-  }, [value, timezone]);
-
-  useEffect(() => {
-    if (!flatpickrRef.current || Array.isArray(flatpickrRef.current)) {
-      return;
-    }
-    if (minDate !== undefined) {
-      flatpickrRef.current.set(
-        "minDate",
-        dayjsToCalendarString(toDayjsBound(minDate)!, timezone)
-      );
-    }
-  }, [minDate, timezone]);
-
-  useEffect(() => {
-    if (!flatpickrRef.current || Array.isArray(flatpickrRef.current)) {
-      return;
-    }
-    if (maxDate !== undefined) {
-      flatpickrRef.current.set(
-        "maxDate",
-        dayjsToCalendarString(toDayjsBound(maxDate)!, timezone)
-      );
-    }
-  }, [maxDate, timezone]);
-
-  useEffect(() => {
-    if (!flatpickrRef.current || Array.isArray(flatpickrRef.current)) {
-      return;
-    }
-    if (disabled) {
-      flatpickrRef.current.close();
-      flatpickrRef.current.set("clickOpens", false);
-    } else {
-      flatpickrRef.current.set("clickOpens", true);
-    }
-  }, [disabled]);
-
-  const inputClasses = cn(fieldBase, error && fieldError, disabled && fieldDisabled);
+  const handleSubmit = () => {
+    onSubmit?.();
+    setOpen(false);
+  };
 
   return (
-    <FormField
-      id={id}
-      label={label}
-      required={required}
-      error={error}
-      wrapperClassName={wrapperClassName}
-    >
-      <div className="relative">
-        <input
-          ref={inputRef}
-          id={id}
-          placeholder={placeholder}
-          className={inputClasses}
-          disabled={disabled}
-          readOnly
-        />
+    <div ref={rootRef} className="relative">
+      <DateField
+        id={id}
+        label={label}
+        value={selectedValue}
+        onChange={handleChange}
+        timezone={timezone}
+        minDate={minDate}
+        maxDate={maxDate}
+        placeholder={placeholder}
+        error={error}
+        required={required}
+        disabled={disabled}
+        wrapperClassName={wrapperClassName}
+        onFocus={() => {
+          if (!disabled) {
+            setOpen(true);
+          }
+        }}
+        endAdornment={
+          <button
+            type="button"
+            aria-label="Open calendar"
+            aria-expanded={open}
+            disabled={disabled}
+            className={cn(textMuted, disabled && "cursor-not-allowed")}
+            onClick={() => {
+              if (!disabled) {
+                setOpen((current) => !current);
+              }
+            }}
+          >
+            <MdCalendarToday className="size-6" />
+          </button>
+        }
+      />
 
-        <span className={cn("absolute -translate-y-1/2 pointer-events-none right-3 top-1/2", textMuted)}>
-          <MdCalendarToday className="size-6" />
-        </span>
-      </div>
-    </FormField>
+      {open ? (
+        <div className="absolute z-20 mt-2">
+          <DateCalendar
+            value={selectedValue}
+            onChange={handleCalendarChange}
+            timezone={timezone}
+            minDate={minDate}
+            maxDate={maxDate}
+            weekStartsOn={weekStartsOn}
+            showSubmitButton={showSubmitButton}
+            onSubmit={handleSubmit}
+            labels={labels}
+            disabled={disabled}
+          />
+        </div>
+      ) : null}
+    </div>
   );
 }

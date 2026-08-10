@@ -8,18 +8,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- **`DateCalendar`**: standalone single-date calendar surface with day / month / year views, configurable `weekStartsOn` (default Sunday), outside-month days, optional `showSubmitButton` / `onSubmit` / `labels.submit`, and Day.js `onChange(value, meta)`.
+- **`DateField`**: FormField-parity date input without a trailing calendar icon; controlled Day.js values and `onChange(value, meta)`.
 - **`DateTimePicker`**: standalone date+time field with UTC Day.js stored values, optional display `timezone`, `minDate` / `maxDate` / `minDateTime` / `maxDateTime`, `clearable` (default `true`), `minuteStep` (default `1`), `timePrecision` (`minutes` | `seconds`), and `ampm` (default 24h). `onChange` returns `(value, meta)` with `validationError` and `source`.
 - Runtime dependency **`dayjs`** (with utc / timezone plugins used internally).
-- Exported picker types: `DatePickerProps`, `DateTimePickerProps`, `PickerChangeMeta`.
+- Exported picker types: `DateCalendarProps`, `DateFieldProps`, `DatePickerProps`, `DateTimePickerProps`, `PickerChangeMeta`.
 
 ### Changed
 
-- **`DatePicker`**: controlled `value` / `defaultValue` / `onChange` now use Day.js values and `PickerChangeMeta` instead of `YYYY-MM-DD` strings and flatpickr `(dates, dateStr, instance)`. Optional `timezone` for zone-aware calendar dates.
+- **`DatePicker`**: rebuilt on `DateField` + `DateCalendar` (calendar icon + popover calendar). Controlled `value` / `defaultValue` / `onChange` use Day.js (`Dayjs | null`) and `PickerChangeMeta`. Optional `timezone`, `weekStartsOn`, and submit chrome props. No longer uses flatpickr.
 
 ### Breaking changes
 
-- **`DatePicker` value API**: hosts must pass Day.js (`Dayjs | Dayjs[] | null`) instead of `YYYY-MM-DD` strings; `onChange` no longer receives flatpickr `dateStr` / `instance`.
+- **`DatePicker` value API**: hosts must pass Day.js (`Dayjs | null`) instead of `YYYY-MM-DD` strings; `onChange` no longer receives flatpickr `dateStr` / `instance`.
 - **`DatePicker` `defaultDate`**: renamed to **`defaultValue`**.
+- **`DatePicker` modes removed**: `mode` (`multiple` / `range` / `time`) is no longer part of the public API — single calendar day only. Use upcoming Time* / DateTime* components for time or datetime.
+- **`DatePickerMode` / `Dayjs[]` value**: removed from exports; array values are no longer accepted.
+
+### Fixed
+
+- **`ComboBox` dropdown**: panel uses `surface` background (same as `Select`) for readable contrast in light theme.
+- **Theme light roles**: `--color-surface-container-high` maps to `gray-100` instead of `gray-dark`.
 
 ### Fixed
 

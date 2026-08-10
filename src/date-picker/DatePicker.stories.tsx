@@ -31,9 +31,21 @@ export const Disabled: Story = {
   render: (args) => <DatePicker {...args} />,
 };
 
-export const RangeMode: Story = {
-  args: { mode: "range", label: "Date range" },
-  render: (args) => <DatePicker {...args} />,
+export const WithSubmitButton: Story = {
+  args: {
+    showSubmitButton: true,
+    labels: { submit: "Done" },
+  },
+  render: (args) => {
+    const [value, setValue] = useState<Dayjs | null>(dayjs("2026-08-10"));
+    return (
+      <DatePicker
+        {...args}
+        value={value}
+        onChange={(next) => setValue(next)}
+      />
+    );
+  },
 };
 
 export const ControlledDayjs: Story = {
@@ -43,9 +55,7 @@ export const ControlledDayjs: Story = {
       <DatePicker
         {...args}
         value={value}
-        onChange={(next) => {
-          setValue(Array.isArray(next) ? next[0] ?? null : next);
-        }}
+        onChange={(next) => setValue(next)}
       />
     );
   },
