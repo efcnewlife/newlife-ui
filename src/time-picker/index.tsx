@@ -1,70 +1,175 @@
+import { useEffect, useRef, useState } from "react";
+import { MdAccessTime, MdClear } from "react-icons/md";
 import { cn } from "../cn";
-import FormField from "../form-field";
-import { ChangeEvent } from "react";
-import { MdAccessTime } from "react-icons/md";
-import { fieldBase, fieldDisabled, fieldError, textMuted } from "../theme/role-classes";
+import type { Dayjs } from "../lib/dayjs";
+import DigitalTimeSurface, {
+  type DigitalTimeVariant,
+} from "../picker/digital-time-surface";
+import type { TimePrecision } from "../picker/time";
+import type { PickerChangeMeta } from "../picker/types";
+import { textMuted } from "../theme/role-classes";
+import TimeField from "../time-field";
 
-interface TimePickerProps {
+export type { DigitalTimeVariant };
+
+export interface TimePickerLabels {
+  clear?: string;
+}
+
+export interface TimePickerProps {
   id: string;
-  name?: string;
+  value?: Dayjs | null;
+  defaultValue?: Dayjs | null;
+  onChange?: (value: Dayjs | null, meta: PickerChangeMeta) => void;
+  variant?: DigitalTimeVariant;
+  minuteStep?: number;
+  ampm?: boolean;
+  timePrecision?: TimePrecision;
   label?: string;
-  value?: string;
-  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
   error?: string;
   required?: boolean;
   disabled?: boolean;
-  min?: string;
-  max?: string;
-  step?: number;
-  className?: string;
+  clearable?: boolean;
   wrapperClassName?: string;
+  labels?: TimePickerLabels;
 }
 
-const TimePicker = ({
+export type TimePickerValue = Dayjs | null;
+
+export default function TimePicker({
   id,
-  name,
-  label,
   value,
+  defaultValue = null,
   onChange,
+  variant = "sections",
+  minuteStep = 1,
+  ampm = false,
+  timePrecision = "minutes",
+  label,
+  placeholder,
   error,
-  required = false,
-  disabled = false,
-  min,
-  max,
-  step,
-  className,
+  required,
+  disabled,
+  clearable = true,
   wrapperClassName,
-}: TimePickerProps) => {
-  const inputClasses = cn(
-    fieldBase,
-    "pr-11",
-    error && fieldError,
-    disabled && fieldDisabled,
-    className
+  labels,
+}: TimePickerProps) {
+  const isControlled = value !== undefined;
+  const [uncontrolledValue, setUncontrolledValue] = useState<Dayjs | null>(
+    defaultValue
+  );
+  const selectedValue = isControlled ? value : uncontrolledValue;
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const hasValue = selectedValue != null && selectedValue.isValid();
+  const showClear = clearable && !disabled && hasValue;
+  const clearLabel = labels?.clear ?? "Clear";
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (rootRef.current && !rootRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => document.removeEventListener("mousedown", handlePointerDown);
+  }, [open]);
+
+  const handleChange = (next: Dayjs | null, meta: PickerChangeMeta) => {
+    if (!isControlled) {
+      setUncontrolledValue(next);
+    }
+    onChange?.(next, meta);
+  };
+
+  const handleViewChange = (next: Dayjs, meta: PickerChangeMeta) => {
+    handleChange(next, meta);
+  };
+
+  const handleClear = () => {
+    if (disabled) {
+      return;
+    }
+    handleChange(null, { validationError: null, source: "field" });
+  };
+
+  const iconButtonClassName = cn(
+    "inline-flex size-7 items-center justify-center rounded-md transition-colors",
+    textMuted,
+    disabled && "cursor-not-allowed"
   );
 
   return (
-    <FormField id={id} label={label} required={required} error={error} wrapperClassName={wrapperClassName}>
-      <div className="relative">
-        <input
-          type="time"
-          id={id}
-          name={name}
-          value={value}
-          onChange={onChange}
-          min={min}
-          max={max}
-          step={step}
-          disabled={disabled}
-          className={inputClasses}
-        />
+    <div ref={rootRef} className="relative">
+      <TimeField
+        id={id}
+        label={label}
+        value={selectedValue}
+        onChange={handleChange}
+        timePrecision={timePrecision}
+        placeholder={placeholder}
+        error={error}
+        required={required}
+        disabled={disabled}
+        wrapperClassName={wrapperClassName}
+        className={showClear ? "pr-16" : undefined}
+        onFocus={() => {
+          if (!disabled) {
+            setOpen(true);
+          }
+        }}
+        endAdornment={
+          <span className="flex items-center gap-0.5">
+            {showClear ? (
+              <button
+                type="button"
+                aria-label={clearLabel}
+                className={cn(iconButtonClassName, "hover:text-on-surface")}
+                onClick={handleClear}
+              >
+                <MdClear className="size-5" />
+              </button>
+            ) : null}
+            <button
+              type="button"
+              aria-label="Open time picker"
+              aria-expanded={open}
+              disabled={disabled}
+              className={cn(
+                iconButtonClassName,
+                "hover:bg-surface-variant hover:text-on-surface"
+              )}
+              onClick={() => {
+                if (!disabled) {
+                  setOpen((current) => !current);
+                }
+              }}
+            >
+              <MdAccessTime className="size-5" />
+            </button>
+          </span>
+        }
+      />
 
-        <span className={`absolute -translate-y-1/2 pointer-events-none right-3 top-1/2 ${textMuted}`}>
-          <MdAccessTime className="size-6" />
-        </span>
-      </div>
-    </FormField>
+      {open ? (
+        <div className="absolute z-20 mt-2">
+          <DigitalTimeSurface
+            value={selectedValue}
+            onChange={handleViewChange}
+            variant={variant}
+            minuteStep={minuteStep}
+            ampm={ampm}
+            timePrecision={timePrecision}
+            disabled={disabled}
+          />
+        </div>
+      ) : null}
+    </div>
   );
-};
-
-export default TimePicker;
+}

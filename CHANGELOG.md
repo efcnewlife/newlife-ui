@@ -10,13 +10,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - **`DateCalendar`**: standalone single-date calendar surface with day / month / year views, configurable `weekStartsOn` (default Sunday), outside-month days, optional footer divider with `showTodayButton` / `showSubmitButton` / `onSubmit` / `labels.today` / `labels.submit`, and Day.js `onChange(value, meta)`.
 - **`DateField`**: FormField-parity date input without a trailing calendar icon; controlled Day.js values and `onChange(value, meta)`.
+- **`TimeField`**: FormField-parity time-of-day input without a trailing clock icon; controlled time-of-day Day.js values anchored to `1970-01-01`, typed `HH:mm` / `HH:mm:ss` (via `timePrecision`), and `onChange(value, meta)`. No `timezone` prop.
 - **`DateTimePicker`**: standalone date+time field with UTC Day.js stored values, optional display `timezone`, `minDate` / `maxDate` / `minDateTime` / `maxDateTime`, `clearable` (default `true`), `minuteStep` (default `1`), `timePrecision` (`minutes` | `seconds`), and `ampm` (default 24h). `onChange` returns `(value, meta)` with `validationError` and `source`.
 - Runtime dependency **`dayjs`** (with utc / timezone plugins used internally).
-- Exported picker types: `DateCalendarProps`, `DateFieldProps`, `DatePickerProps`, `DateTimePickerProps`, `PickerChangeMeta`.
+- Exported picker types: `DateCalendarProps`, `DateFieldProps`, `DatePickerProps`, `DateTimePickerProps`, `TimeFieldProps`, `TimePickerProps`, `PickerChangeMeta`, `TimePrecision`.
 
 ### Changed
 
 - **`DatePicker`**: rebuilt on `DateField` + `DateCalendar` (calendar icon + popover calendar). Controlled `value` / `defaultValue` / `onChange` use Day.js (`Dayjs | null`) and `PickerChangeMeta`. Optional `timezone`, `weekStartsOn`, `clearable` (default `true`), and submit / today chrome props. No longer uses flatpickr.
+- **`TimePicker`**: rebuilt on `TimeField` + private digital time surface (MUI Digital Clock–shaped). Controlled `value` / `defaultValue` / `onChange` use time-of-day Day.js (`Dayjs | null`) and `PickerChangeMeta`. Supports `variant` (`digital` | `sections`, default `sections`), `clearable` (default `true`), `minuteStep` (default `1`), `ampm` (default `false`), and `timePrecision` (default `minutes`). Selection commits immediately (no confirm step). No `timezone` prop.
 
 ### Breaking changes
 
@@ -24,6 +26,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **`DatePicker` `defaultDate`**: renamed to **`defaultValue`**.
 - **`DatePicker` modes removed**: `mode` (`multiple` / `range` / `time`) is no longer part of the public API — single calendar day only. Use upcoming Time* / DateTime* components for time or datetime.
 - **`DatePickerMode` / `Dayjs[]` value**: removed from exports; array values are no longer accepted.
+- **`TimePicker` value API**: hosts must pass time-of-day Day.js (`Dayjs | null`) instead of native `type="time"` strings; `onChange` is `(value, meta)` instead of a DOM `ChangeEvent`. Migrate string values by parsing into Day.js (anchor date is conventional `1970-01-01`).
+- **`TimePicker` native props removed**: `name`, `min`, `max`, and `step` are no longer part of the public API (use `minuteStep` / `timePrecision` / bounds via host form logic as needed).
 
 ### Fixed
 

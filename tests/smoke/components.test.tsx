@@ -29,6 +29,7 @@ import Switch from "../../src/switch";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../src/table";
 import Tabs from "../../src/tabs";
 import TextArea from "../../src/textarea";
+import TimeField from "../../src/time-field";
 import TimePicker from "../../src/time-picker";
 import Tooltip from "../../src/tooltip";
 import { PopoverPosition } from "../../src/types/enums";
@@ -48,6 +49,7 @@ describe("component smoke renders", () => {
         <Slider defaultValue={[50]} aria-label="Volume" />
         <FileInput />
         <PhoneInput countries={[{ name: "US", code: "+1" }]} />
+        <TimeField id="time-field" label="Time field" />
         <TimePicker id="time" label="Time" />
         <DateCalendar value={null} />
         <DateField id="date-field" label="Date field" />

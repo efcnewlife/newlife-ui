@@ -48,7 +48,15 @@ export type {
   DateTimePickerTimePrecision,
 } from "./date-time-picker";
 export type { PickerChangeMeta, PickerChangeSource, PickerValidationError } from "./picker/types";
+export { default as TimeField } from "./time-field";
+export type { TimeFieldProps } from "./time-field";
 export { default as TimePicker } from "./time-picker";
+export type {
+  TimePickerLabels,
+  TimePickerProps,
+  TimePickerValue,
+} from "./time-picker";
+export type { TimePrecision } from "./picker/time";
 export { default as PhoneInput } from "./phone-input";
 export { default as FileInput } from "./file-input";
 export { default as ComboBox } from "./combobox";
