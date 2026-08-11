@@ -37,6 +37,47 @@ export const ControlledUtcWithTimezone: Story = {
   },
 };
 
+export const SectionsVariant: Story = {
+  args: {
+    variant: "sections",
+    value: dayjs.utc("2026-06-20T15:30:00.000Z"),
+    timezone: "UTC",
+  },
+  render: (args) => {
+    const [value, setValue] = useState<Dayjs | null>(
+      (args.value as Dayjs | null | undefined) ?? dayjs.utc("2026-06-20T15:30:00.000Z")
+    );
+    return (
+      <DateTimePicker
+        {...args}
+        value={value}
+        onChange={(next) => setValue(next)}
+      />
+    );
+  },
+};
+
+export const DigitalVariant: Story = {
+  args: {
+    variant: "digital",
+    minuteStep: 15,
+    value: dayjs.utc("2026-06-20T15:00:00.000Z"),
+    timezone: "UTC",
+  },
+  render: (args) => {
+    const [value, setValue] = useState<Dayjs | null>(
+      (args.value as Dayjs | null | undefined) ?? dayjs.utc("2026-06-20T15:00:00.000Z")
+    );
+    return (
+      <DateTimePicker
+        {...args}
+        value={value}
+        onChange={(next) => setValue(next)}
+      />
+    );
+  },
+};
+
 export const WithMinuteStep: Story = {
   args: {
     minuteStep: 15,
@@ -62,6 +103,33 @@ export const Ampm: Story = {
     timezone: "UTC",
   },
   render: (args) => <DateTimePicker {...args} />,
+};
+
+export const WithSubmitButton: Story = {
+  args: {
+    showSubmitButton: true,
+    value: dayjs.utc("2026-06-20T15:30:00.000Z"),
+    timezone: "UTC",
+  },
+  render: (args) => {
+    const [value, setValue] = useState<Dayjs | null>(
+      dayjs.utc("2026-06-20T15:30:00.000Z")
+    );
+    const [submitted, setSubmitted] = useState(false);
+    return (
+      <div className="space-y-2">
+        <DateTimePicker
+          {...args}
+          value={value}
+          onChange={(next) => setValue(next)}
+          onSubmit={() => setSubmitted(true)}
+        />
+        {submitted ? (
+          <p className="text-sm text-on-surface-variant">Submit fired (value already committed).</p>
+        ) : null}
+      </div>
+    );
+  },
 };
 
 export const WithError: Story = {

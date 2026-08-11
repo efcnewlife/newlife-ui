@@ -57,7 +57,8 @@ Copy consumer auth for local install of published packages: PAT with `read:packa
 │   ├── date-calendar/      # custom calendar surface
 │   ├── date-field/         # date field without calendar icon
 │   ├── date-picker/        # DateField + DateCalendar
-│   ├── date-time-picker/   # datetime (flatpickr until #14)
+│   ├── date-time-field/    # datetime typed field (UTC Day.js, no icon)
+│   ├── date-time-picker/   # DateTimeField + DateCalendar + digital time
 │   ├── time-field/         # time-of-day field without clock icon
 │   ├── time-picker/        # TimeField + private digital time surface
 │   ├── picker/             # shared Day.js helpers + private digital time surface
@@ -93,14 +94,14 @@ Package exports (see `package.json`):
 | `./theme/reference.css` | Full primitives + role mappings |
 | `./theme/required-roles.css` | Roles only (host already has brand/gray scales) |
 
-`tsup` marks these as **external** (must be peer/host-provided): `react`, `react-dom`, `react-icons`, `flatpickr`.
+`tsup` marks these as **external** (must be peer/host-provided): `react`, `react-dom`, `react-icons`.
 
 ### Component catalog (high level)
 
 | Area | Examples |
 | ---- | -------- |
 | **Primitives** | `Button`, `Badge`, `Spinner`, `Label`, `ProgressBar`, `Slider` |
-| **Form** | `FormField`, `Input`, `TextArea`, `Checkbox`, `Radio`, `Switch`, `Select`, `ComboBox`, `PhoneInput`, `FileInput`, `DateCalendar`, `DateField`, `DatePicker`, `DateTimePicker`, `TimeField`, `TimePicker` |
+| **Form** | `FormField`, `Input`, `TextArea`, `Checkbox`, `Radio`, `Switch`, `Select`, `ComboBox`, `PhoneInput`, `FileInput`, `DateCalendar`, `DateField`, `DatePicker`, `DateTimeField`, `DateTimePicker`, `TimeField`, `TimePicker` |
 | **Overlay** | `Modal`, `ModalForm`, `Popover`, `Tooltip`, `Dropdown` / `DropdownItem` |
 | **Feedback** | `Alert`, `Notification*` + `notificationManager` |
 | **Layout / data** | `Tabs`, `Table*`, `ButtonGroup` |
@@ -150,10 +151,11 @@ Match existing fields for props like `id`, `label`, `error`, `required`, `disabl
 
 - **`DateCalendar`**: custom calendar surface (day / month / year views); `weekStartsOn` default Sunday; optional submit chrome.
 - **`DateField`**: Day.js calendar date field without trailing calendar icon (`FormField` parity).
-- **`DatePicker`**: `DateField` + calendar icon + `DateCalendar`; single-day only (no multiple / range / time). Flatpickr is not used on the date line.
+- **`DatePicker`**: `DateField` + calendar icon + `DateCalendar`; single-day only (no multiple / range / time). Flatpickr is not used.
 - **`TimeField`**: typed time-of-day field without trailing clock icon; Day.js time-of-day value (fixed day anchor); no `timezone`.
 - **`TimePicker`**: `TimeField` + clock icon + private digital time surface (`variant="digital" | "sections"`, default `sections`); defaults `clearable=true`, `minuteStep=1`, `ampm=false`, `timePrecision="minutes"`.
-- There is **no** dedicated `DateTimeField` export yet — `DateTimePicker` remains flatpickr-based until #14.
+- **`DateTimeField`**: single typed datetime field without trailing calendar icon; UTC Day.js store; optional display `timezone`.
+- **`DateTimePicker`**: `DateTimeField` + calendar icon + side-by-side `DateCalendar` and private digital time surface; preserves time on date change; `variant` + submit chrome; no flatpickr.
 
 ### Icons
 

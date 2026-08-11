@@ -29,12 +29,12 @@ A Day.js value used by TimeField / TimePicker where only the time-of-day matters
 _Avoid_: using "today" as the date anchor, wall-clock `HH:mm` strings as the public contract, requiring hosts to ignore an arbitrary date part
 
 **DateTimeField**:
-A form field that displays or edits a date and time-of-day in a **single** typed field without a trailing calendar icon. Its controlled **stored value** is a UTC Day.js value; optional `timezone` affects display only (same store-UTC / display-zone rules as DateTimePicker). Planned as the Field half of the DateTime stack under ADR 0003 / #14.
+A form field that displays or edits a date and time-of-day in a **single** typed field without a trailing calendar icon. Its controlled **stored value** is a UTC Day.js value; optional `timezone` affects display only (same store-UTC / display-zone rules as DateTimePicker). Field half of the DateTime stack under ADR 0003.
 _Avoid_: DateTimeInput, datetime-local, DateTimePicker (the field-only surface), splitting into two public fields as the DateTimeField product
 
 **DateTimePicker**:
-A form control for date and time-of-day. Stored value remains UTC Day.js; `timezone` is display-only with the same fallbacks as before. Under ADR 0003 / #14 it becomes DateTimeField + calendar icon + side-by-side DateCalendar and the shared digital time surface (preserving time when the date changes, with `variant` and DateCalendar-style submit chrome), and flatpickr is removed from the package. Until #14 lands, the shipped control remains the existing flatpickr-based DateTimePicker.
-_Avoid_: DateTimeInput, datetime-local, DatePicker (when time is included), wall-clock strings as the public contract, flatpickr as the long-term DateTime UI engine
+A form control built on DateTimeField that adds calendar-affordance chrome (including a calendar icon) and a popover with **side-by-side** DateCalendar and the shared private digital time surface. Stored value remains UTC Day.js; `timezone` is display-only with the same fallbacks as before. Selecting a calendar date preserves the current time-of-day (defaulting to `00:00` when unset). Supports `variant` and DateCalendar-style submit chrome. Flatpickr is not used.
+_Avoid_: DateTimeInput, datetime-local, DatePicker (when time is included), wall-clock strings as the public contract, flatpickr as the DateTime UI engine
 
 **Day.js value**:
 The canonical controlled value type for date/time fields and pickers (`dayjs` / `Dayjs` | `null`). Day.js is shipped as a library dependency of `@efcnewlife/newlife-ui`.

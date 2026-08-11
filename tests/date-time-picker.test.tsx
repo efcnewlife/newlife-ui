@@ -21,7 +21,40 @@ describe("DateTimePicker", () => {
     expect(screen.getByLabelText("Starts at")).toHaveValue("2026-06-20 11:30");
   });
 
-  it("calls onChange with a UTC Day.js value when the calendar changes", async () => {
+  it("renders a trailing calendar icon", () => {
+    const { container } = render(
+      <DateTimePicker
+        id="starts-at"
+        label="Starts at"
+        value={dayjs.utc("2026-06-20T15:30:00.000Z")}
+        timezone="UTC"
+      />
+    );
+
+    expect(container.querySelector("svg")).not.toBeNull();
+    expect(screen.getByRole("button", { name: /open calendar/i })).toBeInTheDocument();
+  });
+
+  it("opens side-by-side DateCalendar and digital time surfaces", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <DateTimePicker
+        id="starts-at"
+        label="Starts at"
+        value={dayjs.utc("2026-06-20T15:30:00.000Z")}
+        timezone="UTC"
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: /open calendar/i }));
+
+    expect(screen.getByRole("button", { name: "June 15, 2026" })).toBeInTheDocument();
+    expect(screen.getByRole("listbox", { name: /hours/i })).toBeInTheDocument();
+    expect(screen.getByRole("listbox", { name: /minutes/i })).toBeInTheDocument();
+  });
+
+  it("preserves time-of-day when the calendar date changes", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
     const value = dayjs.utc("2026-06-20T15:30:00.000Z");
@@ -36,25 +69,89 @@ describe("DateTimePicker", () => {
       />
     );
 
-    const input = screen.getByLabelText("Starts at");
-    await user.click(input);
-
-    const dayButton = document.querySelector(
-      ".flatpickr-calendar.open .flatpickr-day:not(.prevMonthDay):not(.nextMonthDay)"
-    ) as HTMLElement | null;
-    expect(dayButton).toBeTruthy();
-    await user.click(dayButton!);
+    await user.click(screen.getByRole("button", { name: /open calendar/i }));
+    await user.click(screen.getByRole("button", { name: "June 15, 2026" }));
 
     expect(onChange).toHaveBeenCalled();
-    const [nextValue, meta] = onChange.mock.calls[0];
-    expect(dayjs.isDayjs(nextValue)).toBe(true);
+    const [nextValue, meta] = onChange.mock.calls.at(-1)!;
     expect(nextValue.isUTC()).toBe(true);
+    expect(nextValue.toISOString()).toBe("2026-06-15T15:30:00.000Z");
     expect(meta).toEqual(
       expect.objectContaining({
-        source: expect.stringMatching(/^(field|view|unknown)$/),
+        source: "view",
+        validationError: null,
       })
     );
-    expect(meta).toHaveProperty("validationError");
+  });
+
+  it("defaults time to 00:00 when selecting a date with no current value", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+
+    render(
+      <DateTimePicker
+        id="starts-at"
+        label="Starts at"
+        value={null}
+        defaultValue={null}
+        timezone="UTC"
+        onChange={onChange}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: /open calendar/i }));
+    // Calendar opens on the current month when empty; pick a day in view.
+    const dayButton = screen.getByRole("button", { name: /August 15, 2026/i });
+    await user.click(dayButton);
+
+    const [nextValue] = onChange.mock.calls.at(-1)!;
+    expect(nextValue.toISOString()).toBe("2026-08-15T00:00:00.000Z");
+  });
+
+  it("commits time selection while preserving the current date", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+
+    render(
+      <DateTimePicker
+        id="starts-at"
+        label="Starts at"
+        value={dayjs.utc("2026-06-20T15:30:00.000Z")}
+        timezone="UTC"
+        onChange={onChange}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: /open calendar/i }));
+    const hours = screen.getByRole("listbox", { name: /hours/i });
+    await user.click(
+      Array.from(hours.querySelectorAll('[role="option"]')).find(
+        (option) => option.textContent === "16"
+      )!
+    );
+
+    const [nextValue, meta] = onChange.mock.calls.at(-1)!;
+    expect(nextValue.toISOString()).toBe("2026-06-20T16:30:00.000Z");
+    expect(meta.source).toBe("view");
+  });
+
+  it("renders a single digital list when variant is digital", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <DateTimePicker
+        id="starts-at"
+        label="Starts at"
+        value={dayjs.utc("2026-06-20T15:00:00.000Z")}
+        timezone="UTC"
+        variant="digital"
+        minuteStep={30}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: /open calendar/i }));
+    expect(screen.getByRole("listbox", { name: /times/i })).toBeInTheDocument();
+    expect(screen.queryByRole("listbox", { name: /hours/i })).not.toBeInTheDocument();
   });
 
   it("falls back to system display when value and defaultValue are empty", () => {
@@ -118,24 +215,13 @@ describe("DateTimePicker", () => {
       />
     );
 
-    await user.click(screen.getByLabelText("Starts at"));
-
-    const hourInput = document.querySelector(
-      ".flatpickr-calendar.open .flatpickr-hour"
-    ) as HTMLInputElement | null;
-    expect(hourInput).toBeTruthy();
-
-    await user.tripleClick(hourInput!);
-    await user.keyboard("00");
-    hourInput!.dispatchEvent(new Event("change", { bubbles: true }));
-    hourInput!.blur();
-
-    const selectedDay = document.querySelector(
-      ".flatpickr-calendar.open .flatpickr-day.selected"
-    ) as HTMLElement | null;
-    if (selectedDay) {
-      await user.click(selectedDay);
-    }
+    await user.click(screen.getByRole("button", { name: /open calendar/i }));
+    const hours = screen.getByRole("listbox", { name: /hours/i });
+    await user.click(
+      Array.from(hours.querySelectorAll('[role="option"]')).find(
+        (option) => option.textContent === "00"
+      )!
+    );
 
     expect(onChange).toHaveBeenCalled();
     const withError = onChange.mock.calls.find(
@@ -162,24 +248,13 @@ describe("DateTimePicker", () => {
       />
     );
 
-    await user.click(screen.getByLabelText("Starts at"));
-
-    const hourInput = document.querySelector(
-      ".flatpickr-calendar.open .flatpickr-hour"
-    ) as HTMLInputElement | null;
-    expect(hourInput).toBeTruthy();
-
-    await user.tripleClick(hourInput!);
-    await user.keyboard("23");
-    hourInput!.dispatchEvent(new Event("change", { bubbles: true }));
-    hourInput!.blur();
-
-    const selectedDay = document.querySelector(
-      ".flatpickr-calendar.open .flatpickr-day.selected"
-    ) as HTMLElement | null;
-    if (selectedDay) {
-      await user.click(selectedDay);
-    }
+    await user.click(screen.getByRole("button", { name: /open calendar/i }));
+    const hours = screen.getByRole("listbox", { name: /hours/i });
+    await user.click(
+      Array.from(hours.querySelectorAll('[role="option"]')).find(
+        (option) => option.textContent === "23"
+      )!
+    );
 
     expect(onChange).toHaveBeenCalled();
     const withError = onChange.mock.calls.find(
@@ -188,7 +263,58 @@ describe("DateTimePicker", () => {
     expect(withError).toBeTruthy();
   });
 
-  it("applies minuteStep to the time spinner", async () => {
+  it("does not gate onChange when showSubmitButton is true", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const onSubmit = vi.fn();
+
+    render(
+      <DateTimePicker
+        id="starts-at"
+        label="Starts at"
+        value={dayjs.utc("2026-06-20T15:30:00.000Z")}
+        timezone="UTC"
+        showSubmitButton
+        onSubmit={onSubmit}
+        onChange={onChange}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: /open calendar/i }));
+    expect(screen.getByRole("button", { name: "Done" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "June 15, 2026" }));
+    expect(onChange).toHaveBeenCalled();
+    expect(onSubmit).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole("button", { name: "Done" }));
+    expect(onSubmit).toHaveBeenCalled();
+  });
+
+  it("shows am/pm options when ampm is true", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+
+    render(
+      <DateTimePicker
+        id="starts-at"
+        label="Starts at"
+        value={dayjs.utc("2026-06-20T15:30:00.000Z")}
+        timezone="UTC"
+        ampm
+        onChange={onChange}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: /open calendar/i }));
+    expect(screen.getByRole("listbox", { name: /meridiem/i })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("option", { name: "AM" }));
+    const [nextValue] = onChange.mock.calls.at(-1)!;
+    expect(nextValue.toISOString()).toBe("2026-06-20T03:30:00.000Z");
+  });
+
+  it("applies minuteStep to the digital time surface", async () => {
     const user = userEvent.setup();
 
     render(
@@ -201,12 +327,11 @@ describe("DateTimePicker", () => {
       />
     );
 
-    await user.click(screen.getByLabelText("Starts at"));
-
-    const minuteInput = document.querySelector(
-      ".flatpickr-calendar.open .flatpickr-minute"
-    ) as HTMLInputElement | null;
-    expect(minuteInput).toBeTruthy();
-    expect(minuteInput!.step).toBe("15");
+    await user.click(screen.getByRole("button", { name: /open calendar/i }));
+    const minutes = screen.getByRole("listbox", { name: /minutes/i });
+    const labels = Array.from(minutes.querySelectorAll('[role="option"]')).map(
+      (option) => option.textContent
+    );
+    expect(labels).toEqual(["00", "15", "30", "45"]);
   });
 });

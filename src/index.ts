@@ -42,10 +42,17 @@ export { default as DateField } from "./date-field";
 export type { DateFieldProps } from "./date-field";
 export { default as DatePicker } from "./date-picker";
 export type { DatePickerLabels, DatePickerProps, DatePickerValue } from "./date-picker";
+export { default as DateTimeField } from "./date-time-field";
+export type {
+  DateTimeFieldProps,
+  DateTimeFieldTimePrecision,
+} from "./date-time-field";
 export { default as DateTimePicker } from "./date-time-picker";
 export type {
+  DateTimePickerLabels,
   DateTimePickerProps,
   DateTimePickerTimePrecision,
+  DateTimePickerValue,
 } from "./date-time-picker";
 export type { PickerChangeMeta, PickerChangeSource, PickerValidationError } from "./picker/types";
 export { default as TimeField } from "./time-field";

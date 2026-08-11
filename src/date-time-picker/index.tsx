@@ -1,20 +1,31 @@
+import { useEffect, useRef, useState } from "react";
+import { MdCalendarMonth, MdClear } from "react-icons/md";
 import { cn } from "../cn";
-import FormField from "../form-field";
+import DateCalendar from "../date-calendar";
+import type { DateCalendarLabels, WeekStartsOn } from "../date-calendar";
+import DateTimeField from "../date-time-field";
 import type { Dayjs } from "../lib/dayjs";
 import {
-  fromWallClockDateToUtc,
+  applyDatePreservingTime,
+  applyTimePreservingDate,
   resolveDisplayTimezone,
-  toWallClockDate,
+  utcToDisplayCalendarDate,
+  utcToDisplayTimeOfDay,
   validateDatetimeBounds,
 } from "../picker/datetime";
+import DigitalTimeSurface, {
+  type DigitalTimeVariant,
+} from "../picker/digital-time-surface";
+import type { TimePrecision } from "../picker/time";
 import type { PickerChangeMeta } from "../picker/types";
-import flatpickr from "flatpickr";
-import "flatpickr/dist/flatpickr.css";
-import { useEffect, useRef, useState } from "react";
-import { MdCalendarToday, MdClear } from "react-icons/md";
-import { fieldBase, fieldDisabled, fieldError, textMuted } from "../theme/role-classes";
+import { surfacePanel, textMuted } from "../theme/role-classes";
 
-export type DateTimePickerTimePrecision = "minutes" | "seconds";
+export type { DigitalTimeVariant };
+export type DateTimePickerTimePrecision = TimePrecision;
+
+export interface DateTimePickerLabels extends DateCalendarLabels {
+  clear?: string;
+}
 
 export interface DateTimePickerProps {
   id: string;
@@ -30,28 +41,25 @@ export interface DateTimePickerProps {
   minuteStep?: number;
   timePrecision?: DateTimePickerTimePrecision;
   ampm?: boolean;
+  variant?: DigitalTimeVariant;
   label?: string;
   placeholder?: string;
   error?: string;
   required?: boolean;
   disabled?: boolean;
   wrapperClassName?: string;
+  weekStartsOn?: WeekStartsOn;
+  showSubmitButton?: boolean;
+  onSubmit?: () => void;
+  labels?: DateTimePickerLabels;
 }
 
-const boundToFlatpickrDate = (
-  bound: Dayjs | null | undefined,
-  displayTimezone: string
-): Date | undefined => {
-  if (bound == null) {
-    return undefined;
-  }
-  return toWallClockDate(bound.utc(), displayTimezone);
-};
+export type DateTimePickerValue = Dayjs | null;
 
 export default function DateTimePicker({
   id,
   value,
-  defaultValue,
+  defaultValue = null,
   onChange,
   timezone,
   minDate,
@@ -62,221 +70,202 @@ export default function DateTimePicker({
   minuteStep = 1,
   timePrecision = "minutes",
   ampm = false,
+  variant = "sections",
   label,
   placeholder,
   error,
   required,
   disabled,
   wrapperClassName,
+  weekStartsOn,
+  showSubmitButton = false,
+  onSubmit,
+  labels,
 }: DateTimePickerProps) {
-  const flatpickrRef = useRef<flatpickr.Instance | null>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const onChangeRef = useRef(onChange);
-  const boundsRef = useRef({ minDate, maxDate, minDateTime, maxDateTime });
+  const isControlled = value !== undefined;
+  const [uncontrolledValue, setUncontrolledValue] = useState<Dayjs | null>(defaultValue);
+  const selectedValue = isControlled ? value : uncontrolledValue;
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
   const displayTimezone = resolveDisplayTimezone(timezone, value, defaultValue);
-  const displayTimezoneRef = useRef(displayTimezone);
-  const initialSource = value !== undefined ? value : defaultValue;
-  const [hasValue, setHasValue] = useState(initialSource != null);
+  const hasValue = selectedValue != null && selectedValue.isValid();
+  const showClear = clearable && !disabled && hasValue;
+  const clearLabel = labels?.clear ?? "Clear";
 
   useEffect(() => {
-    onChangeRef.current = onChange;
-  }, [onChange]);
-
-  useEffect(() => {
-    boundsRef.current = { minDate, maxDate, minDateTime, maxDateTime };
-  }, [minDate, maxDate, minDateTime, maxDateTime]);
-
-  useEffect(() => {
-    displayTimezoneRef.current = displayTimezone;
-  }, [displayTimezone]);
-
-  useEffect(() => {
-    if (value !== undefined) {
-      setHasValue(value != null);
+    if (!open) {
+      return;
     }
-  }, [value]);
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (rootRef.current && !rootRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => document.removeEventListener("mousedown", handlePointerDown);
+  }, [open]);
 
   const emitChange = (next: Dayjs | null, source: PickerChangeMeta["source"]) => {
-    setHasValue(next != null);
-    if (!onChangeRef.current) {
-      return;
+    if (!isControlled) {
+      setUncontrolledValue(next);
     }
 
     const validationError = validateDatetimeBounds(next, {
-      minDate: boundsRef.current.minDate,
-      maxDate: boundsRef.current.maxDate,
-      minDateTime: boundsRef.current.minDateTime,
-      maxDateTime: boundsRef.current.maxDateTime,
-      displayTimezone: displayTimezoneRef.current,
+      minDate,
+      maxDate,
+      minDateTime,
+      maxDateTime,
+      displayTimezone,
     });
 
-    onChangeRef.current(next, {
-      validationError,
-      source,
-    });
+    onChange?.(next, { validationError, source });
   };
 
-  useEffect(() => {
-    if (!inputRef.current) {
+  const handleFieldChange = (next: Dayjs | null, meta: PickerChangeMeta) => {
+    if (!isControlled) {
+      setUncontrolledValue(next);
+    }
+    onChange?.(next, meta);
+  };
+
+  const handleCalendarChange = (nextCalendarDate: Dayjs | null) => {
+    if (nextCalendarDate == null) {
       return;
     }
-
-    const source = value !== undefined ? value : defaultValue;
-    const initialDate =
-      source != null ? toWallClockDate(source.utc(), displayTimezone) : undefined;
-
-    const dateFormat =
-      timePrecision === "seconds"
-        ? ampm
-          ? "Y-m-d G:i:S K"
-          : "Y-m-d H:i:S"
-        : ampm
-          ? "Y-m-d G:i K"
-          : "Y-m-d H:i";
-
-    const options: flatpickr.Options.Options = {
-      enableTime: true,
-      enableSeconds: timePrecision === "seconds",
-      time_24hr: !ampm,
-      minuteIncrement: minuteStep,
-      static: true,
-      monthSelectorType: "static",
-      dateFormat,
-      defaultDate: initialDate,
-      disableMobile: true,
-      onChange: (selectedDates) => {
-        if (selectedDates.length === 0) {
-          emitChange(null, "view");
-          return;
-        }
-
-        const utcValue = fromWallClockDateToUtc(
-          selectedDates[0],
-          displayTimezoneRef.current
-        );
-        emitChange(utcValue, "view");
-      },
-    };
-
-    if (minDate != null) {
-      options.minDate = boundToFlatpickrDate(minDate, displayTimezone);
-    }
-    if (maxDate != null) {
-      options.maxDate = boundToFlatpickrDate(maxDate, displayTimezone);
-    }
-    if (disabled) {
-      options.clickOpens = false;
-    }
-
-    flatpickrRef.current = flatpickr(inputRef.current, options);
-
-    return () => {
-      if (flatpickrRef.current && !Array.isArray(flatpickrRef.current)) {
-        flatpickrRef.current.destroy();
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, disabled, displayTimezone, minuteStep, timePrecision, ampm]);
-
-  useEffect(() => {
-    if (!flatpickrRef.current || Array.isArray(flatpickrRef.current)) {
-      return;
-    }
-    if (value === undefined) {
-      return;
-    }
-    if (value == null) {
-      if (flatpickrRef.current.selectedDates.length > 0) {
-        flatpickrRef.current.clear(false);
-      }
-      return;
-    }
-
-    const nextDate = toWallClockDate(value.utc(), displayTimezone);
-    const current = flatpickrRef.current.selectedDates[0];
-    if (!current || current.getTime() !== nextDate.getTime()) {
-      flatpickrRef.current.setDate(nextDate, false);
-    }
-  }, [value, displayTimezone]);
-
-  useEffect(() => {
-    if (!flatpickrRef.current || Array.isArray(flatpickrRef.current)) {
-      return;
-    }
-    flatpickrRef.current.set(
-      "minDate",
-      minDate != null ? boundToFlatpickrDate(minDate, displayTimezone) : undefined
+    const next = applyDatePreservingTime(
+      selectedValue,
+      nextCalendarDate,
+      displayTimezone
     );
-    flatpickrRef.current.set(
-      "maxDate",
-      maxDate != null ? boundToFlatpickrDate(maxDate, displayTimezone) : undefined
-    );
-  }, [minDate, maxDate, displayTimezone]);
+    emitChange(next, "view");
+  };
 
-  useEffect(() => {
-    if (!flatpickrRef.current || Array.isArray(flatpickrRef.current)) {
-      return;
-    }
-    if (disabled) {
-      flatpickrRef.current.close();
-      flatpickrRef.current.set("clickOpens", false);
-    } else {
-      flatpickrRef.current.set("clickOpens", true);
-    }
-  }, [disabled]);
+  const handleTimeChange = (nextTimeOfDay: Dayjs) => {
+    const next = applyTimePreservingDate(
+      selectedValue,
+      nextTimeOfDay,
+      displayTimezone
+    );
+    emitChange(next, "view");
+  };
 
   const handleClear = () => {
     if (disabled) {
       return;
     }
-    if (flatpickrRef.current && !Array.isArray(flatpickrRef.current)) {
-      flatpickrRef.current.clear(false);
-    }
     emitChange(null, "field");
   };
 
-  const showClear = clearable && !disabled && hasValue;
-  const inputClasses = cn(fieldBase, "pr-20", error && fieldError, disabled && fieldDisabled);
+  const handleSubmit = () => {
+    onSubmit?.();
+    setOpen(false);
+  };
+
+  const calendarValue =
+    selectedValue != null && selectedValue.isValid()
+      ? utcToDisplayCalendarDate(selectedValue, displayTimezone)
+      : null;
+  const timeValue =
+    selectedValue != null && selectedValue.isValid()
+      ? utcToDisplayTimeOfDay(selectedValue, displayTimezone)
+      : null;
+
+  const iconButtonClassName = cn(
+    "inline-flex size-7 items-center justify-center rounded-md transition-colors",
+    textMuted,
+    disabled && "cursor-not-allowed"
+  );
 
   return (
-    <FormField
-      id={id}
-      label={label}
-      required={required}
-      error={error}
-      wrapperClassName={wrapperClassName}
-    >
-      <div className="relative">
-        <input
-          ref={inputRef}
-          id={id}
-          placeholder={placeholder}
-          className={inputClasses}
-          disabled={disabled}
-          readOnly
-        />
-
-        <span
-          className={cn(
-            "absolute -translate-y-1/2 right-3 top-1/2 flex items-center gap-1",
-            textMuted
-          )}
-        >
-          {showClear && (
+    <div ref={rootRef} className="relative">
+      <DateTimeField
+        id={id}
+        label={label}
+        value={selectedValue}
+        onChange={handleFieldChange}
+        timezone={timezone}
+        minDate={minDate}
+        maxDate={maxDate}
+        minDateTime={minDateTime}
+        maxDateTime={maxDateTime}
+        timePrecision={timePrecision}
+        placeholder={placeholder}
+        error={error}
+        required={required}
+        disabled={disabled}
+        wrapperClassName={wrapperClassName}
+        className={showClear ? "pr-16" : undefined}
+        onFocus={() => {
+          if (!disabled) {
+            setOpen(true);
+          }
+        }}
+        endAdornment={
+          <span className="flex items-center gap-0.5">
+            {showClear ? (
+              <button
+                type="button"
+                aria-label={clearLabel}
+                className={cn(iconButtonClassName, "hover:text-on-surface")}
+                onClick={handleClear}
+              >
+                <MdClear className="size-5" />
+              </button>
+            ) : null}
             <button
               type="button"
-              aria-label="Clear"
-              className="pointer-events-auto p-0.5 hover:text-on-surface"
-              onClick={handleClear}
+              aria-label="Open calendar"
+              aria-expanded={open}
+              disabled={disabled}
+              className={cn(
+                iconButtonClassName,
+                "hover:bg-surface-variant hover:text-on-surface"
+              )}
+              onClick={() => {
+                if (!disabled) {
+                  setOpen((current) => !current);
+                }
+              }}
             >
-              <MdClear className="size-5" />
+              <MdCalendarMonth className="size-5" />
             </button>
-          )}
-          <span className="pointer-events-none">
-            <MdCalendarToday className="size-6" />
           </span>
-        </span>
-      </div>
-    </FormField>
+        }
+      />
+
+      {open ? (
+        <div
+          className={cn(
+            "absolute z-20 mt-2 flex flex-col gap-2 p-2 sm:flex-row",
+            surfacePanel,
+            "rounded-2xl"
+          )}
+        >
+          <DateCalendar
+            value={calendarValue}
+            onChange={handleCalendarChange}
+            timezone={timezone}
+            minDate={minDate ?? undefined}
+            maxDate={maxDate ?? undefined}
+            weekStartsOn={weekStartsOn}
+            showSubmitButton={showSubmitButton}
+            onSubmit={handleSubmit}
+            labels={labels}
+            disabled={disabled}
+          />
+          <DigitalTimeSurface
+            value={timeValue}
+            onChange={handleTimeChange}
+            variant={variant}
+            minuteStep={minuteStep}
+            ampm={ampm}
+            timePrecision={timePrecision}
+            disabled={disabled}
+          />
+        </div>
+      ) : null}
+    </div>
   );
 }
