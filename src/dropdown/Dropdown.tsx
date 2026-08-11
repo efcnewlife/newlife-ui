@@ -1,6 +1,7 @@
 import type React from "react";
-import { useEffect, useRef } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { cn } from "../cn";
+import { FloatingSurface } from "../floating-surface";
 import { surfacePanel } from "../theme/role-classes";
 
 interface DropdownProps {
@@ -16,33 +17,31 @@ export const Dropdown: React.FC<DropdownProps> = ({
   children,
   className = "",
 }) => {
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLSpanElement | null>(null);
+  const anchorRef = useRef<HTMLElement | null>(null);
+  const [anchorReady, setAnchorReady] = useState(false);
+  const dismissSurface = useCallback(() => onClose(), [onClose]);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        !(event.target as HTMLElement).closest(".dropdown-toggle")
-      ) {
-        onClose();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [onClose]);
-
-  if (!isOpen) return null;
+  useLayoutEffect(() => {
+    const parent = sentinelRef.current?.parentElement ?? null;
+    anchorRef.current = parent;
+    setAnchorReady(Boolean(parent));
+  }, [isOpen]);
 
   return (
-    <div
-      ref={dropdownRef}
-      className={cn("absolute z-40 right-0 mt-2 rounded-xl", surfacePanel, className)}
-    >
-      {children}
-    </div>
+    <>
+      <span ref={sentinelRef} className="hidden" aria-hidden />
+      <FloatingSurface
+        open={isOpen && anchorReady}
+        anchorRef={anchorRef}
+        onDismiss={dismissSurface}
+        placement="bottom-end"
+        offset={8}
+        ignoreOutsidePressSelector=".dropdown-toggle"
+        className={cn("rounded-xl", surfacePanel, className)}
+      >
+        {children}
+      </FloatingSurface>
+    </>
   );
 };

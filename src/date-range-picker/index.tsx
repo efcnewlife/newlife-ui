@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { MdCalendarMonth, MdClear } from "react-icons/md";
 import { cn } from "../cn";
 import DateRangeCalendar from "../date-range-calendar";
 import type { DateRangeCalendarLabels } from "../date-range-calendar";
 import DateRangeField from "../date-range-field";
+import { FloatingSurface } from "../floating-surface";
 import type { Dayjs } from "../lib/dayjs";
 import type { WeekStartsOn } from "../date-calendar";
 import {
@@ -81,21 +82,7 @@ export default function DateRangePicker({
     selectedValue.start.isValid();
   const showClear = clearable && !disabled && hasValue;
   const clearLabel = labels?.clear ?? "Clear";
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    const handlePointerDown = (event: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handlePointerDown);
-    return () => document.removeEventListener("mousedown", handlePointerDown);
-  }, [open]);
+  const dismissSurface = useCallback(() => setOpen(false), []);
 
   const maybeCloseAfterComplete = (
     next: DateRangeValue | null,
@@ -198,25 +185,23 @@ export default function DateRangePicker({
         }
       />
 
-      {open ? (
-        <div className="absolute z-20 mt-2">
-          <DateRangeCalendar
-            value={selectedValue}
-            onChange={handleCalendarChange}
-            timezone={timezone}
-            minDate={minDate}
-            maxDate={maxDate}
-            weekStartsOn={weekStartsOn}
-            defaultMonth={defaultMonth}
-            showSubmitButton={showSubmitButton}
-            onSubmit={handleSubmit}
-            shortcuts={shortcuts}
-            shortcutsPlacement={shortcutsPlacement}
-            labels={labels}
-            disabled={disabled}
-          />
-        </div>
-      ) : null}
+      <FloatingSurface open={open} anchorRef={rootRef} onDismiss={dismissSurface} placement="bottom-start" offset={8}>
+        <DateRangeCalendar
+          value={selectedValue}
+          onChange={handleCalendarChange}
+          timezone={timezone}
+          minDate={minDate}
+          maxDate={maxDate}
+          weekStartsOn={weekStartsOn}
+          defaultMonth={defaultMonth}
+          showSubmitButton={showSubmitButton}
+          onSubmit={handleSubmit}
+          shortcuts={shortcuts}
+          shortcutsPlacement={shortcutsPlacement}
+          labels={labels}
+          disabled={disabled}
+        />
+      </FloatingSurface>
     </div>
   );
 }

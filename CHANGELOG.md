@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Floating surfaces in Modal / ModalForm**: Select, ComboBox, DatePicker, DateTimePicker, TimePicker, DateRangePicker, Dropdown, Popover, and Tooltip now render through a shared portal above the Modal shell, so sticky footers no longer clip or cover open surfaces. Escape and outside press dismiss the open Floating surface before closing the Modal.
+
 ## [0.3.0] - 2026-08-11
 
 ### Summary

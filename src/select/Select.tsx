@@ -1,7 +1,8 @@
 import type React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { MdClose, MdKeyboardArrowDown, MdSearch } from "react-icons/md";
 import { cn } from "../cn";
+import { FloatingSurface } from "../floating-surface";
 import FormField from "../form-field";
 import {
   checkboxBase,
@@ -90,6 +91,12 @@ export const Select: React.FC<SelectProps> = ({
   const selectRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
+  const dismissSurface = useCallback(() => {
+    setIsOpen(false);
+    setSearchTerm("");
+    setFocusedIndex(-1);
+  }, []);
+
   // Filter options
   const filteredOptions = options.filter((option) => option.label.toLowerCase().includes(searchTerm.toLowerCase()));
 
@@ -158,26 +165,10 @@ export const Select: React.FC<SelectProps> = ({
         }
         break;
       case "Escape":
-        setIsOpen(false);
-        setSearchTerm("");
-        setFocusedIndex(-1);
+        dismissSurface();
         break;
     }
   };
-
-  // Click outside to close
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-        setSearchTerm("");
-        setFocusedIndex(-1);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   // size style
   const sizeClasses = {
@@ -297,73 +288,73 @@ export const Select: React.FC<SelectProps> = ({
           </div>
         </div>
 
-        {/* drop down options */}
-        <div
-          className={cn(
-            `absolute z-50 w-full mt-1 rounded-lg shadow-theme-lg ${surfacePanel}`,
-            "transition-all duration-200 ease-out origin-top",
-            isOpen
-              ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
-              : "opacity-0 scale-95 -translate-y-2 pointer-events-none invisible"
-          )}
-          role="listbox"
+        <FloatingSurface
+          open={isOpen}
+          anchorRef={selectRef}
+          onDismiss={dismissSurface}
+          matchAnchorWidth
+          placement="bottom-start"
+          offset={4}
+          className={cn(`w-full rounded-lg shadow-theme-lg ${surfacePanel}`)}
         >
-          {searchable && (
-            <div className="p-2 border-b border-outline-variant">
-              <div className="relative">
-                <MdSearch className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${textMuted}`} />
-                <input
-                  ref={searchInputRef}
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder={labels.searchOptions}
-                  className={`w-full pl-9 pr-3 py-2 text-sm border border-outline rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-outline-focus bg-surface text-on-surface`}
-                />
+          <div role="listbox">
+            {searchable && (
+              <div className="p-2 border-b border-outline-variant">
+                <div className="relative">
+                  <MdSearch className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${textMuted}`} />
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder={labels.searchOptions}
+                    className={`w-full pl-9 pr-3 py-2 text-sm border border-outline rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-outline-focus bg-surface text-on-surface`}
+                  />
+                </div>
               </div>
-            </div>
-          )}
-
-          <div className="max-h-60 overflow-y-auto">
-            {filteredOptions.length > 0 ? (
-              filteredOptions.map((option, index) => {
-                const isSelected = selectedOptions.some((selected) => selected.value === option.value);
-                const isFocused = index === focusedIndex;
-
-                return (
-                  <div
-                    key={option.value}
-                    className={cn(
-                      "flex items-center gap-2 px-4 py-2 text-sm cursor-pointer transition-colors select-none",
-                      comboboxOptionDefault,
-                      !option.disabled && !isFocused && !isSelected && "hover:bg-primary hover:text-on-primary",
-                      isFocused && comboboxOptionFocused,
-                      isSelected && !isFocused && selectOptionActive,
-                      option.disabled && cn(textMuted, "cursor-not-allowed opacity-60")
-                    )}
-                    onClick={() => handleOptionClick(option)}
-                    onMouseEnter={() => !option.disabled && setFocusedIndex(index)}
-                    role="option"
-                    aria-selected={isSelected}
-                  >
-                    {multiple && (
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => {}}
-                        className={`w-4 h-4 rounded ${checkboxBase}`}
-                      />
-                    )}
-                    {option.icon}
-                    {option.label}
-                  </div>
-                );
-              })
-            ) : (
-              <div className={`px-4 py-3 text-sm ${textMuted} text-center`}>{labels.noOptions}</div>
             )}
+
+            <div className="max-h-60 overflow-y-auto">
+              {filteredOptions.length > 0 ? (
+                filteredOptions.map((option, index) => {
+                  const isSelected = selectedOptions.some((selected) => selected.value === option.value);
+                  const isFocused = index === focusedIndex;
+
+                  return (
+                    <div
+                      key={option.value}
+                      className={cn(
+                        "flex items-center gap-2 px-4 py-2 text-sm cursor-pointer transition-colors select-none",
+                        comboboxOptionDefault,
+                        !option.disabled && !isFocused && !isSelected && "hover:bg-primary hover:text-on-primary",
+                        isFocused && comboboxOptionFocused,
+                        isSelected && !isFocused && selectOptionActive,
+                        option.disabled && cn(textMuted, "cursor-not-allowed opacity-60")
+                      )}
+                      onClick={() => handleOptionClick(option)}
+                      onMouseEnter={() => !option.disabled && setFocusedIndex(index)}
+                      role="option"
+                      aria-selected={isSelected}
+                    >
+                      {multiple && (
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => {}}
+                          className={`w-4 h-4 rounded ${checkboxBase}`}
+                        />
+                      )}
+                      {option.icon}
+                      {option.label}
+                    </div>
+                  );
+                })
+              ) : (
+                <div className={`px-4 py-3 text-sm ${textMuted} text-center`}>{labels.noOptions}</div>
+              )}
+            </div>
           </div>
-        </div>
+        </FloatingSurface>
 
         {/* Hidden form input */}
         <input type="hidden" name={name} value={Array.isArray(value) ? value.join(",") : value || ""} />
