@@ -167,6 +167,32 @@ export const calendarDayHover =
 
 export const calendarDaySelected = "bg-primary text-on-primary";
 
+/** Full-width cell band so selected ranges read as one continuous strip. */
+export const calendarRangeCellIn = "bg-primary-container";
+
+export const calendarRangeCellStart = "bg-primary-container rounded-l-full";
+
+export const calendarRangeCellEnd = "bg-primary-container rounded-r-full";
+
+export const calendarDayInRange =
+  "bg-transparent text-on-primary-container rounded-none";
+
+/** MUI-shaped dashed preview chrome for half-selection hover (cell wrapper). */
+export const calendarDayPreviewIn =
+  "border-y border-dashed border-primary";
+
+export const calendarDayPreviewStart =
+  "border-y border-l border-dashed border-primary rounded-l-full";
+
+export const calendarDayPreviewEnd =
+  "border-y border-r border-dashed border-primary rounded-r-full";
+
+export const calendarDayPreviewStartEnd =
+  "border border-dashed border-primary rounded-full";
+
+export const calendarShortcutButton =
+  "h-8 w-full rounded-md bg-surface-variant px-2 text-left text-xs font-bold text-on-surface transition-colors hover:bg-primary-container hover:text-on-primary-container";
+
 export const calendarNavButton =
   "flex size-5 items-center justify-center rounded transition-colors hover:bg-surface-variant";
 
