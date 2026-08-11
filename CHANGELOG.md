@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-08-11
+
+### Summary
+
+Ship the Day.js Field→Picker date/time family (and remove flatpickr), add the DateRange stack, and fix ComboBox / light theme surface contrast.
+
 ### Added
 
 - **`DateRangeCalendar`**: dual-month inclusive calendar-date range surface with half-selection, swap normalization, restart-after-complete, optional host `shortcuts` in a side column (`shortcutsPlacement`: `left` | `right`, default `left`), optional `showSubmitButton` (no `showTodayButton`), and Day.js `{ start, end } | null` `onChange(value, meta)`.
@@ -36,11 +42,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **`TimePicker` native props removed**: `name`, `min`, `max`, and `step` are no longer part of the public API (use `minuteStep` / `timePrecision` / bounds via host form logic as needed).
 - **`DateTimePicker` composition**: hosts that customized flatpickr chrome or CSS must switch to Field→Picker surfaces (`DateTimeField` alone, or `DateTimePicker` popover). Value contract remains UTC Day.js + display `timezone`.
 - **`flatpickr` peer removed**: the package no longer depends on or peers `flatpickr`. Hosts can drop the peer install when nothing else needs it.
-
-### Fixed
-
-- **`ComboBox` dropdown**: panel uses `surface` background (same as `Select`) for readable contrast in light theme.
-- **Theme light roles**: `--color-surface-container-high` maps to `gray-100` instead of `gray-dark`.
 
 ### Fixed
 
