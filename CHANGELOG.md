@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-08-11
+
+### Summary
+
+Select multiple option checkmarks no longer require the host `@tailwindcss/forms` plugin.
+
 ### Fixed
 
 - **`Select` multiple options**: selection checkmarks no longer depend on the host installing `@tailwindcss/forms`. Options use the same `MdCheck` indicator as `ComboBox` / `Checkbox`, so checked rows show a visible tick without the forms plugin background-image.
