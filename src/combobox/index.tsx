@@ -13,7 +13,7 @@ import {
   fieldDisabled,
   fieldError,
   fieldSuccess,
-  surfaceContainerHigh,
+  surfacePanel,
   textMuted,
 } from "../theme/role-classes";
 
@@ -423,7 +423,7 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
         {/* drop down options */}
         <div
           className={cn(
-            `absolute z-50 mt-1 w-full overflow-auto rounded-lg py-1 text-base shadow-theme-lg outline outline-black/5 sm:text-sm ${surfaceContainerHigh}`,
+            `absolute z-50 mt-1 w-full overflow-auto rounded-lg py-1 text-base shadow-theme-lg outline outline-black/5 sm:text-sm ${surfacePanel}`,
             "transition-all duration-200 ease-out origin-top",
             isOpen
               ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"

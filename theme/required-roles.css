@@ -21,7 +21,7 @@
   --color-on-surface-variant: var(--color-gray-500);
   --color-surface-variant: var(--color-gray-100);
   --color-surface-container: var(--color-gray-50);
-  --color-surface-container-high: var(--color-gray-dark, #1a2231);
+  --color-surface-container-high: var(--color-gray-100);
   --color-surface-dim: var(--color-gray-50);
 
   /* Semantic — error */
