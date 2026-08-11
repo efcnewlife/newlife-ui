@@ -9,6 +9,9 @@ import ComboBox from "../../src/combobox";
 import DateCalendar from "../../src/date-calendar";
 import DateField from "../../src/date-field";
 import DatePicker from "../../src/date-picker";
+import DateRangeCalendar from "../../src/date-range-calendar";
+import DateRangeField from "../../src/date-range-field";
+import DateRangePicker from "../../src/date-range-picker";
 import DateTimeField from "../../src/date-time-field";
 import DateTimePicker from "../../src/date-time-picker";
 import { Dropdown } from "../../src/dropdown/Dropdown";
@@ -55,6 +58,9 @@ describe("component smoke renders", () => {
         <DateCalendar value={null} />
         <DateField id="date-field" label="Date field" />
         <DatePicker id="date" label="Date" />
+        <DateRangeCalendar value={null} />
+        <DateRangeField id="date-range-field" label="Date range field" />
+        <DateRangePicker id="date-range" label="Date range" />
         <DateTimeField id="datetime-field" label="Date time field" />
         <DateTimePicker id="datetime" label="Date time" />
         <Select id="select" options={[{ value: "a", label: "A" }]} />

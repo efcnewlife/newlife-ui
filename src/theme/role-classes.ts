@@ -167,6 +167,9 @@ export const calendarDayHover =
 
 export const calendarDaySelected = "bg-primary text-on-primary";
 
+export const calendarDayInRange =
+  "bg-primary-container text-on-primary-container rounded-none";
+
 export const calendarNavButton =
   "flex size-5 items-center justify-center rounded transition-colors hover:bg-surface-variant";
 
