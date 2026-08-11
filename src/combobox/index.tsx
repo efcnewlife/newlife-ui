@@ -108,7 +108,7 @@ function OptionCheckbox({ checked, disabled }: { checked: boolean; disabled?: bo
       role="checkbox"
       aria-checked={checked}
     >
-      {checked && <MdCheck className="size-3.5" aria-hidden />}
+      {checked ? <MdCheck className="size-3.5 text-on-primary" aria-hidden /> : null}
     </span>
   );
 }

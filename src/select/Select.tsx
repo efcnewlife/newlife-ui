@@ -1,11 +1,12 @@
 import type React from "react";
 import { useCallback, useRef, useState } from "react";
-import { MdClose, MdKeyboardArrowDown, MdSearch } from "react-icons/md";
+import { MdCheck, MdClose, MdKeyboardArrowDown, MdSearch } from "react-icons/md";
 import { cn } from "../cn";
 import { FloatingSurface } from "../floating-surface";
 import FormField from "../form-field";
 import {
-  checkboxBase,
+  comboboxCheckboxChecked,
+  comboboxCheckboxUnchecked,
   comboboxOptionDefault,
   comboboxOptionFocused,
   fieldBase,
@@ -17,6 +18,22 @@ import {
   tagPrimary,
   textMuted,
 } from "../theme/role-classes";
+
+function OptionCheckbox({ checked, disabled }: { checked: boolean; disabled?: boolean }) {
+  return (
+    <span
+      className={cn(
+        "flex size-5 shrink-0 items-center justify-center rounded border transition-colors",
+        checked ? comboboxCheckboxChecked : comboboxCheckboxUnchecked,
+        disabled && "opacity-50"
+      )}
+      role="checkbox"
+      aria-checked={checked}
+    >
+      {checked ? <MdCheck className="size-3.5 text-on-primary" aria-hidden /> : null}
+    </span>
+  );
+}
 
 export interface SelectOption {
   value: string | number | null;
@@ -336,14 +353,9 @@ export const Select: React.FC<SelectProps> = ({
                       role="option"
                       aria-selected={isSelected}
                     >
-                      {multiple && (
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => {}}
-                          className={`w-4 h-4 rounded ${checkboxBase}`}
-                        />
-                      )}
+                      {multiple ? (
+                        <OptionCheckbox checked={isSelected} disabled={option.disabled} />
+                      ) : null}
                       {option.icon}
                       {option.label}
                     </div>
