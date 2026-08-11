@@ -25,7 +25,7 @@ No component-level tokens (e.g. `--button-primary-bg`).
 | | `--color-on-surface-variant` | `--color-gray-500` |
 | | `--color-surface-variant` | `--color-gray-100` |
 | | `--color-surface-container` | `--color-gray-50` |
-| | `--color-surface-container-high` | `--color-gray-dark` |
+| | `--color-surface-container-high` | `--color-gray-100` (light); `--color-gray-dark` (dark) |
 | | `--color-surface-dim` | `--color-gray-50` |
 | Error | `--color-error`, `--color-on-error`, `--color-error-container`, `--color-on-error-container` | `error-*` scale |
 | Success | `--color-success`, `--color-on-success`, `--color-success-container`, `--color-on-success-container` | `success-*` scale |
