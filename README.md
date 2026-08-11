@@ -137,7 +137,6 @@ Ensure these match your app:
 
 - `react`, `react-dom`
 - `react-icons`
-- `flatpickr` (used by `DatePicker`)
 
 ### Notifications
 

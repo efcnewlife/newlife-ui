@@ -6,7 +6,11 @@ import Button from "../../src/button";
 import ButtonGroup from "../../src/buttons-group";
 import Checkbox from "../../src/checkbox";
 import ComboBox from "../../src/combobox";
+import DateCalendar from "../../src/date-calendar";
+import DateField from "../../src/date-field";
 import DatePicker from "../../src/date-picker";
+import DateTimeField from "../../src/date-time-field";
+import DateTimePicker from "../../src/date-time-picker";
 import { Dropdown } from "../../src/dropdown/Dropdown";
 import { DropdownItem } from "../../src/dropdown/DropdownItem";
 import FileInput from "../../src/file-input";
@@ -26,6 +30,7 @@ import Switch from "../../src/switch";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../src/table";
 import Tabs from "../../src/tabs";
 import TextArea from "../../src/textarea";
+import TimeField from "../../src/time-field";
 import TimePicker from "../../src/time-picker";
 import Tooltip from "../../src/tooltip";
 import { PopoverPosition } from "../../src/types/enums";
@@ -45,8 +50,13 @@ describe("component smoke renders", () => {
         <Slider defaultValue={[50]} aria-label="Volume" />
         <FileInput />
         <PhoneInput countries={[{ name: "US", code: "+1" }]} />
+        <TimeField id="time-field" label="Time field" />
         <TimePicker id="time" label="Time" />
+        <DateCalendar value={null} />
+        <DateField id="date-field" label="Date field" />
         <DatePicker id="date" label="Date" />
+        <DateTimeField id="datetime-field" label="Date time field" />
+        <DateTimePicker id="datetime" label="Date time" />
         <Select id="select" options={[{ value: "a", label: "A" }]} />
         <ComboBox id="combo" options={[{ value: "a", label: "A" }]} />
         <Tabs tabs={[{ value: "a", label: "A" }]} value="a" onChange={() => undefined} />

@@ -29,7 +29,7 @@ alwaysApply: true
 
 - The library **does not** ship a duplicate Tailwind v4 theme; hosts own `@theme` / tokens.
 - Hosts must register Tailwind `@source` over this package’s `dist` so utilities used inside the library are not purged (see [`README.md`](README.md)).
-- Keep **peer dependencies** accurate in `package.json` (`react`, `react-dom`, `react-icons`, `flatpickr`, etc.).
+- Keep **peer dependencies** accurate in `package.json` (`react`, `react-dom`, `react-icons`, etc.).
 
 ## Git workflow (mandatory)
 

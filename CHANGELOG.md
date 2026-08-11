@@ -6,6 +6,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **`DateCalendar`**: standalone single-date calendar surface with day / month / year views, configurable `weekStartsOn` (default Sunday), outside-month days, optional footer divider with `showTodayButton` / `showSubmitButton` / `onSubmit` / `labels.today` / `labels.submit`, and Day.js `onChange(value, meta)`.
+- **`DateField`**: FormField-parity date input without a trailing calendar icon; controlled Day.js values and `onChange(value, meta)`.
+- **`TimeField`**: FormField-parity time-of-day input without a trailing clock icon; controlled time-of-day Day.js values anchored to `1970-01-01`, typed `HH:mm` / `HH:mm:ss` (via `timePrecision`), and `onChange(value, meta)`. No `timezone` prop.
+- **`DateTimeField`**: FormField-parity datetime input without a trailing calendar icon; controlled **UTC** Day.js stored values, optional display `timezone`, typed `YYYY-MM-DD HH:mm` / `HH:mm:ss`, bounds (`minDate` / `maxDate` / `minDateTime` / `maxDateTime`), and `onChange(value, meta)`.
+- **`DateTimePicker`**: rebuilt on `DateTimeField` + calendar icon + side-by-side `DateCalendar` and private digital time surface. UTC Day.js store, optional display `timezone`, retained bounds / `clearable` / `minuteStep` / `timePrecision` / `ampm`, plus `variant` (`digital` | `sections`, default `sections`) and optional footer `showSubmitButton` with Now (left) and Cancel / OK (right) (`labels.now` / `labels.cancel` / `labels.submit`; never gates `onChange`). Selecting a calendar date preserves the current time-of-day (defaults to `00:00` when unset).
+- Runtime dependency **`dayjs`** (with utc / timezone plugins used internally).
+- Exported picker types: `DateCalendarProps`, `DateFieldProps`, `DatePickerProps`, `DateTimeFieldProps`, `DateTimePickerProps`, `TimeFieldProps`, `TimePickerProps`, `PickerChangeMeta`, `TimePrecision`.
+
+### Changed
+
+- **`DatePicker`**: rebuilt on `DateField` + `DateCalendar` (calendar icon + popover calendar). Controlled `value` / `defaultValue` / `onChange` use Day.js (`Dayjs | null`) and `PickerChangeMeta`. Optional `timezone`, `weekStartsOn`, `clearable` (default `true`), and submit / today chrome props. No longer uses flatpickr.
+- **`TimePicker`**: rebuilt on `TimeField` + private digital time surface (MUI Digital Clock–shaped). Controlled `value` / `defaultValue` / `onChange` use time-of-day Day.js (`Dayjs | null`) and `PickerChangeMeta`. Supports `variant` (`digital` | `sections`, default `sections`), `clearable` (default `true`), `minuteStep` (default `1`), `ampm` (default `false`), and `timePrecision` (default `minutes`). Selection commits immediately (no confirm step). No `timezone` prop.
+- **`DateTimePicker`**: no longer uses flatpickr; composed from design-system `DateCalendar` + shared digital time surface. When `showSubmitButton` is true, Cancel / OK actions sit in a full-width footer under both surfaces (right-aligned), not inside the calendar panel.
+
+### Breaking changes
+
+- **`DatePicker` value API**: hosts must pass Day.js (`Dayjs | null`) instead of `YYYY-MM-DD` strings; `onChange` no longer receives flatpickr `dateStr` / `instance`.
+- **`DatePicker` `defaultDate`**: renamed to **`defaultValue`**.
+- **`DatePicker` modes removed**: `mode` (`multiple` / `range` / `time`) is no longer part of the public API — single calendar day only. Use Time* / DateTime* components for time or datetime.
+- **`DatePickerMode` / `Dayjs[]` value**: removed from exports; array values are no longer accepted.
+- **`TimePicker` value API**: hosts must pass time-of-day Day.js (`Dayjs | null`) instead of native `type="time"` strings; `onChange` is `(value, meta)` instead of a DOM `ChangeEvent`. Migrate string values by parsing into Day.js (anchor date is conventional `1970-01-01`).
+- **`TimePicker` native props removed**: `name`, `min`, `max`, and `step` are no longer part of the public API (use `minuteStep` / `timePrecision` / bounds via host form logic as needed).
+- **`DateTimePicker` composition**: hosts that customized flatpickr chrome or CSS must switch to Field→Picker surfaces (`DateTimeField` alone, or `DateTimePicker` popover). Value contract remains UTC Day.js + display `timezone`.
+- **`flatpickr` peer removed**: the package no longer depends on or peers `flatpickr`. Hosts can drop the peer install when nothing else needs it.
+
+### Fixed
+
+- **`ComboBox` dropdown**: panel uses `surface` background (same as `Select`) for readable contrast in light theme.
+- **Theme light roles**: `--color-surface-container-high` maps to `gray-100` instead of `gray-dark`.
+
 ### Fixed
 
 - **`ComboBox` dropdown**: panel uses `surface` background (same as `Select`) for readable contrast in light theme.

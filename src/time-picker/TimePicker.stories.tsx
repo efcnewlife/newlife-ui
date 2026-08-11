@@ -1,4 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
+import { dayjs, type Dayjs } from "../lib/dayjs";
 import TimePicker from "./index";
 
 const meta: Meta<typeof TimePicker> = {
@@ -24,6 +26,48 @@ export const WithError: Story = {
 };
 
 export const Disabled: Story = {
-  args: { disabled: true, value: "09:30" },
+  args: { disabled: true, value: dayjs("1970-01-01T09:30:00") },
   render: (args) => <TimePicker {...args} />,
+};
+
+export const SectionsVariant: Story = {
+  args: { variant: "sections" },
+  render: (args) => {
+    const [value, setValue] = useState<Dayjs | null>(dayjs("1970-01-01T14:30:00"));
+    return (
+      <TimePicker
+        {...args}
+        value={value}
+        onChange={(next) => setValue(next)}
+      />
+    );
+  },
+};
+
+export const DigitalVariant: Story = {
+  args: { variant: "digital", minuteStep: 15 },
+  render: (args) => {
+    const [value, setValue] = useState<Dayjs | null>(dayjs("1970-01-01T09:00:00"));
+    return (
+      <TimePicker
+        {...args}
+        value={value}
+        onChange={(next) => setValue(next)}
+      />
+    );
+  },
+};
+
+export const AmpmWithSeconds: Story = {
+  args: { ampm: true, timePrecision: "seconds" },
+  render: (args) => {
+    const [value, setValue] = useState<Dayjs | null>(dayjs("1970-01-01T09:30:00"));
+    return (
+      <TimePicker
+        {...args}
+        value={value}
+        onChange={(next) => setValue(next)}
+      />
+    );
+  },
 };
