@@ -41,7 +41,7 @@ export type {
 export { default as DateField } from "./date-field";
 export type { DateFieldProps } from "./date-field";
 export { default as DatePicker } from "./date-picker";
-export type { DatePickerProps, DatePickerValue } from "./date-picker";
+export type { DatePickerLabels, DatePickerProps, DatePickerValue } from "./date-picker";
 export { default as DateTimePicker } from "./date-time-picker";
 export type {
   DateTimePickerProps,

@@ -159,6 +159,22 @@ export const badgeLightNeutral =
 
 export const badgeSolidNeutral = "bg-on-surface-variant text-on-primary";
 
+export const calendarDayBase =
+  "mx-auto flex size-6 items-center justify-center rounded-full text-sm font-semibold transition-colors";
+
+export const calendarDayHover =
+  "hover:bg-primary-container hover:text-on-primary-container";
+
+export const calendarDaySelected = "bg-primary text-on-primary";
+
+export const calendarNavButton =
+  "flex size-5 items-center justify-center rounded transition-colors hover:bg-surface-variant";
+
+export const calendarGridOption =
+  "rounded-lg px-2 py-2 text-sm font-semibold transition-colors hover:bg-primary-container hover:text-on-primary-container";
+
+export const calendarGridOptionSelected = "bg-primary text-on-primary";
+
 export const alertSuccessContainer =
   "border-success bg-success-container text-on-success-container";
 

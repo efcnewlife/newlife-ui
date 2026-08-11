@@ -61,7 +61,7 @@ describe("DateCalendar", () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
 
-    const { rerender } = render(
+    const { rerender, container } = render(
       <DateCalendar value={dayjs("2026-08-10")} onSubmit={onSubmit} />
     );
     expect(screen.queryByRole("button", { name: "Done" })).not.toBeInTheDocument();
@@ -76,8 +76,43 @@ describe("DateCalendar", () => {
     );
 
     const submit = screen.getByRole("button", { name: "Apply" });
+    const root = container.firstElementChild;
+    expect(root?.lastElementChild?.contains(submit)).toBe(true);
+
     await user.click(submit);
     expect(onSubmit).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows Today in the footer when showTodayButton is true and selects today", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+
+    const { rerender } = render(
+      <DateCalendar value={dayjs("2026-08-10")} onChange={onChange} />
+    );
+    expect(screen.queryByRole("button", { name: "Today" })).not.toBeInTheDocument();
+
+    rerender(
+      <DateCalendar
+        value={dayjs("2026-08-10")}
+        showTodayButton
+        onChange={onChange}
+        labels={{ today: "今天" }}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: "今天" }));
+
+    expect(onChange).toHaveBeenCalled();
+    const [value, meta] = onChange.mock.calls[0];
+    expect(dayjs.isDayjs(value)).toBe(true);
+    expect(value.format("YYYY-MM-DD")).toBe(dayjs().format("YYYY-MM-DD"));
+    expect(meta).toEqual(
+      expect.objectContaining({
+        source: "view",
+        validationError: null,
+      })
+    );
   });
 
   it("navigates day, month, and year views from the header", async () => {

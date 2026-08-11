@@ -63,4 +63,35 @@ describe("DatePicker", () => {
 
     expect(screen.queryByText(/to/i)).not.toBeInTheDocument();
   });
+
+  it("clears the value when clearable and Clear is clicked", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+
+    const { rerender } = render(
+      <DatePicker
+        id="start-date"
+        label="Start date"
+        value={dayjs("2026-06-20")}
+        onChange={onChange}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: "Clear" }));
+    expect(onChange).toHaveBeenCalledWith(null, {
+      validationError: null,
+      source: "field",
+    });
+
+    rerender(
+      <DatePicker
+        id="start-date"
+        label="Start date"
+        value={dayjs("2026-06-20")}
+        clearable={false}
+        onChange={onChange}
+      />
+    );
+    expect(screen.queryByRole("button", { name: "Clear" })).not.toBeInTheDocument();
+  });
 });

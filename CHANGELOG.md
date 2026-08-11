@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- **`DateCalendar`**: standalone single-date calendar surface with day / month / year views, configurable `weekStartsOn` (default Sunday), outside-month days, optional `showSubmitButton` / `onSubmit` / `labels.submit`, and Day.js `onChange(value, meta)`.
+- **`DateCalendar`**: standalone single-date calendar surface with day / month / year views, configurable `weekStartsOn` (default Sunday), outside-month days, optional footer divider with `showTodayButton` / `showSubmitButton` / `onSubmit` / `labels.today` / `labels.submit`, and Day.js `onChange(value, meta)`.
 - **`DateField`**: FormField-parity date input without a trailing calendar icon; controlled Day.js values and `onChange(value, meta)`.
 - **`DateTimePicker`**: standalone date+time field with UTC Day.js stored values, optional display `timezone`, `minDate` / `maxDate` / `minDateTime` / `maxDateTime`, `clearable` (default `true`), `minuteStep` (default `1`), `timePrecision` (`minutes` | `seconds`), and `ampm` (default 24h). `onChange` returns `(value, meta)` with `validationError` and `source`.
 - Runtime dependency **`dayjs`** (with utc / timezone plugins used internally).
@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
-- **`DatePicker`**: rebuilt on `DateField` + `DateCalendar` (calendar icon + popover calendar). Controlled `value` / `defaultValue` / `onChange` use Day.js (`Dayjs | null`) and `PickerChangeMeta`. Optional `timezone`, `weekStartsOn`, and submit chrome props. No longer uses flatpickr.
+- **`DatePicker`**: rebuilt on `DateField` + `DateCalendar` (calendar icon + popover calendar). Controlled `value` / `defaultValue` / `onChange` use Day.js (`Dayjs | null`) and `PickerChangeMeta`. Optional `timezone`, `weekStartsOn`, `clearable` (default `true`), and submit / today chrome props. No longer uses flatpickr.
 
 ### Breaking changes
 

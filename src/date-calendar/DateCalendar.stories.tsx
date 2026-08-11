@@ -58,3 +58,21 @@ export const WithSubmit: Story = {
     );
   },
 };
+
+export const WithTodayAndSubmit: Story = {
+  args: {
+    showTodayButton: true,
+    showSubmitButton: true,
+    labels: { today: "Today", submit: "Done" },
+  },
+  render: (args) => {
+    const [value, setValue] = useState<Dayjs | null>(dayjs("2026-08-10"));
+    return (
+      <DateCalendar
+        {...args}
+        value={value}
+        onChange={(next) => setValue(next)}
+      />
+    );
+  },
+};

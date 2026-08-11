@@ -60,3 +60,17 @@ export const ControlledDayjs: Story = {
     );
   },
 };
+
+export const Clearable: Story = {
+  args: { clearable: true },
+  render: (args) => {
+    const [value, setValue] = useState<Dayjs | null>(dayjs("2026-06-20"));
+    return (
+      <DatePicker
+        {...args}
+        value={value}
+        onChange={(next) => setValue(next)}
+      />
+    );
+  },
+};

@@ -11,6 +11,12 @@ import {
 import type { PickerChangeMeta } from "../picker/types";
 import {
   accentPrimarySolid,
+  calendarDayBase,
+  calendarDayHover,
+  calendarDaySelected,
+  calendarGridOption,
+  calendarGridOptionSelected,
+  calendarNavButton,
   surfacePanel,
   textMuted,
   textOnSurface,
@@ -22,6 +28,7 @@ export type WeekStartsOn = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 export interface DateCalendarLabels {
   submit?: string;
+  today?: string;
 }
 
 export interface DateCalendarProps {
@@ -36,6 +43,7 @@ export interface DateCalendarProps {
   defaultView?: DateCalendarView;
   onViewChange?: (view: DateCalendarView) => void;
   showSubmitButton?: boolean;
+  showTodayButton?: boolean;
   onSubmit?: () => void;
   labels?: DateCalendarLabels;
   className?: string;
@@ -90,6 +98,7 @@ export default function DateCalendar({
   defaultView = "day",
   onViewChange,
   showSubmitButton = false,
+  showTodayButton = false,
   onSubmit,
   labels,
   className,
@@ -108,6 +117,8 @@ export default function DateCalendar({
   const minBound = toDayjsBound(minDate);
   const maxBound = toDayjsBound(maxDate);
   const submitLabel = labels?.submit ?? "Done";
+  const todayLabel = labels?.today ?? "Today";
+  const showFooter = showSubmitButton || showTodayButton;
 
   useEffect(() => {
     if (selectedValue?.isValid()) {
@@ -186,6 +197,15 @@ export default function DateCalendar({
     );
   };
 
+  const selectToday = () => {
+    const today = calendarStringToDayjs(dayjsToCalendarString(dayjs(), timezone), timezone);
+    setViewMonth(today.startOf("month"));
+    setView("day");
+    emitChange(today);
+  };
+
+  const todayValue = calendarStringToDayjs(dayjsToCalendarString(dayjs(), timezone), timezone);
+
   return (
     <div
       className={cn(
@@ -196,63 +216,37 @@ export default function DateCalendar({
       data-disabled={disabled || undefined}
     >
       <div className="flex w-64 items-center justify-between">
-        <div className="flex w-12 items-center justify-start gap-2.5">
-          <button
-            type="button"
-            aria-label="Previous"
-            className={cn("flex size-5 items-center justify-center rounded", textOnSurface)}
-            onClick={() => navigate(-1)}
-            disabled={disabled}
-          >
-            <MdChevronLeft className="size-5" />
-          </button>
-          {showSubmitButton ? (
-            <button
-              type="button"
-              aria-label="Next"
-              className={cn("flex size-5 items-center justify-center rounded", textOnSurface)}
-              onClick={() => navigate(1)}
-              disabled={disabled}
-            >
-              <MdChevronRight className="size-5" />
-            </button>
-          ) : null}
-        </div>
+        <button
+          type="button"
+          aria-label="Previous"
+          className={cn(calendarNavButton, textOnSurface)}
+          onClick={() => navigate(-1)}
+          disabled={disabled}
+        >
+          <MdChevronLeft className="size-5" />
+        </button>
 
         <button
           type="button"
-          className={cn("min-w-32 text-center text-base font-bold", textOnSurface)}
+          className={cn(
+            "min-w-32 rounded px-1 text-center text-base font-bold transition-colors hover:bg-surface-variant",
+            textOnSurface
+          )}
           onClick={onHeaderClick}
           disabled={disabled || view === "year"}
         >
           {headerLabel}
         </button>
 
-        <div className="flex w-12 items-center justify-end">
-          {showSubmitButton ? (
-            <button
-              type="button"
-              className={cn(
-                "h-5 min-w-12 rounded-[3px] px-1 text-center text-xs font-bold",
-                accentPrimarySolid
-              )}
-              onClick={onSubmit}
-              disabled={disabled}
-            >
-              {submitLabel}
-            </button>
-          ) : (
-            <button
-              type="button"
-              aria-label="Next"
-              className={cn("flex size-5 items-center justify-center rounded", textOnSurface)}
-              onClick={() => navigate(1)}
-              disabled={disabled}
-            >
-              <MdChevronRight className="size-5" />
-            </button>
-          )}
-        </div>
+        <button
+          type="button"
+          aria-label="Next"
+          className={cn(calendarNavButton, textOnSurface)}
+          onClick={() => navigate(1)}
+          disabled={disabled}
+        >
+          <MdChevronRight className="size-5" />
+        </button>
       </div>
 
       {view === "day" ? (
@@ -293,9 +287,10 @@ export default function DateCalendar({
                   data-outside-month={isOutside ? "true" : "false"}
                   disabled={isDayDisabled(day)}
                   className={cn(
-                    "mx-auto flex size-6 items-center justify-center rounded-full text-sm font-semibold",
+                    calendarDayBase,
                     isOutside ? textMuted : textOnSurface,
-                    isSelected && "bg-primary text-on-primary"
+                    isSelected ? calendarDaySelected : calendarDayHover,
+                    "disabled:pointer-events-none disabled:opacity-40"
                   )}
                   onClick={() => emitChange(day)}
                 >
@@ -314,9 +309,9 @@ export default function DateCalendar({
               key={label}
               type="button"
               className={cn(
-                "rounded-lg px-2 py-2 text-sm font-semibold",
+                calendarGridOption,
                 viewMonth.month() === monthIndex
-                  ? "bg-primary text-on-primary"
+                  ? calendarGridOptionSelected
                   : textOnSurface
               )}
               disabled={disabled}
@@ -340,9 +335,9 @@ export default function DateCalendar({
                 key={year}
                 type="button"
                 className={cn(
-                  "rounded-lg px-2 py-2 text-sm font-semibold",
+                  calendarGridOption,
                   viewMonth.year() === year
-                    ? "bg-primary text-on-primary"
+                    ? calendarGridOptionSelected
                     : textOnSurface
                 )}
                 disabled={disabled}
@@ -355,6 +350,45 @@ export default function DateCalendar({
               </button>
             );
           })}
+        </div>
+      ) : null}
+
+      {showFooter ? (
+        <div className="flex w-full flex-col items-center gap-2.5">
+          <div className="w-full border-t border-outline-variant" />
+          <div className="flex w-64 items-center justify-between">
+            <div className="flex min-w-16 justify-start">
+              {showTodayButton ? (
+                <button
+                  type="button"
+                  className={cn(
+                    "h-8 rounded-md px-3 text-xs font-bold transition-colors",
+                    textOnSurface,
+                    "hover:bg-surface-variant"
+                  )}
+                  onClick={selectToday}
+                  disabled={disabled || isDayDisabled(todayValue)}
+                >
+                  {todayLabel}
+                </button>
+              ) : null}
+            </div>
+            <div className="flex min-w-16 justify-end">
+              {showSubmitButton ? (
+                <button
+                  type="button"
+                  className={cn(
+                    "h-8 min-w-16 rounded-md px-3 text-center text-xs font-bold",
+                    accentPrimarySolid
+                  )}
+                  onClick={onSubmit}
+                  disabled={disabled}
+                >
+                  {submitLabel}
+                </button>
+              ) : null}
+            </div>
+          </div>
         </div>
       ) : null}
     </div>

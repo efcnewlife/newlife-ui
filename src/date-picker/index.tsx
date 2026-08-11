@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { MdCalendarToday } from "react-icons/md";
+import { MdCalendarMonth, MdClear } from "react-icons/md";
 import { cn } from "../cn";
 import DateCalendar from "../date-calendar";
 import type { DateCalendarLabels, WeekStartsOn } from "../date-calendar";
@@ -7,6 +7,10 @@ import DateField from "../date-field";
 import type { Dayjs } from "../lib/dayjs";
 import type { PickerChangeMeta } from "../picker/types";
 import { textMuted } from "../theme/role-classes";
+
+export interface DatePickerLabels extends DateCalendarLabels {
+  clear?: string;
+}
 
 export interface DatePickerProps {
   id: string;
@@ -21,11 +25,13 @@ export interface DatePickerProps {
   error?: string;
   required?: boolean;
   disabled?: boolean;
+  clearable?: boolean;
   wrapperClassName?: string;
   weekStartsOn?: WeekStartsOn;
   showSubmitButton?: boolean;
+  showTodayButton?: boolean;
   onSubmit?: () => void;
-  labels?: DateCalendarLabels;
+  labels?: DatePickerLabels;
 }
 
 export type DatePickerValue = Dayjs | null;
@@ -43,9 +49,11 @@ export default function DatePicker({
   error,
   required,
   disabled,
+  clearable = true,
   wrapperClassName,
   weekStartsOn,
   showSubmitButton,
+  showTodayButton,
   onSubmit,
   labels,
 }: DatePickerProps) {
@@ -54,6 +62,9 @@ export default function DatePicker({
   const selectedValue = isControlled ? value : uncontrolledValue;
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const hasValue = selectedValue != null && selectedValue.isValid();
+  const showClear = clearable && !disabled && hasValue;
+  const clearLabel = labels?.clear ?? "Clear";
 
   useEffect(() => {
     if (!open) {
@@ -84,10 +95,23 @@ export default function DatePicker({
     }
   };
 
+  const handleClear = () => {
+    if (disabled) {
+      return;
+    }
+    handleChange(null, { validationError: null, source: "field" });
+  };
+
   const handleSubmit = () => {
     onSubmit?.();
     setOpen(false);
   };
+
+  const iconButtonClassName = cn(
+    "inline-flex size-7 items-center justify-center rounded-md transition-colors",
+    textMuted,
+    disabled && "cursor-not-allowed"
+  );
 
   return (
     <div ref={rootRef} className="relative">
@@ -104,26 +128,42 @@ export default function DatePicker({
         required={required}
         disabled={disabled}
         wrapperClassName={wrapperClassName}
+        className={showClear ? "pr-16" : undefined}
         onFocus={() => {
           if (!disabled) {
             setOpen(true);
           }
         }}
         endAdornment={
-          <button
-            type="button"
-            aria-label="Open calendar"
-            aria-expanded={open}
-            disabled={disabled}
-            className={cn(textMuted, disabled && "cursor-not-allowed")}
-            onClick={() => {
-              if (!disabled) {
-                setOpen((current) => !current);
-              }
-            }}
-          >
-            <MdCalendarToday className="size-6" />
-          </button>
+          <span className="flex items-center gap-0.5">
+            {showClear ? (
+              <button
+                type="button"
+                aria-label={clearLabel}
+                className={cn(iconButtonClassName, "hover:text-on-surface")}
+                onClick={handleClear}
+              >
+                <MdClear className="size-5" />
+              </button>
+            ) : null}
+            <button
+              type="button"
+              aria-label="Open calendar"
+              aria-expanded={open}
+              disabled={disabled}
+              className={cn(
+                iconButtonClassName,
+                "hover:bg-surface-variant hover:text-on-surface"
+              )}
+              onClick={() => {
+                if (!disabled) {
+                  setOpen((current) => !current);
+                }
+              }}
+            >
+              <MdCalendarMonth className="size-5" />
+            </button>
+          </span>
         }
       />
 
@@ -137,6 +177,7 @@ export default function DatePicker({
             maxDate={maxDate}
             weekStartsOn={weekStartsOn}
             showSubmitButton={showSubmitButton}
+            showTodayButton={showTodayButton}
             onSubmit={handleSubmit}
             labels={labels}
             disabled={disabled}

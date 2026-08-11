@@ -136,11 +136,11 @@ export default function DateField({
         {endAdornment ? (
           <span
             className={cn(
-              "absolute right-3 top-1/2 -translate-y-1/2",
-              disabled && "pointer-events-none opacity-40"
+              "pointer-events-none absolute inset-y-0 right-3 flex items-center",
+              disabled && "opacity-40"
             )}
           >
-            {endAdornment}
+            <span className="pointer-events-auto flex items-center">{endAdornment}</span>
           </span>
         ) : null}
       </div>
