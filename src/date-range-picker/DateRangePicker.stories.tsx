@@ -11,6 +11,7 @@ const meta: Meta<typeof DateRangePicker> = {
     id: "date-range-picker-default",
     label: "Date range",
     defaultMonth: dayjs("2026-08-01"),
+    wrapperClassName: "w-full max-w-md",
   },
 };
 
