@@ -23,17 +23,8 @@ export const Default: Story = {
 
 export const ControlledUtcWithTimezone: Story = {
   render: (args) => {
-    const [value, setValue] = useState<Dayjs | null>(
-      dayjs.utc("2026-06-20T15:30:00.000Z")
-    );
-    return (
-      <DateTimePicker
-        {...args}
-        value={value}
-        timezone="America/New_York"
-        onChange={(next) => setValue(next)}
-      />
-    );
+    const [value, setValue] = useState<Dayjs | null>(dayjs.utc("2026-06-20T15:30:00.000Z"));
+    return <DateTimePicker {...args} value={value} timezone="America/New_York" onChange={(next) => setValue(next)} />;
   },
 };
 
@@ -44,16 +35,8 @@ export const SectionsVariant: Story = {
     timezone: "UTC",
   },
   render: (args) => {
-    const [value, setValue] = useState<Dayjs | null>(
-      (args.value as Dayjs | null | undefined) ?? dayjs.utc("2026-06-20T15:30:00.000Z")
-    );
-    return (
-      <DateTimePicker
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next)}
-      />
-    );
+    const [value, setValue] = useState<Dayjs | null>((args.value as Dayjs | null | undefined) ?? dayjs.utc("2026-06-20T15:30:00.000Z"));
+    return <DateTimePicker {...args} value={value} onChange={(next) => setValue(next)} />;
   },
 };
 
@@ -65,16 +48,8 @@ export const DigitalVariant: Story = {
     timezone: "UTC",
   },
   render: (args) => {
-    const [value, setValue] = useState<Dayjs | null>(
-      (args.value as Dayjs | null | undefined) ?? dayjs.utc("2026-06-20T15:00:00.000Z")
-    );
-    return (
-      <DateTimePicker
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next)}
-      />
-    );
+    const [value, setValue] = useState<Dayjs | null>((args.value as Dayjs | null | undefined) ?? dayjs.utc("2026-06-20T15:00:00.000Z"));
+    return <DateTimePicker {...args} value={value} onChange={(next) => setValue(next)} />;
   },
 };
 
@@ -112,21 +87,12 @@ export const WithSubmitButton: Story = {
     timezone: "UTC",
   },
   render: (args) => {
-    const [value, setValue] = useState<Dayjs | null>(
-      dayjs.utc("2026-06-20T15:30:00.000Z")
-    );
+    const [value, setValue] = useState<Dayjs | null>(dayjs.utc("2026-06-20T15:30:00.000Z"));
     const [submitted, setSubmitted] = useState(false);
     return (
       <div className="space-y-2">
-        <DateTimePicker
-          {...args}
-          value={value}
-          onChange={(next) => setValue(next)}
-          onSubmit={() => setSubmitted(true)}
-        />
-        {submitted ? (
-          <p className="text-sm text-on-surface-variant">Submit fired (value already committed).</p>
-        ) : null}
+        <DateTimePicker {...args} value={value} onChange={(next) => setValue(next)} onSubmit={() => setSubmitted(true)} />
+        {submitted ? <p className="text-sm text-on-surface-variant">Submit fired (value already committed).</p> : null}
       </div>
     );
   },

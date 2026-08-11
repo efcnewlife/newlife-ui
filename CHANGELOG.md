@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **`DateField`**: FormField-parity date input without a trailing calendar icon; controlled Day.js values and `onChange(value, meta)`.
 - **`TimeField`**: FormField-parity time-of-day input without a trailing clock icon; controlled time-of-day Day.js values anchored to `1970-01-01`, typed `HH:mm` / `HH:mm:ss` (via `timePrecision`), and `onChange(value, meta)`. No `timezone` prop.
 - **`DateTimeField`**: FormField-parity datetime input without a trailing calendar icon; controlled **UTC** Day.js stored values, optional display `timezone`, typed `YYYY-MM-DD HH:mm` / `HH:mm:ss`, bounds (`minDate` / `maxDate` / `minDateTime` / `maxDateTime`), and `onChange(value, meta)`.
-- **`DateTimePicker`**: rebuilt on `DateTimeField` + calendar icon + side-by-side `DateCalendar` and private digital time surface. UTC Day.js store, optional display `timezone`, retained bounds / `clearable` / `minuteStep` / `timePrecision` / `ampm`, plus `variant` (`digital` | `sections`, default `sections`) and DateCalendar-style `showSubmitButton` / `onSubmit` / `labels.submit` (never gates `onChange`). Selecting a calendar date preserves the current time-of-day (defaults to `00:00` when unset).
+- **`DateTimePicker`**: rebuilt on `DateTimeField` + calendar icon + side-by-side `DateCalendar` and private digital time surface. UTC Day.js store, optional display `timezone`, retained bounds / `clearable` / `minuteStep` / `timePrecision` / `ampm`, plus `variant` (`digital` | `sections`, default `sections`) and optional footer `showSubmitButton` with Now (left) and Cancel / OK (right) (`labels.now` / `labels.cancel` / `labels.submit`; never gates `onChange`). Selecting a calendar date preserves the current time-of-day (defaults to `00:00` when unset).
 - Runtime dependency **`dayjs`** (with utc / timezone plugins used internally).
 - Exported picker types: `DateCalendarProps`, `DateFieldProps`, `DatePickerProps`, `DateTimeFieldProps`, `DateTimePickerProps`, `TimeFieldProps`, `TimePickerProps`, `PickerChangeMeta`, `TimePrecision`.
 
@@ -20,7 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - **`DatePicker`**: rebuilt on `DateField` + `DateCalendar` (calendar icon + popover calendar). Controlled `value` / `defaultValue` / `onChange` use Day.js (`Dayjs | null`) and `PickerChangeMeta`. Optional `timezone`, `weekStartsOn`, `clearable` (default `true`), and submit / today chrome props. No longer uses flatpickr.
 - **`TimePicker`**: rebuilt on `TimeField` + private digital time surface (MUI Digital Clock–shaped). Controlled `value` / `defaultValue` / `onChange` use time-of-day Day.js (`Dayjs | null`) and `PickerChangeMeta`. Supports `variant` (`digital` | `sections`, default `sections`), `clearable` (default `true`), `minuteStep` (default `1`), `ampm` (default `false`), and `timePrecision` (default `minutes`). Selection commits immediately (no confirm step). No `timezone` prop.
-- **`DateTimePicker`**: no longer uses flatpickr; composed from design-system `DateCalendar` + shared digital time surface.
+- **`DateTimePicker`**: no longer uses flatpickr; composed from design-system `DateCalendar` + shared digital time surface. When `showSubmitButton` is true, Cancel / OK actions sit in a full-width footer under both surfaces (right-aligned), not inside the calendar panel.
 
 ### Breaking changes
 

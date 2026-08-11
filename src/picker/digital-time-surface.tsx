@@ -1,18 +1,8 @@
 import { cn } from "../cn";
 import type { Dayjs } from "../lib/dayjs";
-import {
-  createTimeOfDay,
-  dayjsToTimeString,
-  toTimeOfDay,
-  type TimePrecision,
-} from "./time";
+import { calendarGridOption, calendarGridOptionSelected, surfacePanel, textMuted } from "../theme/role-classes";
+import { createTimeOfDay, dayjsToTimeString, toTimeOfDay, type TimePrecision } from "./time";
 import type { PickerChangeMeta } from "./types";
-import {
-  calendarGridOption,
-  calendarGridOptionSelected,
-  surfacePanel,
-  textMuted,
-} from "../theme/role-classes";
 
 export type DigitalTimeVariant = "digital" | "sections";
 
@@ -75,14 +65,10 @@ const resolveParts = (value: Dayjs | null | undefined) => {
   };
 };
 
-const buildDigitalOptions = (
-  minuteStep: number,
-  timePrecision: TimePrecision
-): Dayjs[] => {
+const buildDigitalOptions = (minuteStep: number, timePrecision: TimePrecision): Dayjs[] => {
   const options: Dayjs[] = [];
   const minuteValues = buildSteppedValues(60, minuteStep);
-  const secondValues =
-    timePrecision === "seconds" ? buildSteppedValues(60, 1) : [0];
+  const secondValues = timePrecision === "seconds" ? buildSteppedValues(60, 1) : [0];
 
   for (let hour = 0; hour < 24; hour += 1) {
     for (const minute of minuteValues) {
@@ -115,23 +101,11 @@ interface TimeColumnProps {
   onSelect: (value: number | string) => void;
 }
 
-const TimeColumn = ({
-  label,
-  options,
-  selected,
-  disabled,
-  onSelect,
-}: TimeColumnProps) => {
+const TimeColumn = ({ label, options, selected, disabled, onSelect }: TimeColumnProps) => {
   return (
     <div className="flex min-w-14 flex-col">
-      <div className={cn("px-2 pb-1 text-center text-xs font-medium", textMuted)}>
-        {label}
-      </div>
-      <ul
-        role="listbox"
-        aria-label={label}
-        className="max-h-56 overflow-y-auto py-1"
-      >
+      <div className={cn("px-2 pb-1 text-center text-xs font-medium", textMuted)}>{label}</div>
+      <ul role="listbox" aria-label={label} className="max-h-56 overflow-y-auto py-1">
         {options.map((option) => {
           const isSelected = selected === option.value;
           return (
@@ -145,7 +119,7 @@ const TimeColumn = ({
                   "w-full",
                   calendarGridOption,
                   isSelected && calendarGridOptionSelected,
-                  disabled && "cursor-not-allowed opacity-40"
+                  disabled && "cursor-not-allowed opacity-40",
                 )}
                 onClick={() => onSelect(option.value)}
               >
@@ -186,18 +160,11 @@ export default function DigitalTimeSurface({
 
   if (variant === "digital") {
     const options = buildDigitalOptions(minuteStep, timePrecision);
-    const selectedKey =
-      value != null && value.isValid()
-        ? dayjsToTimeString(toTimeOfDay(value), timePrecision)
-        : null;
+    const selectedKey = value != null && value.isValid() ? dayjsToTimeString(toTimeOfDay(value), timePrecision) : null;
 
     return (
       <div className={cn(surfacePanel, "rounded-xl p-2", className)}>
-        <ul
-          role="listbox"
-          aria-label="Times"
-          className="max-h-64 overflow-y-auto py-1"
-        >
+        <ul role="listbox" aria-label="Times" className="max-h-64 overflow-y-auto py-1">
           {options.map((option) => {
             const key = dayjsToTimeString(option, timePrecision);
             const isSelected = selectedKey === key;
@@ -212,11 +179,9 @@ export default function DigitalTimeSurface({
                     "w-full text-left",
                     calendarGridOption,
                     isSelected && calendarGridOptionSelected,
-                    disabled && "cursor-not-allowed opacity-40"
+                    disabled && "cursor-not-allowed opacity-40",
                   )}
-                  onClick={() =>
-                    emit(option.hour(), option.minute(), option.second())
-                  }
+                  onClick={() => emit(option.hour(), option.minute(), option.second())}
                 >
                   {formatDigitalLabel(option, timePrecision, ampm)}
                 </button>
@@ -242,13 +207,7 @@ export default function DigitalTimeSurface({
           value: hour,
           label: pad(hour),
         }))}
-        onSelect={(nextHour) =>
-          emit(
-            toHour24(Number(nextHour), isPm, ampm),
-            parts.minute,
-            timePrecision === "seconds" ? parts.second : 0
-          )
-        }
+        onSelect={(nextHour) => emit(toHour24(Number(nextHour), isPm, ampm), parts.minute, timePrecision === "seconds" ? parts.second : 0)}
       />
       <TimeColumn
         label="Minutes"
@@ -258,13 +217,7 @@ export default function DigitalTimeSurface({
           value: minute,
           label: pad(minute),
         }))}
-        onSelect={(nextMinute) =>
-          emit(
-            parts.hour,
-            Number(nextMinute),
-            timePrecision === "seconds" ? parts.second : 0
-          )
-        }
+        onSelect={(nextMinute) => emit(parts.hour, Number(nextMinute), timePrecision === "seconds" ? parts.second : 0)}
       />
       {timePrecision === "seconds" ? (
         <TimeColumn
@@ -288,11 +241,7 @@ export default function DigitalTimeSurface({
             { value: "PM", label: "PM" },
           ]}
           onSelect={(nextMeridiem) =>
-            emit(
-              toHour24(selectedDisplayHour, nextMeridiem === "PM", true),
-              parts.minute,
-              timePrecision === "seconds" ? parts.second : 0
-            )
+            emit(toHour24(selectedDisplayHour, nextMeridiem === "PM", true), parts.minute, timePrecision === "seconds" ? parts.second : 0)
           }
         />
       ) : null}
