@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **`ComboBox` dropdown**: panel uses `surface` background (same as `Select`) for readable contrast in light theme.
+- **Theme light roles**: `--color-surface-container-high` maps to `gray-100` instead of `gray-dark`.
+
 ## [0.2.1] - 2026-08-08
 
 ### Summary
