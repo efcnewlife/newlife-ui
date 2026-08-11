@@ -5,6 +5,7 @@ import { type Dayjs } from "../lib/dayjs";
 import {
   calendarStringToDayjs,
   dayjsToCalendarString,
+  formatCalendarDateInput,
   toDayjsBound,
   validateCalendarDate,
 } from "../picker/datetime";
@@ -68,7 +69,21 @@ export default function DateField({
   const [text, setText] = useState(() => toDisplay(selectedValue, timezone));
 
   useEffect(() => {
-    setText(toDisplay(selectedValue, timezone));
+    setText((current) => {
+      if (selectedValue != null && selectedValue.isValid()) {
+        return toDisplay(selectedValue, timezone);
+      }
+
+      // Keep in-progress edits when the committed value becomes null (e.g. backspace).
+      // Clear when the field previously showed a complete date (external clear).
+      if (DATE_PATTERN.test(current)) {
+        const parsed = calendarStringToDayjs(current, timezone);
+        if (parsed.isValid()) {
+          return "";
+        }
+      }
+      return current;
+    });
   }, [selectedValue, timezone]);
 
   const emit = (next: Dayjs | null, validationError: PickerValidationError) => {
@@ -79,7 +94,7 @@ export default function DateField({
   };
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const nextText = event.target.value;
+    const nextText = formatCalendarDateInput(event.target.value);
     setText(nextText);
 
     if (nextText === "") {
@@ -105,6 +120,7 @@ export default function DateField({
     });
     emit(parsed, validationError);
   };
+
 
   return (
     <FormField
@@ -132,6 +148,7 @@ export default function DateField({
             className
           )}
           autoComplete="off"
+          inputMode="numeric"
         />
         {endAdornment ? (
           <span
@@ -147,3 +164,4 @@ export default function DateField({
     </FormField>
   );
 }
+

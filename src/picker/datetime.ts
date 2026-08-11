@@ -1,6 +1,7 @@
 import type { Dayjs } from "../lib/dayjs";
 import { dayjs } from "../lib/dayjs";
 import type { PickerValidationError } from "../picker/types";
+import { pushTwoDigitSection } from "./digit-section";
 
 export const resolveDisplayTimezone = (
   timezone: string | undefined,
@@ -59,10 +60,16 @@ export const fromWallClockDateToUtc = (date: Date, displayTimezone: string): Day
 };
 
 export const calendarStringToDayjs = (dateStr: string, timezone?: string): Dayjs => {
+  // Strict parse rejects impossible calendar dates (e.g. 2020-12-34) instead of
+  // overflowing them to another day (2021-01-03).
+  const strict = dayjs(dateStr, "YYYY-MM-DD", true);
+  if (!strict.isValid()) {
+    return strict;
+  }
   if (timezone && timezone !== "system") {
     return dayjs.tz(dateStr, "YYYY-MM-DD", timezone);
   }
-  return dayjs(dateStr, "YYYY-MM-DD");
+  return strict;
 };
 
 export const dayjsToCalendarString = (value: Dayjs, timezone?: string): string => {
@@ -71,6 +78,50 @@ export const dayjsToCalendarString = (value: Dayjs, timezone?: string): string =
   }
   return value.format("YYYY-MM-DD");
 };
+
+/** Keep digits only and insert `-`; month/day restart when exceeding 12/31. */
+export const formatCalendarDateInput = (text: string): string => {
+  const digits = text.replace(/\D/g, "");
+  let year = "";
+  let month = "";
+  let day = "";
+  let section: "year" | "month" | "day" = "year";
+
+  for (const digit of digits) {
+    if (section === "year") {
+      year += digit;
+      if (year.length >= 4) {
+        year = year.slice(0, 4);
+        section = "month";
+      }
+      continue;
+    }
+
+    if (section === "month") {
+      const result = pushTwoDigitSection(month, digit, 12, 1);
+      month = result.value;
+      if (result.complete) {
+        section = "day";
+      }
+      continue;
+    }
+
+    const result = pushTwoDigitSection(day, digit, 31, 1);
+    day = result.value;
+    if (result.complete) {
+      break;
+    }
+  }
+
+  if (!month && !day) {
+    return year;
+  }
+  if (!day) {
+    return `${year}-${month}`;
+  }
+  return `${year}-${month}-${day}`;
+};
+
 
 export const dayjsOrNullToFlatpickr = (
   value: Dayjs | Dayjs[] | null | undefined,

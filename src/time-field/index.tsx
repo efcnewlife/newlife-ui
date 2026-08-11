@@ -4,6 +4,7 @@ import FormField from "../form-field";
 import { type Dayjs } from "../lib/dayjs";
 import {
   dayjsToTimeString,
+  formatTimeInput,
   parseTimeString,
   toTimeOfDay,
   type TimePrecision,
@@ -69,7 +70,18 @@ export default function TimeField({
   const [text, setText] = useState(() => toDisplay(selectedValue, timePrecision));
 
   useEffect(() => {
-    setText(toDisplay(selectedValue, timePrecision));
+    setText((current) => {
+      if (selectedValue != null && selectedValue.isValid()) {
+        return toDisplay(selectedValue, timePrecision);
+      }
+
+      // Keep in-progress edits when the committed value becomes null (e.g. backspace).
+      // Clear when the field previously showed a complete time (external clear).
+      if (parseTimeString(current, timePrecision) != null) {
+        return "";
+      }
+      return current;
+    });
   }, [selectedValue, timePrecision]);
 
   const emit = (next: Dayjs | null, validationError: PickerValidationError) => {
@@ -80,7 +92,7 @@ export default function TimeField({
   };
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const nextText = event.target.value;
+    const nextText = formatTimeInput(event.target.value, timePrecision);
     setText(nextText);
 
     if (nextText === "") {

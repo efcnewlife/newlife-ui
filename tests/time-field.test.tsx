@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import dayjs from "dayjs";
+import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 import TimeField from "../src/time-field";
 
@@ -112,7 +113,7 @@ describe("TimeField", () => {
       />
     );
 
-    await user.type(screen.getByLabelText("Start time"), "09:");
+    await user.type(screen.getByLabelText("Start time"), "094");
 
     const [value, meta] = onChange.mock.calls.at(-1)!;
     expect(value).toBeNull();
@@ -121,6 +122,62 @@ describe("TimeField", () => {
         source: "field",
         validationError: "invalidDate",
       })
+    );
+  });
+
+  it("auto-inserts colons so digits-only typing parses as a time-of-day", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+
+    render(
+      <TimeField
+        id="start-time"
+        label="Start time"
+        value={null}
+        onChange={onChange}
+      />
+    );
+
+    const input = screen.getByLabelText("Start time");
+    await user.type(input, "0945");
+
+    expect(input).toHaveValue("09:45");
+    const [value, meta] = onChange.mock.calls.at(-1)!;
+    expect(value.format("HH:mm:ss")).toBe("09:45:00");
+    expect(meta.validationError).toBeNull();
+  });
+
+  it("keeps in-progress text when backspace makes the time incomplete", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+
+    const Harness = () => {
+      const [value, setValue] = useState<dayjs.Dayjs | null>(
+        dayjs("1970-01-01T09:45:00")
+      );
+      return (
+        <TimeField
+          id="start-time"
+          label="Start time"
+          value={value}
+          onChange={(next, meta) => {
+            onChange(next, meta);
+            setValue(next);
+          }}
+        />
+      );
+    };
+
+    render(<Harness />);
+
+    const input = screen.getByLabelText("Start time");
+    expect(input).toHaveValue("09:45");
+    await user.type(input, "{Backspace}");
+
+    expect(input).toHaveValue("09:4");
+    expect(onChange).toHaveBeenCalledWith(
+      null,
+      expect.objectContaining({ validationError: "invalidDate", source: "field" })
     );
   });
 });
