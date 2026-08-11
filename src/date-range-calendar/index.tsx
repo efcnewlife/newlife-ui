@@ -1,28 +1,33 @@
 import { useEffect, useMemo, useState } from "react";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { cn } from "../cn";
-import { dayjs, type Dayjs } from "../lib/dayjs";
 import type { WeekStartsOn } from "../date-calendar";
+import { dayjs, type Dayjs } from "../lib/dayjs";
 import {
   applyDateRangeDayClick,
+  isHalfDateRange,
   normalizeDateRange,
+  validateDateRangeValue,
   type DateRangeShortcut,
   type DateRangeValue,
-  validateDateRangeValue,
 } from "../picker/date-range";
-import {
-  dayjsToCalendarString,
-  toDayjsBound,
-  validateCalendarDate,
-} from "../picker/datetime";
+import { dayjsToCalendarString, toDayjsBound, validateCalendarDate } from "../picker/datetime";
 import type { PickerChangeMeta } from "../picker/types";
 import {
   accentPrimarySolid,
   calendarDayBase,
   calendarDayHover,
   calendarDayInRange,
+  calendarDayPreviewEnd,
+  calendarDayPreviewIn,
+  calendarDayPreviewStart,
+  calendarDayPreviewStartEnd,
   calendarDaySelected,
   calendarNavButton,
+  calendarRangeCellEnd,
+  calendarRangeCellIn,
+  calendarRangeCellStart,
+  calendarShortcutButton,
   surfacePanel,
   textMuted,
   textOnSurface,
@@ -45,6 +50,8 @@ export interface DateRangeCalendarProps {
   showSubmitButton?: boolean;
   onSubmit?: () => void;
   shortcuts?: DateRangeShortcut[];
+  /** Side column for shortcuts. Default `left`. Not rendered below the calendar. */
+  shortcutsPlacement?: "left" | "right";
   labels?: DateRangeCalendarLabels;
   className?: string;
   disabled?: boolean;
@@ -69,6 +76,13 @@ const buildMonthGrid = (viewMonth: Dayjs, weekStartsOn: WeekStartsOn): Dayjs[] =
 
 type RangePosition = "start" | "end" | "start-end" | "in-range" | null;
 
+type PreviewPosition =
+  | "preview-start"
+  | "preview-end"
+  | "preview-in"
+  | "preview-start-end"
+  | null;
+
 const rangePositionForDay = (
   dayKey: string,
   value: DateRangeValue | null,
@@ -79,8 +93,7 @@ const rangePositionForDay = (
   }
 
   const startKey = dayjsToCalendarString(value.start, timezone);
-  const endKey =
-    value.end != null ? dayjsToCalendarString(value.end, timezone) : null;
+  const endKey = value.end != null ? dayjsToCalendarString(value.end, timezone) : null;
 
   if (endKey == null) {
     return dayKey === startKey ? "start" : null;
@@ -101,6 +114,62 @@ const rangePositionForDay = (
   return null;
 };
 
+const previewPositionForDay = (
+  dayKey: string,
+  startKey: string | null,
+  hoverKey: string | null
+): PreviewPosition => {
+  if (startKey == null || hoverKey == null) {
+    return null;
+  }
+
+  const fromKey = startKey <= hoverKey ? startKey : hoverKey;
+  const toKey = startKey <= hoverKey ? hoverKey : startKey;
+
+  if (dayKey === fromKey && dayKey === toKey) {
+    return "preview-start-end";
+  }
+  if (dayKey === fromKey) {
+    return "preview-start";
+  }
+  if (dayKey === toKey) {
+    return "preview-end";
+  }
+  if (dayKey > fromKey && dayKey < toKey) {
+    return "preview-in";
+  }
+  return null;
+};
+
+const previewCellClassName = (previewPos: PreviewPosition): string | false => {
+  if (previewPos === "preview-start-end") {
+    return calendarDayPreviewStartEnd;
+  }
+  if (previewPos === "preview-start") {
+    return calendarDayPreviewStart;
+  }
+  if (previewPos === "preview-end") {
+    return calendarDayPreviewEnd;
+  }
+  if (previewPos === "preview-in") {
+    return calendarDayPreviewIn;
+  }
+  return false;
+};
+
+const rangeCellClassName = (rangePos: RangePosition): string | false => {
+  if (rangePos === "in-range") {
+    return calendarRangeCellIn;
+  }
+  if (rangePos === "start") {
+    return calendarRangeCellStart;
+  }
+  if (rangePos === "end") {
+    return calendarRangeCellEnd;
+  }
+  return false;
+};
+
 export default function DateRangeCalendar({
   value,
   defaultValue = null,
@@ -113,6 +182,7 @@ export default function DateRangeCalendar({
   showSubmitButton = false,
   onSubmit,
   shortcuts,
+  shortcutsPlacement = "left",
   labels,
   className,
   disabled = false,
@@ -122,6 +192,7 @@ export default function DateRangeCalendar({
     defaultValue
   );
   const selectedValue = isControlled ? value : uncontrolledValue;
+  const [hoveredDay, setHoveredDay] = useState<Dayjs | null>(null);
 
   const [viewMonth, setViewMonth] = useState<Dayjs>(() =>
     (defaultMonth ?? selectedValue?.start ?? dayjs()).startOf("month")
@@ -131,7 +202,16 @@ export default function DateRangeCalendar({
   const maxBound = toDayjsBound(maxDate);
   const submitLabel = labels?.submit ?? "Done";
   const hasShortcuts = Boolean(shortcuts && shortcuts.length > 0);
-  const showFooter = showSubmitButton || hasShortcuts;
+  const showFooter = showSubmitButton;
+  const isSelectingEnd = isHalfDateRange(selectedValue);
+  const startKey =
+    isSelectingEnd && selectedValue.start != null
+      ? dayjsToCalendarString(selectedValue.start, timezone)
+      : null;
+  const hoverKey =
+    isSelectingEnd && hoveredDay != null
+      ? dayjsToCalendarString(hoveredDay, timezone)
+      : null;
 
   useEffect(() => {
     if (selectedValue?.start?.isValid()) {
@@ -139,10 +219,13 @@ export default function DateRangeCalendar({
     }
   }, [selectedValue?.start]);
 
-  const weekdayLabels = useMemo(
-    () => rotateWeekdayLabels(weekStartsOn),
-    [weekStartsOn]
-  );
+  useEffect(() => {
+    if (!isSelectingEnd) {
+      setHoveredDay(null);
+    }
+  }, [isSelectingEnd]);
+
+  const weekdayLabels = useMemo(() => rotateWeekdayLabels(weekStartsOn), [weekStartsOn]);
 
   const leftMonth = viewMonth;
   const rightMonth = viewMonth.add(1, "month");
@@ -224,34 +307,89 @@ export default function DateRangeCalendar({
           {calendarDays.map((day) => {
             const isOutside = day.month() !== month.month();
             const dayKey = dayjsToCalendarString(day, timezone);
-            const rangePos = rangePositionForDay(dayKey, selectedValue ?? null, timezone);
+            const rangePos = rangePositionForDay(
+              dayKey,
+              selectedValue ?? null,
+              timezone
+            );
+            const previewPos = previewPositionForDay(dayKey, startKey, hoverKey);
             const isSelected =
-              rangePos === "start" || rangePos === "end" || rangePos === "start-end";
+              rangePos === "start" ||
+              rangePos === "end" ||
+              rangePos === "start-end";
             const ariaLabel = day.format("MMMM D, YYYY");
 
             return (
-              <button
+              <div
                 key={`${month.format("YYYY-MM")}-${dayKey}`}
-                type="button"
-                aria-label={ariaLabel}
-                aria-pressed={isSelected || rangePos === "in-range"}
-                data-outside-month={isOutside ? "true" : "false"}
-                data-range={rangePos ?? undefined}
-                disabled={isDayDisabled(day)}
                 className={cn(
-                  calendarDayBase,
-                  isOutside ? textMuted : textOnSurface,
-                  rangePos === "in-range" && calendarDayInRange,
-                  isSelected ? calendarDaySelected : !rangePos && calendarDayHover,
-                  "disabled:pointer-events-none disabled:opacity-40"
+                  "flex h-8 w-full items-center justify-center",
+                  rangeCellClassName(rangePos),
+                  previewCellClassName(previewPos)
                 )}
-                onClick={() => handleDayClick(day)}
+                data-preview={previewPos ?? undefined}
+                onMouseEnter={() => {
+                  if (isSelectingEnd && !isDayDisabled(day)) {
+                    setHoveredDay(day);
+                  }
+                }}
               >
-                {day.date()}
-              </button>
+                <button
+                  type="button"
+                  aria-label={ariaLabel}
+                  aria-pressed={isSelected || rangePos === "in-range"}
+                  data-outside-month={isOutside ? "true" : "false"}
+                  data-range={rangePos ?? undefined}
+                  disabled={isDayDisabled(day)}
+                  className={cn(
+                    calendarDayBase,
+                    isOutside ? textMuted : textOnSurface,
+                    rangePos === "in-range" && calendarDayInRange,
+                    isSelected
+                      ? calendarDaySelected
+                      : !rangePos && calendarDayHover,
+                    "disabled:pointer-events-none disabled:opacity-40"
+                  )}
+                  onClick={() => handleDayClick(day)}
+                >
+                  {day.date()}
+                </button>
+              </div>
             );
           })}
         </div>
+      </div>
+    );
+  };
+
+  const renderShortcuts = () => {
+    if (!hasShortcuts) {
+      return null;
+    }
+
+    return (
+      <div
+        role="list"
+        aria-label="Date range shortcuts"
+        className={cn(
+          "flex min-w-28 max-w-36 flex-col gap-1.5 px-2 py-1",
+          shortcutsPlacement === "left"
+            ? "border-r border-outline-variant pr-3"
+            : "border-l border-outline-variant pl-3"
+        )}
+        data-shortcuts-placement={shortcutsPlacement}
+      >
+        {shortcuts!.map((shortcut) => (
+          <button
+            key={shortcut.id ?? shortcut.label}
+            type="button"
+            className={cn(calendarShortcutButton, disabled && "opacity-40")}
+            onClick={() => handleShortcut(shortcut)}
+            disabled={disabled}
+          >
+            {shortcut.label}
+          </button>
+        ))}
       </div>
     );
   };
@@ -264,72 +402,56 @@ export default function DateRangeCalendar({
         className
       )}
       data-disabled={disabled || undefined}
+      onMouseLeave={() => setHoveredDay(null)}
     >
-      <div className="flex items-start gap-2 px-2">
-        <button
-          type="button"
-          aria-label="Previous"
-          className={cn(calendarNavButton, textOnSurface, "mt-1")}
-          onClick={() => setViewMonth((current) => current.subtract(1, "month"))}
-          disabled={disabled}
-        >
-          <MdChevronLeft className="size-5" />
-        </button>
+      <div className="flex items-stretch gap-1 px-2">
+        {shortcutsPlacement === "left" ? renderShortcuts() : null}
 
-        <div className="flex flex-col gap-4 sm:flex-row sm:gap-2">
-          {renderMonth(leftMonth)}
-          {renderMonth(rightMonth)}
+        <div className="flex items-start gap-2">
+          <button
+            type="button"
+            aria-label="Previous"
+            className={cn(calendarNavButton, textOnSurface, "mt-1")}
+            onClick={() => setViewMonth((current) => current.subtract(1, "month"))}
+            disabled={disabled}
+          >
+            <MdChevronLeft className="size-5" />
+          </button>
+
+          <div className="flex flex-col gap-4 sm:flex-row sm:gap-2">
+            {renderMonth(leftMonth)}
+            {renderMonth(rightMonth)}
+          </div>
+
+          <button
+            type="button"
+            aria-label="Next"
+            className={cn(calendarNavButton, textOnSurface, "mt-1")}
+            onClick={() => setViewMonth((current) => current.add(1, "month"))}
+            disabled={disabled}
+          >
+            <MdChevronRight className="size-5" />
+          </button>
         </div>
 
-        <button
-          type="button"
-          aria-label="Next"
-          className={cn(calendarNavButton, textOnSurface, "mt-1")}
-          onClick={() => setViewMonth((current) => current.add(1, "month"))}
-          disabled={disabled}
-        >
-          <MdChevronRight className="size-5" />
-        </button>
+        {shortcutsPlacement === "right" ? renderShortcuts() : null}
       </div>
 
       {showFooter ? (
         <div className="flex w-full flex-col items-center gap-2.5 px-4">
           <div className="w-full border-t border-outline-variant" />
-          <div className="flex w-full flex-wrap items-center justify-between gap-2">
-            <div className="flex flex-wrap gap-1">
-              {hasShortcuts
-                ? shortcuts!.map((shortcut) => (
-                    <button
-                      key={shortcut.id ?? shortcut.label}
-                      type="button"
-                      className={cn(
-                        "h-8 rounded-md px-3 text-xs font-bold transition-colors",
-                        textOnSurface,
-                        "hover:bg-surface-variant"
-                      )}
-                      onClick={() => handleShortcut(shortcut)}
-                      disabled={disabled}
-                    >
-                      {shortcut.label}
-                    </button>
-                  ))
-                : null}
-            </div>
-            <div className="flex min-w-16 justify-end">
-              {showSubmitButton ? (
-                <button
-                  type="button"
-                  className={cn(
-                    "h-8 min-w-16 rounded-md px-3 text-center text-xs font-bold",
-                    accentPrimarySolid
-                  )}
-                  onClick={onSubmit}
-                  disabled={disabled}
-                >
-                  {submitLabel}
-                </button>
-              ) : null}
-            </div>
+          <div className="flex w-full items-center justify-end">
+            <button
+              type="button"
+              className={cn(
+                "h-8 min-w-16 rounded-md px-3 text-center text-xs font-bold",
+                accentPrimarySolid
+              )}
+              onClick={onSubmit}
+              disabled={disabled}
+            >
+              {submitLabel}
+            </button>
           </div>
         </div>
       ) : null}

@@ -47,6 +47,36 @@ export const WithShortcuts: Story = {
         getValue: () => null,
       },
     ],
+    shortcutsPlacement: "left",
+  },
+  render: (args) => {
+    const [value, setValue] = useState<DateRangeValue | null>(null);
+    return (
+      <DateRangeCalendar
+        {...args}
+        value={value}
+        onChange={(next) => setValue(next)}
+      />
+    );
+  },
+};
+
+export const ShortcutsOnRight: Story = {
+  args: {
+    shortcuts: [
+      {
+        label: "Last 7 days",
+        getValue: () => ({
+          start: dayjs("2026-08-04"),
+          end: dayjs("2026-08-10"),
+        }),
+      },
+      {
+        label: "Clear",
+        getValue: () => null,
+      },
+    ],
+    shortcutsPlacement: "right",
   },
   render: (args) => {
     const [value, setValue] = useState<DateRangeValue | null>(null);
@@ -75,6 +105,48 @@ export const WithSubmit: Story = {
         {...args}
         value={value}
         onChange={(next) => setValue(next)}
+      />
+    );
+  },
+};
+
+export const WithShortcutsAndSubmit: Story = {
+  args: {
+    showSubmitButton: true,
+    labels: { submit: "Done" },
+    shortcutsPlacement: "left",
+    shortcuts: [
+      {
+        label: "This week",
+        getValue: () => ({
+          start: dayjs("2026-08-09"),
+          end: dayjs("2026-08-15"),
+        }),
+      },
+      {
+        label: "Last 7 days",
+        getValue: () => ({
+          start: dayjs("2026-08-04"),
+          end: dayjs("2026-08-10"),
+        }),
+      },
+      {
+        label: "Clear",
+        getValue: () => null,
+      },
+    ],
+  },
+  render: (args) => {
+    const [value, setValue] = useState<DateRangeValue | null>({
+      start: dayjs("2026-08-10"),
+      end: dayjs("2026-08-15"),
+    });
+    return (
+      <DateRangeCalendar
+        {...args}
+        value={value}
+        onChange={(next) => setValue(next)}
+        onSubmit={() => undefined}
       />
     );
   },

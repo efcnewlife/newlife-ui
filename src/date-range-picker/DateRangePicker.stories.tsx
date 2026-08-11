@@ -11,7 +11,7 @@ const meta: Meta<typeof DateRangePicker> = {
     id: "date-range-picker-default",
     label: "Date range",
     defaultMonth: dayjs("2026-08-01"),
-    wrapperClassName: "w-full max-w-md",
+    wrapperClassName: "w-96",
   },
 };
 
@@ -71,9 +71,51 @@ export const WithShortcuts: Story = {
         getValue: () => null,
       },
     ],
+    shortcutsPlacement: "left",
   },
   render: (args) => {
     const [value, setValue] = useState<DateRangeValue | null>(null);
+    return (
+      <DateRangePicker
+        {...args}
+        value={value}
+        onChange={(next) => setValue(next)}
+      />
+    );
+  },
+};
+
+export const WithShortcutsAndSubmit: Story = {
+  args: {
+    showSubmitButton: true,
+    labels: { submit: "Done" },
+    shortcutsPlacement: "left",
+    shortcuts: [
+      {
+        label: "This week",
+        getValue: () => ({
+          start: dayjs("2026-08-09"),
+          end: dayjs("2026-08-15"),
+        }),
+      },
+      {
+        label: "Last 7 days",
+        getValue: () => ({
+          start: dayjs("2026-08-04"),
+          end: dayjs("2026-08-10"),
+        }),
+      },
+      {
+        label: "Clear",
+        getValue: () => null,
+      },
+    ],
+  },
+  render: (args) => {
+    const [value, setValue] = useState<DateRangeValue | null>({
+      start: dayjs("2026-08-10"),
+      end: dayjs("2026-08-15"),
+    });
     return (
       <DateRangePicker
         {...args}

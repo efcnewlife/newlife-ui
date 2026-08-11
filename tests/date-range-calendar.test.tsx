@@ -149,6 +149,29 @@ describe("DateRangeCalendar", () => {
     );
   });
 
+  it("shows a dashed preview range while hovering after half-selection", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <DateRangeCalendar
+        value={{ start: dayjs("2026-08-10"), end: null }}
+        defaultMonth={dayjs("2026-08-01")}
+      />
+    );
+
+    await user.hover(screen.getByRole("button", { name: "August 14, 2026" }));
+
+    expect(
+      screen.getByRole("button", { name: "August 10, 2026" }).parentElement
+    ).toHaveAttribute("data-preview", "preview-start");
+    expect(
+      screen.getByRole("button", { name: "August 12, 2026" }).parentElement
+    ).toHaveAttribute("data-preview", "preview-in");
+    expect(
+      screen.getByRole("button", { name: "August 14, 2026" }).parentElement
+    ).toHaveAttribute("data-preview", "preview-end");
+  });
+
   it("disables days outside minDate and maxDate", () => {
     render(
       <DateRangeCalendar
@@ -208,12 +231,41 @@ describe("DateRangeCalendar", () => {
       />
     );
 
+    expect(screen.getByRole("list", { name: /date range shortcuts/i })).toHaveAttribute(
+      "data-shortcuts-placement",
+      "left"
+    );
+
     await user.click(screen.getByRole("button", { name: "Last 7 days" }));
 
     const [value, meta] = onChange.mock.calls[0];
     expect(value.start.format("YYYY-MM-DD")).toBe("2026-08-04");
     expect(value.end.format("YYYY-MM-DD")).toBe("2026-08-10");
     expect(meta.source).toBe("view");
+  });
+
+  it("places shortcuts on the right when shortcutsPlacement is right", () => {
+    render(
+      <DateRangeCalendar
+        value={null}
+        defaultMonth={dayjs("2026-08-01")}
+        shortcutsPlacement="right"
+        shortcuts={[
+          {
+            label: "Today",
+            getValue: () => ({
+              start: dayjs("2026-08-11"),
+              end: dayjs("2026-08-11"),
+            }),
+          },
+        ]}
+      />
+    );
+
+    expect(screen.getByRole("list", { name: /date range shortcuts/i })).toHaveAttribute(
+      "data-shortcuts-placement",
+      "right"
+    );
   });
 
   it("shows submit chrome when showSubmitButton is true", async () => {

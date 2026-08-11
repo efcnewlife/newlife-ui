@@ -38,6 +38,8 @@ export interface DateRangePickerProps {
   showSubmitButton?: boolean;
   onSubmit?: () => void;
   shortcuts?: DateRangeShortcut[];
+  /** Side column for shortcuts on the calendar. Default `left`. */
+  shortcutsPlacement?: "left" | "right";
   labels?: DateRangePickerLabels;
 }
 
@@ -63,6 +65,7 @@ export default function DateRangePicker({
   showSubmitButton,
   onSubmit,
   shortcuts,
+  shortcutsPlacement,
   labels,
 }: DateRangePickerProps) {
   const isControlled = value !== undefined;
@@ -208,6 +211,7 @@ export default function DateRangePicker({
             showSubmitButton={showSubmitButton}
             onSubmit={handleSubmit}
             shortcuts={shortcuts}
+            shortcutsPlacement={shortcutsPlacement}
             labels={labels}
             disabled={disabled}
           />

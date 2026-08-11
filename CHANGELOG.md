@@ -8,9 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- **`DateRangeCalendar`**: dual-month inclusive calendar-date range surface with half-selection, swap normalization, restart-after-complete, optional host `shortcuts`, optional `showSubmitButton` (no `showTodayButton`), and Day.js `{ start, end } | null` `onChange(value, meta)`.
+- **`DateRangeCalendar`**: dual-month inclusive calendar-date range surface with half-selection, swap normalization, restart-after-complete, optional host `shortcuts` in a side column (`shortcutsPlacement`: `left` | `right`, default `left`), optional `showSubmitButton` (no `showTodayButton`), and Day.js `{ start, end } | null` `onChange(value, meta)`.
 - **`DateRangeField`**: FormField-parity single typed range field without a trailing calendar icon; half-selection displays as `YYYY-MM-DD –`; free-text parse with `PickerChangeMeta.validationError`.
-- **`DateRangePicker`**: `DateRangeField` + calendar icon + popover `DateRangeCalendar`. Defaults `clearable=true`; closes on complete range when submit is off; stays open on half-selection; optional submit / host shortcuts.
+- **`DateRangePicker`**: `DateRangeField` + calendar icon + popover `DateRangeCalendar`. Defaults `clearable=true`; closes on complete range when submit is off; stays open on half-selection; optional submit / host side shortcuts (`shortcutsPlacement`).
 - Exported range types: `DateRangeValue`, `DateRangeShortcut`, `DateRangeCalendarProps`, `DateRangeFieldProps`, `DateRangePickerProps`.
 - **`DateCalendar`**: standalone single-date calendar surface with day / month / year views, configurable `weekStartsOn` (default Sunday), outside-month days, optional footer divider with `showTodayButton` / `showSubmitButton` / `onSubmit` / `labels.today` / `labels.submit`, and Day.js `onChange(value, meta)`.
 - **`DateField`**: FormField-parity date input without a trailing calendar icon; controlled Day.js values and `onChange(value, meta)`.

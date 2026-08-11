@@ -10,7 +10,7 @@ const meta: Meta<typeof DateRangeField> = {
   args: {
     id: "date-range-field-default",
     label: "Date range",
-    wrapperClassName: "w-full max-w-md",
+    wrapperClassName: "w-96",
   },
 };
 
