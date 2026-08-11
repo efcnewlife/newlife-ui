@@ -63,3 +63,7 @@ _Avoid_: moment, raw `Date` as the public contract, `YYYY-MM-DD` / `YYYY-MM-DDTH
 **Picker change meta**:
 The optional second argument to field/picker `onChange`, carrying change context (`validationError`, `source`) rather than a parallel string or flatpickr instance.
 _Avoid_: dateStr-as-second-truth, flatpickr `instance` in the public contract
+
+**Floating surface**:
+The layer that opens from a control trigger and paints above surrounding UI — Select/ComboBox listboxes, picker popovers, Dropdown menus, Popover panels, and Tooltip bubbles. It is not the Modal shell or scrim.
+_Avoid_: dropdown (as the umbrella term), overlay panel (ambiguous with Modal), portal (implementation mechanism, not the product concept)

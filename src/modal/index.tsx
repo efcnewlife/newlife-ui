@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
 import { MdClose } from "react-icons/md";
-import { modalStackManager } from "./modalStack";
+import { floatingSurfaceStackManager } from "../floating-surface/stack";
 import { modalCloseButton, modalSurface, overlayScrim, textOnSurface } from "../theme/role-classes";
+import { modalStackManager } from "./modalStack";
 
 interface ModalProps {
   isOpen: boolean;
@@ -50,14 +51,21 @@ export const Modal: React.FC<ModalProps> = ({
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && modalIdRef.current) {
-        // Only close the top layer Modal
-        if (modalStackManager.isTopModal(modalIdRef.current)) {
-          event.stopPropagation();
-          event.preventDefault();
-          onClose();
-        }
+      if (event.key !== "Escape" || !modalIdRef.current) {
+        return;
       }
+      if (!modalStackManager.isTopModal(modalIdRef.current)) {
+        return;
+      }
+
+      event.stopPropagation();
+      event.preventDefault();
+
+      if (floatingSurfaceStackManager.dismissTop()) {
+        return;
+      }
+
+      onClose();
     };
 
     if (isOpen) {
@@ -92,7 +100,18 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center overflow-y-auto modal z-99999">
-      {!isFullscreen && <div className={`fixed inset-0 h-full w-full ${overlayScrim}`} onClick={onClose}></div>}
+      {!isFullscreen && (
+        <div
+          className={`fixed inset-0 h-full w-full ${overlayScrim}`}
+          onClick={() => {
+            if (floatingSurfaceStackManager.hasOpen()) {
+              floatingSurfaceStackManager.dismissTop();
+              return;
+            }
+            onClose();
+          }}
+        />
+      )}
       <div ref={modalRef} className={`${contentClasses} ${contentWrapperClasses} ${className}`} onClick={(e) => e.stopPropagation()}>
         {(title || showCloseButton) && (
           <div className="flex items-center justify-between pb-2 shrink-0">

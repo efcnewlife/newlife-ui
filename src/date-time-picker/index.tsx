@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { MdCalendarMonth, MdClear } from "react-icons/md";
 import { cn } from "../cn";
 import type { DateCalendarLabels, WeekStartsOn } from "../date-calendar";
 import DateCalendar from "../date-calendar";
 import DateTimeField from "../date-time-field";
+import { FloatingSurface } from "../floating-surface";
 import { dayjs, type Dayjs } from "../lib/dayjs";
 import {
   applyDatePreservingTime,
@@ -94,21 +95,7 @@ export default function DateTimePicker({
   const cancelLabel = labels?.cancel ?? "Cancel";
   const submitLabel = labels?.submit ?? "OK";
   const nowLabel = labels?.now ?? "Now";
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    const handlePointerDown = (event: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handlePointerDown);
-    return () => document.removeEventListener("mousedown", handlePointerDown);
-  }, [open]);
+  const dismissSurface = useCallback(() => setOpen(false), []);
 
   const emitChange = (next: Dayjs | null, source: PickerChangeMeta["source"]) => {
     if (!isControlled) {
@@ -243,8 +230,14 @@ export default function DateTimePicker({
         }
       />
 
-      {open ? (
-        <div className={cn("absolute z-20 mt-2 flex flex-col", surfacePanel, "rounded-2xl")}>
+      <FloatingSurface
+        open={open}
+        anchorRef={rootRef}
+        onDismiss={dismissSurface}
+        placement="bottom-start"
+        offset={8}
+        className={cn("flex flex-col", surfacePanel, "rounded-2xl")}
+      >
           <div className="flex flex-col gap-2 p-2 sm:flex-row">
             <DateCalendar
               value={calendarValue}
@@ -300,8 +293,7 @@ export default function DateTimePicker({
               </div>
             </div>
           ) : null}
-        </div>
-      ) : null}
+      </FloatingSurface>
     </div>
   );
 }

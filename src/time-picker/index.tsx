@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { MdAccessTime, MdClear } from "react-icons/md";
 import { cn } from "../cn";
+import { FloatingSurface } from "../floating-surface";
 import type { Dayjs } from "../lib/dayjs";
 import DigitalTimeSurface, {
   type DigitalTimeVariant,
@@ -65,21 +66,7 @@ export default function TimePicker({
   const hasValue = selectedValue != null && selectedValue.isValid();
   const showClear = clearable && !disabled && hasValue;
   const clearLabel = labels?.clear ?? "Clear";
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    const handlePointerDown = (event: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handlePointerDown);
-    return () => document.removeEventListener("mousedown", handlePointerDown);
-  }, [open]);
+  const dismissSurface = useCallback(() => setOpen(false), []);
 
   const handleChange = (next: Dayjs | null, meta: PickerChangeMeta) => {
     if (!isControlled) {
@@ -157,19 +144,17 @@ export default function TimePicker({
         }
       />
 
-      {open ? (
-        <div className="absolute z-20 mt-2">
-          <DigitalTimeSurface
-            value={selectedValue}
-            onChange={handleViewChange}
-            variant={variant}
-            minuteStep={minuteStep}
-            ampm={ampm}
-            timePrecision={timePrecision}
-            disabled={disabled}
-          />
-        </div>
-      ) : null}
+      <FloatingSurface open={open} anchorRef={rootRef} onDismiss={dismissSurface} placement="bottom-start" offset={8}>
+        <DigitalTimeSurface
+          value={selectedValue}
+          onChange={handleViewChange}
+          variant={variant}
+          minuteStep={minuteStep}
+          ampm={ampm}
+          timePrecision={timePrecision}
+          disabled={disabled}
+        />
+      </FloatingSurface>
     </div>
   );
 }

@@ -1,4 +1,5 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { FloatingSurface } from "../floating-surface";
 import { useHtmlDarkClass } from "../hooks/use-html-dark-class";
 import { inversePanel, surfacePanel } from "../theme/role-classes";
 
@@ -18,33 +19,17 @@ interface TooltipProps {
   wrapContent?: boolean;
 }
 
-function getPositionClasses(placement: TooltipPlacement) {
+function arrowClasses(placement: TooltipPlacement) {
   switch (placement) {
     case "top":
-      return {
-        container: "bottom-full left-1/2 mb-2.5 -translate-x-1/2",
-        arrow: "-bottom-1 left-1/2 -translate-x-1/2",
-      };
+      return "-bottom-1 left-1/2 -translate-x-1/2";
     case "right":
-      return {
-        container: "left-full top-1/2 ml-2.5 -translate-y-1/2",
-        arrow: "-left-1.5 top-1/2 -translate-y-1/2",
-      };
+      return "-left-1.5 top-1/2 -translate-y-1/2";
     case "left":
-      return {
-        container: "right-full top-1/2 mr-2.5 -translate-y-1/2",
-        arrow: "-right-1.5 top-1/2 -translate-y-1/2",
-      };
+      return "-right-1.5 top-1/2 -translate-y-1/2";
     case "bottom":
-      return {
-        container: "left-1/2 top-full mt-2.5 -translate-x-1/2",
-        arrow: "-top-1 left-1/2 -translate-x-1/2",
-      };
     default:
-      return {
-        container: "left-1/2 top-full mt-2.5 -translate-x-1/2",
-        arrow: "-top-1 left-1/2 -translate-x-1/2",
-      };
+      return "-top-1 left-1/2 -translate-x-1/2";
   }
 }
 
@@ -59,55 +44,69 @@ export default function Tooltip({
   contentClassName = "",
   wrapContent = true,
 }: TooltipProps) {
-  const pos = getPositionClasses(placement);
-  const has_dark_class = useHtmlDarkClass();
-  const [timeoutId, setTimeoutId] = React.useState<ReturnType<typeof setTimeout> | null>(null);
+  const triggerRef = useRef<HTMLDivElement | null>(null);
+  const hasDarkClass = useHtmlDarkClass();
+  const [open, setOpen] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // auto: contrast with Tailwind `dark` class on documentElement (same as previous ThemeContext behavior)
   const isDark = useMemo(() => {
     if (theme === "dark") return true;
     if (theme === "light") return false;
-    return !has_dark_class;
-  }, [theme, has_dark_class]);
+    return !hasDarkClass;
+  }, [theme, hasDarkClass]);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  const clearTimer = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
 
   const handleMouseEnter = () => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-      setTimeoutId(null);
+    clearTimer();
+    if (enterDelay <= 0) {
+      setOpen(true);
+      return;
     }
-
-    if (enterDelay > 0) {
-      setTimeoutId(setTimeout(() => {}, enterDelay));
-    }
+    timeoutRef.current = setTimeout(() => setOpen(true), enterDelay);
   };
 
   const handleMouseLeave = () => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-      setTimeoutId(null);
+    clearTimer();
+    if (leaveDelay <= 0) {
+      setOpen(false);
+      return;
     }
-
-    if (leaveDelay > 0) {
-      setTimeoutId(setTimeout(() => {}, leaveDelay));
-    }
+    timeoutRef.current = setTimeout(() => setOpen(false), leaveDelay);
   };
-
-  React.useEffect(() => {
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-    };
-  }, [timeoutId]);
 
   const bubbleClass = isDark ? inversePanel : surfacePanel;
   const arrowBg = isDark ? "bg-inverse-surface" : "bg-surface";
 
   return (
-    <div className={`relative group ${className}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <div
+      ref={triggerRef}
+      className={`relative inline-flex ${className}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       {children}
-      <div
-        className={`invisible absolute z-999 group-hover:visible transition-opacity duration-200 ${pos.container} opacity-0 group-hover:opacity-100`}
+      <FloatingSurface
+        open={open}
+        anchorRef={triggerRef}
+        placement={placement}
+        offset={10}
+        onDismiss={() => setOpen(false)}
+        dismissOnOutsidePress={false}
+        className="pointer-events-none"
       >
         <div className={`relative ${contentClassName}`}>
           <div
@@ -117,9 +116,9 @@ export default function Tooltip({
           >
             {content}
           </div>
-          <div className={`absolute ${pos.arrow} h-3 w-4 rotate-45 ${arrowBg}`}></div>
+          <div className={`absolute ${arrowClasses(placement)} h-3 w-4 rotate-45 ${arrowBg}`} />
         </div>
-      </div>
+      </FloatingSurface>
     </div>
   );
 }

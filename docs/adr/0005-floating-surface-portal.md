@@ -1,0 +1,3 @@
+# Floating surfaces render in a portal above Modal
+
+Modal and ModalForm keep a sticky footer by scrolling only the body (`overflow-y-auto`). Floating surfaces (Select/ComboBox listboxes, picker popovers, Dropdown, Popover, Tooltip) used to paint as `absolute` descendants of that scrollport, so they were clipped and covered by the footer. We render Floating surfaces through a shared portal to `document.body`, position them fixed to the trigger (and keep them aligned while open on scroll/resize), and stack them above Modal (`z-index` higher than the Modal shell). We rejected changing the Modal scroll model so hosts keep sticky footers. Escape and outside-click dismiss the open Floating surface before closing the Modal.

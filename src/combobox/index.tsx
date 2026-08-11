@@ -1,7 +1,8 @@
 import type React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { MdCheck, MdClose, MdKeyboardArrowDown } from "react-icons/md";
 import { cn } from "../cn";
+import { FloatingSurface } from "../floating-surface";
 import FormField from "../form-field";
 import {
   comboboxCheckboxChecked,
@@ -257,6 +258,12 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
     }, 200);
   };
 
+  const dismissSurface = useCallback(() => {
+    setIsOpen(false);
+    setQuery("");
+    setFocusedIndex(-1);
+  }, []);
+
   // Keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!isOpen) {
@@ -293,27 +300,11 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
         }
         break;
       case "Escape":
-        setIsOpen(false);
-        setQuery("");
-        setFocusedIndex(-1);
+        dismissSurface();
         inputRef.current?.blur();
         break;
     }
   };
-
-  // Click outside to close
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (comboboxRef.current && !comboboxRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-        setQuery("");
-        setFocusedIndex(-1);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   // Scroll to focus option
   useEffect(() => {
@@ -420,77 +411,79 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
           </div>
         </div>
 
-        {/* drop down options */}
-        <div
+        <FloatingSurface
+          open={isOpen}
+          anchorRef={comboboxRef}
+          onDismiss={dismissSurface}
+          matchAnchorWidth
+          placement="bottom-start"
+          offset={4}
           className={cn(
-            `absolute z-50 mt-1 w-full overflow-auto rounded-lg py-1 text-base shadow-theme-lg outline outline-black/5 sm:text-sm ${surfacePanel}`,
-            "transition-all duration-200 ease-out origin-top",
-            isOpen
-              ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
-              : "opacity-0 scale-95 -translate-y-2 pointer-events-none invisible"
+            `w-full overflow-auto rounded-lg py-1 text-base shadow-theme-lg outline outline-black/5 sm:text-sm ${surfacePanel}`
           )}
-          role="listbox"
         >
-          <div ref={optionsRef} className="max-h-56 overflow-auto">
-            {loading ? (
-              <div className={`flex items-center justify-center gap-2 px-3 py-6 text-sm ${textMuted}`}>
-                <span className={`size-5 animate-spin rounded-full border-2 ${comboboxSpinner}`} />
-                loading...
-              </div>
-            ) : allOptions.length > 0 ? (
-              <>
-                {canCreate && (
-                  <div
-                    data-option-index={0}
-                    className={cn(
-                      "cursor-default flex items-center gap-2 px-3 py-2 select-none transition-colors",
-                      focusedIndex === 0 ? comboboxOptionFocused : comboboxOptionDefault,
-                      "hover:bg-primary hover:text-on-primary"
-                    )}
-                    onClick={handleCreate}
-                    onMouseEnter={() => setFocusedIndex(0)}
-                    role="option"
-                    aria-selected={focusedIndex === 0}
-                  >
-                    <span className="size-5 shrink-0" aria-hidden />
-                    {renderOption({ value: null, label: query } as ComboBoxOption<T>)}
-                  </div>
-                )}
-                {filteredOptions.map((option, index) => {
-                  const optionIndex = canCreate ? index + 1 : index;
-                  const isSelected = multiple
-                    ? valueArray.includes(option.value)
-                    : valueSingle === option.value;
-                  return (
+          <div role="listbox">
+            <div ref={optionsRef} className="max-h-56 overflow-auto">
+              {loading ? (
+                <div className={`flex items-center justify-center gap-2 px-3 py-6 text-sm ${textMuted}`}>
+                  <span className={`size-5 animate-spin rounded-full border-2 ${comboboxSpinner}`} />
+                  loading...
+                </div>
+              ) : allOptions.length > 0 ? (
+                <>
+                  {canCreate && (
                     <div
-                      key={String(option.value)}
-                      data-option-index={optionIndex}
+                      data-option-index={0}
                       className={cn(
                         "cursor-default flex items-center gap-2 px-3 py-2 select-none transition-colors",
-                        focusedIndex === optionIndex
-                          ? comboboxOptionFocused
-                          : option.disabled
-                          ? `${textMuted} cursor-not-allowed opacity-60`
-                          : comboboxOptionDefault,
-                        !option.disabled && "hover:bg-primary hover:text-on-primary"
+                        focusedIndex === 0 ? comboboxOptionFocused : comboboxOptionDefault,
+                        "hover:bg-primary hover:text-on-primary"
                       )}
-                      onClick={() => !option.disabled && handleSelect(option)}
-                      onMouseEnter={() => !option.disabled && setFocusedIndex(optionIndex)}
+                      onClick={handleCreate}
+                      onMouseEnter={() => setFocusedIndex(0)}
                       role="option"
-                      aria-selected={isSelected}
-                      aria-disabled={option.disabled}
+                      aria-selected={focusedIndex === 0}
                     >
-                      <OptionCheckbox checked={isSelected} disabled={option.disabled} />
-                      {renderOption(option)}
+                      <span className="size-5 shrink-0" aria-hidden />
+                      {renderOption({ value: null, label: query } as ComboBoxOption<T>)}
                     </div>
-                  );
-                })}
-              </>
-            ) : (
-              <div className={`px-3 py-2 text-sm ${textMuted} text-center`}>No option found</div>
-            )}
+                  )}
+                  {filteredOptions.map((option, index) => {
+                    const optionIndex = canCreate ? index + 1 : index;
+                    const isSelected = multiple
+                      ? valueArray.includes(option.value)
+                      : valueSingle === option.value;
+                    return (
+                      <div
+                        key={String(option.value)}
+                        data-option-index={optionIndex}
+                        className={cn(
+                          "cursor-default flex items-center gap-2 px-3 py-2 select-none transition-colors",
+                          focusedIndex === optionIndex
+                            ? comboboxOptionFocused
+                            : option.disabled
+                            ? `${textMuted} cursor-not-allowed opacity-60`
+                            : comboboxOptionDefault,
+                          !option.disabled && "hover:bg-primary hover:text-on-primary"
+                        )}
+                        onClick={() => !option.disabled && handleSelect(option)}
+                        onMouseEnter={() => !option.disabled && setFocusedIndex(optionIndex)}
+                        role="option"
+                        aria-selected={isSelected}
+                        aria-disabled={option.disabled}
+                      >
+                        <OptionCheckbox checked={isSelected} disabled={option.disabled} />
+                        {renderOption(option)}
+                      </div>
+                    );
+                  })}
+                </>
+              ) : (
+                <div className={`px-3 py-2 text-sm ${textMuted} text-center`}>No option found</div>
+              )}
+            </div>
           </div>
-        </div>
+        </FloatingSurface>
         {/* Hidden form input */}
         {multiple ? (
           valueArray.map((v) => (
