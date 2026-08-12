@@ -152,10 +152,10 @@ Match existing fields for props like `id`, `label`, `error`, `required`, `disabl
 - **`DateCalendar`**: custom calendar surface (day / month / year views); `weekStartsOn` default Sunday; optional submit chrome.
 - **`DateField`**: Day.js calendar date field without trailing calendar icon (`FormField` parity).
 - **`DatePicker`**: `DateField` + calendar icon + `DateCalendar`; single-day only (no multiple / range / time). Flatpickr is not used.
-- **`TimeField`**: typed time-of-day field without trailing clock icon; Day.js time-of-day value (fixed day anchor); no `timezone`.
-- **`TimePicker`**: `TimeField` + clock icon + private digital time surface (`variant="digital" | "sections"`, default `sections`); defaults `clearable=true`, `minuteStep=1`, `ampm=false`, `timePrecision="minutes"`.
-- **`DateTimeField`**: single typed datetime field without trailing calendar icon; UTC Day.js store; optional display `timezone`.
-- **`DateTimePicker`**: `DateTimeField` + calendar icon + side-by-side `DateCalendar` and private digital time surface; preserves time on date change; `variant` + submit chrome; no flatpickr.
+- **`TimeField`**: typed time-of-day field without trailing clock icon; Day.js time-of-day value (fixed day anchor); no `timezone`; `ampm` drives parse/default display; optional display-only `format`.
+- **`TimePicker`**: `TimeField` + clock icon + private digital time surface (`variant="digital" | "sections"`, default `sections`); defaults `clearable=true`, `minuteStep=1`, `ampm=false`, `timePrecision="minutes"`; forwards `ampm` / `format` to TimeField.
+- **`DateTimeField`**: single typed datetime field without trailing calendar icon; UTC Day.js store; optional display `timezone`; `ampm` drives parse/default display; optional display-only `format`.
+- **`DateTimePicker`**: `DateTimeField` + calendar icon + side-by-side `DateCalendar` and private digital time surface; preserves time on date change; `variant` + submit chrome; forwards `ampm` / `format` to DateTimeField; no flatpickr.
 
 ### Icons
 

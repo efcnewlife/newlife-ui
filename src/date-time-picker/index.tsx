@@ -42,6 +42,8 @@ export interface DateTimePickerProps {
   minuteStep?: number;
   timePrecision?: DateTimePickerTimePrecision;
   ampm?: boolean;
+  /** Day.js tokens for committed field display only; forwarded to DateTimeField. */
+  format?: string;
   variant?: DigitalTimeVariant;
   label?: string;
   placeholder?: string;
@@ -71,6 +73,7 @@ export default function DateTimePicker({
   minuteStep = 1,
   timePrecision = "minutes",
   ampm = false,
+  format,
   variant = "sections",
   label,
   placeholder,
@@ -189,6 +192,8 @@ export default function DateTimePicker({
         minDateTime={minDateTime}
         maxDateTime={maxDateTime}
         timePrecision={timePrecision}
+        ampm={ampm}
+        format={format}
         placeholder={placeholder}
         error={error}
         required={required}

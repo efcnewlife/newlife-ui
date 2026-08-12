@@ -4,7 +4,9 @@ import FormField from "../form-field";
 import { type Dayjs } from "../lib/dayjs";
 import {
   dayjsToTimeString,
+  defaultTimeFormat,
   formatTimeInput,
+  isCompleteTimeString,
   parseTimeString,
   toTimeOfDay,
   type TimePrecision,
@@ -18,6 +20,10 @@ export interface TimeFieldProps {
   defaultValue?: Dayjs | null;
   onChange?: (value: Dayjs | null, meta: PickerChangeMeta) => void;
   timePrecision?: TimePrecision;
+  /** Selects parse / default display clock (24h vs 12h with English AM/PM). */
+  ampm?: boolean;
+  /** Day.js tokens for committed display only; does not change parse or mask. */
+  format?: string;
   label?: string;
   placeholder?: string;
   error?: string;
@@ -34,12 +40,14 @@ export interface TimeFieldProps {
 
 const toDisplay = (
   value: Dayjs | null | undefined,
-  timePrecision: TimePrecision
+  timePrecision: TimePrecision,
+  ampm: boolean,
+  format?: string
 ): string => {
   if (value == null || !value.isValid()) {
     return "";
   }
-  return dayjsToTimeString(toTimeOfDay(value), timePrecision);
+  return dayjsToTimeString(toTimeOfDay(value), timePrecision, ampm, format);
 };
 
 export default function TimeField({
@@ -48,6 +56,8 @@ export default function TimeField({
   defaultValue = null,
   onChange,
   timePrecision = "minutes",
+  ampm = false,
+  format,
   label,
   placeholder,
   error,
@@ -65,24 +75,28 @@ export default function TimeField({
     defaultValue
   );
   const selectedValue = isControlled ? value : uncontrolledValue;
-  const resolvedPlaceholder =
-    placeholder ?? (timePrecision === "seconds" ? "HH:mm:ss" : "HH:mm");
-  const [text, setText] = useState(() => toDisplay(selectedValue, timePrecision));
+  const resolvedPlaceholder = placeholder ?? defaultTimeFormat(timePrecision, ampm);
+  const [text, setText] = useState(() =>
+    toDisplay(selectedValue, timePrecision, ampm, format)
+  );
 
   useEffect(() => {
     setText((current) => {
       if (selectedValue != null && selectedValue.isValid()) {
-        return toDisplay(selectedValue, timePrecision);
+        return toDisplay(selectedValue, timePrecision, ampm, format);
       }
 
       // Keep in-progress edits when the committed value becomes null (e.g. backspace).
       // Clear when the field previously showed a complete time (external clear).
-      if (parseTimeString(current, timePrecision) != null) {
-        return "";
+      if (isCompleteTimeString(current, timePrecision, ampm)) {
+        const parsed = parseTimeString(current, timePrecision, ampm);
+        if (parsed != null) {
+          return "";
+        }
       }
       return current;
     });
-  }, [selectedValue, timePrecision]);
+  }, [selectedValue, timePrecision, ampm, format]);
 
   const emit = (next: Dayjs | null, validationError: PickerValidationError) => {
     if (!isControlled) {
@@ -92,7 +106,7 @@ export default function TimeField({
   };
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const nextText = formatTimeInput(event.target.value, timePrecision);
+    const nextText = formatTimeInput(event.target.value, timePrecision, ampm);
     setText(nextText);
 
     if (nextText === "") {
@@ -100,7 +114,12 @@ export default function TimeField({
       return;
     }
 
-    const parsed = parseTimeString(nextText, timePrecision);
+    if (!isCompleteTimeString(nextText, timePrecision, ampm)) {
+      emit(null, "invalidDate");
+      return;
+    }
+
+    const parsed = parseTimeString(nextText, timePrecision, ampm);
     if (parsed == null) {
       emit(null, "invalidDate");
       return;
@@ -135,7 +154,7 @@ export default function TimeField({
             className
           )}
           autoComplete="off"
-          inputMode="numeric"
+          inputMode={ampm ? "text" : "numeric"}
         />
         {endAdornment ? (
           <span

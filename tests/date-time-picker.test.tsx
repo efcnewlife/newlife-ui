@@ -273,6 +273,21 @@ describe("DateTimePicker", () => {
     expect(nextValue.toISOString()).toBe("2026-06-20T03:30:00.000Z");
   });
 
+  it("forwards ampm and format to the composed DateTimeField text", () => {
+    render(
+      <DateTimePicker
+        id="starts-at"
+        label="Starts at"
+        value={dayjs.utc("2026-06-20T15:30:00.000Z")}
+        timezone="UTC"
+        ampm
+        format="MMM D, YYYY h:mm A"
+      />,
+    );
+
+    expect(screen.getByLabelText("Starts at")).toHaveValue("Jun 20, 2026 3:30 PM");
+  });
+
   it("applies minuteStep to the digital time surface", async () => {
     const user = userEvent.setup();
 

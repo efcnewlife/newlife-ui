@@ -155,6 +155,20 @@ describe("TimePicker", () => {
     expect(value.format("HH:mm")).toBe("21:00");
   });
 
+  it("forwards ampm and format to the composed TimeField text", () => {
+    render(
+      <TimePicker
+        id="start-time"
+        label="Start time"
+        value={dayjs("1970-01-01T14:30:00")}
+        ampm
+        format="h:mm A"
+      />
+    );
+
+    expect(screen.getByLabelText("Start time")).toHaveValue("2:30 PM");
+  });
+
   it("clears the value when clearable and Clear is clicked", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();

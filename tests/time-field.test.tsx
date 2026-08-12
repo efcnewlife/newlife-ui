@@ -180,4 +180,93 @@ describe("TimeField", () => {
       expect.objectContaining({ validationError: "invalidDate", source: "field" })
     );
   });
+
+  it("displays a controlled value in 12-hour shape when ampm is true", () => {
+    render(
+      <TimeField id="start-time" label="Start time" value={dayjs("1970-01-01T14:30:00")} ampm />
+    );
+
+    expect(screen.getByLabelText("Start time")).toHaveValue("02:30 PM");
+  });
+
+  it("uses text inputMode when ampm is true", () => {
+    render(<TimeField id="start-time" label="Start time" value={null} ampm />);
+    expect(screen.getByLabelText("Start time")).not.toHaveAttribute("inputMode", "numeric");
+  });
+
+  it("parses a typed 12-hour time when ampm is true", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+
+    render(
+      <TimeField id="start-time" label="Start time" value={null} ampm onChange={onChange} />
+    );
+
+    await user.type(screen.getByLabelText("Start time"), "0230PM");
+
+    const [value, meta] = onChange.mock.calls.at(-1)!;
+    expect(value.format("HH:mm:ss")).toBe("14:30:00");
+    expect(meta.validationError).toBeNull();
+  });
+
+  it("accepts a pasted 24-hour time when ampm is true and redisplays 12-hour", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+
+    const Harness = () => {
+      const [value, setValue] = useState<dayjs.Dayjs | null>(null);
+      return (
+        <TimeField
+          id="start-time"
+          label="Start time"
+          value={value}
+          ampm
+          onChange={(next, meta) => {
+            onChange(next, meta);
+            setValue(next);
+          }}
+        />
+      );
+    };
+
+    render(<Harness />);
+
+    await user.type(screen.getByLabelText("Start time"), "1530");
+
+    const [value, meta] = onChange.mock.calls.at(-1)!;
+    expect(value.format("HH:mm:ss")).toBe("15:30:00");
+    expect(meta.validationError).toBeNull();
+    expect(screen.getByLabelText("Start time")).toHaveValue("03:30 PM");
+  });
+
+  it("uses format only for committed display", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+
+    const Harness = () => {
+      const [value, setValue] = useState<dayjs.Dayjs | null>(null);
+      return (
+        <TimeField
+          id="start-time"
+          label="Start time"
+          value={value}
+          ampm
+          format="h:mm A"
+          onChange={(next, meta) => {
+            onChange(next, meta);
+            setValue(next);
+          }}
+        />
+      );
+    };
+
+    render(<Harness />);
+
+    await user.type(screen.getByLabelText("Start time"), "0200PM");
+
+    const [value, meta] = onChange.mock.calls.at(-1)!;
+    expect(value.format("HH:mm:ss")).toBe("14:00:00");
+    expect(meta.validationError).toBeNull();
+    expect(screen.getByLabelText("Start time")).toHaveValue("2:00 PM");
+  });
 });

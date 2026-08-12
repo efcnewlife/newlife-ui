@@ -25,6 +25,8 @@ export interface TimePickerProps {
   variant?: DigitalTimeVariant;
   minuteStep?: number;
   ampm?: boolean;
+  /** Day.js tokens for committed field display only; forwarded to TimeField. */
+  format?: string;
   timePrecision?: TimePrecision;
   label?: string;
   placeholder?: string;
@@ -46,6 +48,7 @@ export default function TimePicker({
   variant = "sections",
   minuteStep = 1,
   ampm = false,
+  format,
   timePrecision = "minutes",
   label,
   placeholder,
@@ -100,6 +103,8 @@ export default function TimePicker({
         value={selectedValue}
         onChange={handleChange}
         timePrecision={timePrecision}
+        ampm={ampm}
+        format={format}
         placeholder={placeholder}
         error={error}
         required={required}
