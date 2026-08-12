@@ -6,10 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-08-12
+
+### Summary
+
+DateTime / Time field wall-clock text follows `ampm`, with an optional display-only `format` prop.
+
 ### Changed
 
 - **`DateTimeField` / `TimeField`**: `ampm` now drives parse and default wall-clock display (12-hour with English `AM`/`PM`), not only the picker digital surface. When `ampm` is true, `inputMode` is text-capable. Unambiguous 24-hour complete strings (hour `00` or `13`–`23`) still parse and normalize to the 12-hour default display; hours `01`–`12` without a meridian stay incomplete so progressive 12-hour typing is not committed early.
 - **`DateTimePicker` / `TimePicker`**: forward `ampm` (and optional display-only `format`) to the composed Field so field text matches the digital time surface.
+
 ### Added
 
 - **`format` prop** on `DateTimeField`, `TimeField`, `DateTimePicker`, and `TimePicker`: optional Day.js token string for **committed display only** (does not change parse, typing mask, or default placeholder).
