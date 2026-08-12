@@ -2,6 +2,11 @@ import type { Dayjs } from "../lib/dayjs";
 import { dayjs } from "../lib/dayjs";
 import type { PickerValidationError } from "../picker/types";
 import { pushTwoDigitSection } from "./digit-section";
+import {
+  extractMeridianSuffix,
+  hour12To24,
+  isUnambiguous24hHour,
+} from "./meridian";
 import { createTimeOfDay, type TimePrecision } from "./time";
 
 export const resolveDisplayTimezone = (
@@ -102,16 +107,28 @@ export const toZonedDayjs = (value: Dayjs, displayTimezone: string): Dayjs => {
   return value.tz(displayTimezone);
 };
 
+export const defaultDatetimeFormat = (
+  timePrecision: TimePrecision = "minutes",
+  ampm = false
+): string => {
+  if (ampm) {
+    return timePrecision === "seconds" ? "YYYY-MM-DD hh:mm:ss A" : "YYYY-MM-DD hh:mm A";
+  }
+  return timePrecision === "seconds" ? "YYYY-MM-DD HH:mm:ss" : "YYYY-MM-DD HH:mm";
+};
+
 export const dayjsToDatetimeString = (
   value: Dayjs,
   displayTimezone: string,
-  timePrecision: TimePrecision = "minutes"
+  timePrecision: TimePrecision = "minutes",
+  ampm = false,
+  format?: string
 ): string => {
   const zoned = toZonedDayjs(value, displayTimezone);
-  if (timePrecision === "seconds") {
-    return zoned.format("YYYY-MM-DD HH:mm:ss");
+  if (format) {
+    return zoned.format(format);
   }
-  return zoned.format("YYYY-MM-DD HH:mm");
+  return zoned.format(defaultDatetimeFormat(timePrecision, ampm));
 };
 
 export const wallClockToUtc = (
@@ -130,29 +147,22 @@ export const wallClockToUtc = (
   return dayjs.tz(wall, "YYYY-MM-DD HH:mm:ss", displayTimezone).utc();
 };
 
-export const parseDatetimeString = (
-  text: string,
-  displayTimezone: string,
-  timePrecision: TimePrecision = "minutes"
+const DATETIME_24H_MINUTES = /^(\d{4})-(\d{2})-(\d{2}) ([01]\d|2[0-3]):([0-5]\d)$/;
+const DATETIME_24H_SECONDS = /^(\d{4})-(\d{2})-(\d{2}) ([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
+const DATETIME_12H_MINUTES =
+  /^(\d{4})-(\d{2})-(\d{2}) (0?[1-9]|1[0-2]):([0-5]\d) (AM|PM)$/i;
+const DATETIME_12H_SECONDS =
+  /^(\d{4})-(\d{2})-(\d{2}) (0?[1-9]|1[0-2]):([0-5]\d):([0-5]\d) (AM|PM)$/i;
+
+const parseDatetimePartsToUtc = (
+  year: number,
+  month: number,
+  day: number,
+  hour: number,
+  minute: number,
+  second: number,
+  displayTimezone: string
 ): Dayjs | null => {
-  const pattern =
-    timePrecision === "seconds"
-      ? /^(\d{4})-(\d{2})-(\d{2}) ([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/
-      : /^(\d{4})-(\d{2})-(\d{2}) ([01]\d|2[0-3]):([0-5]\d)$/;
-
-  const match = pattern.exec(text);
-  if (!match) {
-    return null;
-  }
-
-  const year = Number(match[1]);
-  const month = Number(match[2]);
-  const day = Number(match[3]);
-  const hour = Number(match[4]);
-  const minute = Number(match[5]);
-  const second = timePrecision === "seconds" ? Number(match[6]) : 0;
-
-  // Reject impossible calendar dates (e.g. 2020-12-34 overflow).
   const calendarCheck = dayjs(
     `${year}-${pad(month)}-${pad(day)}`,
     "YYYY-MM-DD",
@@ -161,16 +171,98 @@ export const parseDatetimeString = (
   if (!calendarCheck.isValid()) {
     return null;
   }
-
   return wallClockToUtc(year, month, day, hour, minute, second, displayTimezone);
 };
 
-/** Keep digits only and insert date/time separators; sections restart when exceeding max. */
+export const isCompleteDatetimeString = (
+  text: string,
+  timePrecision: TimePrecision = "minutes",
+  ampm = false
+): boolean => {
+  if (ampm) {
+    const twelveOk =
+      timePrecision === "seconds"
+        ? DATETIME_12H_SECONDS.test(text)
+        : DATETIME_12H_MINUTES.test(text);
+    if (twelveOk) {
+      return true;
+    }
+    const twentyFour =
+      timePrecision === "seconds"
+        ? DATETIME_24H_SECONDS.exec(text)
+        : DATETIME_24H_MINUTES.exec(text);
+    if (!twentyFour) {
+      return false;
+    }
+    const hour = Number(twentyFour[4]);
+    // Hours 1-12 without a meridian are ambiguous in ampm mode (wait for AM/PM).
+    return isUnambiguous24hHour(hour);
+  }
+  return timePrecision === "seconds"
+    ? DATETIME_24H_SECONDS.test(text)
+    : DATETIME_24H_MINUTES.test(text);
+};
+
+export const parseDatetimeString = (
+  text: string,
+  displayTimezone: string,
+  timePrecision: TimePrecision = "minutes",
+  ampm = false
+): Dayjs | null => {
+  if (ampm) {
+    const twelve =
+      timePrecision === "seconds"
+        ? DATETIME_12H_SECONDS.exec(text)
+        : DATETIME_12H_MINUTES.exec(text);
+    if (twelve) {
+      const year = Number(twelve[1]);
+      const month = Number(twelve[2]);
+      const day = Number(twelve[3]);
+      const hour12 = Number(twelve[4]);
+      const minute = Number(twelve[5]);
+      const second = timePrecision === "seconds" ? Number(twelve[6]) : 0;
+      const meridian = timePrecision === "seconds" ? twelve[7]! : twelve[6]!;
+      return parseDatetimePartsToUtc(
+        year,
+        month,
+        day,
+        hour12To24(hour12, meridian),
+        minute,
+        second,
+        displayTimezone
+      );
+    }
+  }
+
+  if (!isCompleteDatetimeString(text, timePrecision, ampm)) {
+    return null;
+  }
+
+  const twentyFour =
+    timePrecision === "seconds"
+      ? DATETIME_24H_SECONDS.exec(text)
+      : DATETIME_24H_MINUTES.exec(text);
+  if (!twentyFour) {
+    return null;
+  }
+
+  const year = Number(twentyFour[1]);
+  const month = Number(twentyFour[2]);
+  const day = Number(twentyFour[3]);
+  const hour = Number(twentyFour[4]);
+  const minute = Number(twentyFour[5]);
+  const second = timePrecision === "seconds" ? Number(twentyFour[6]) : 0;
+  return parseDatetimePartsToUtc(year, month, day, hour, minute, second, displayTimezone);
+};
+
+/** Keep digits (and optional AM/PM when ampm) and insert date/time separators. */
 export const formatDatetimeInput = (
   text: string,
-  timePrecision: TimePrecision = "minutes"
+  timePrecision: TimePrecision = "minutes",
+  ampm = false
 ): string => {
-  const digits = text.replace(/\D/g, "");
+  const { body, meridian } = ampm ? extractMeridianSuffix(text) : { body: text, meridian: "" };
+  const digits = body.replace(/\D/g, "");
   let year = "";
   let month = "";
   let day = "";
@@ -252,6 +344,17 @@ export const formatDatetimeInput = (
   if (timePrecision === "seconds" && second) {
     result = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
   }
+
+  if (ampm && meridian) {
+    const hourValue = Number(hour);
+    const looks12h = hour.length === 2 && hourValue >= 1 && hourValue <= 12;
+    const timeComplete =
+      timePrecision === "seconds" ? Boolean(second && second.length === 2) : minute.length === 2;
+    if (looks12h && (timeComplete || meridian.length === 2)) {
+      result = `${result} ${meridian}`;
+    }
+  }
+
   return result;
 };
 

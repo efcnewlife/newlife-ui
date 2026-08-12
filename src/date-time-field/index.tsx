@@ -4,7 +4,9 @@ import FormField from "../form-field";
 import { type Dayjs } from "../lib/dayjs";
 import {
   dayjsToDatetimeString,
+  defaultDatetimeFormat,
   formatDatetimeInput,
+  isCompleteDatetimeString,
   parseDatetimeString,
   resolveDisplayTimezone,
   validateDatetimeBounds,
@@ -26,6 +28,10 @@ export interface DateTimeFieldProps {
   minDateTime?: Dayjs | null;
   maxDateTime?: Dayjs | null;
   timePrecision?: DateTimeFieldTimePrecision;
+  /** Selects parse / default display clock (24h vs 12h with English AM/PM). */
+  ampm?: boolean;
+  /** Day.js tokens for committed display only; does not change parse or mask. */
+  format?: string;
   label?: string;
   placeholder?: string;
   error?: string;
@@ -40,24 +46,17 @@ export interface DateTimeFieldProps {
   endAdornment?: ReactNode;
 }
 
-const DATETIME_PATTERN_MINUTES = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/;
-const DATETIME_PATTERN_SECONDS = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
-
-const isCompleteDatetime = (text: string, timePrecision: TimePrecision): boolean => {
-  return timePrecision === "seconds"
-    ? DATETIME_PATTERN_SECONDS.test(text)
-    : DATETIME_PATTERN_MINUTES.test(text);
-};
-
 const toDisplay = (
   value: Dayjs | null | undefined,
   displayTimezone: string,
-  timePrecision: TimePrecision
+  timePrecision: TimePrecision,
+  ampm: boolean,
+  format?: string
 ): string => {
   if (value == null || !value.isValid()) {
     return "";
   }
-  return dayjsToDatetimeString(value.utc(), displayTimezone, timePrecision);
+  return dayjsToDatetimeString(value.utc(), displayTimezone, timePrecision, ampm, format);
 };
 
 export default function DateTimeField({
@@ -71,6 +70,8 @@ export default function DateTimeField({
   minDateTime,
   maxDateTime,
   timePrecision = "minutes",
+  ampm = false,
+  format,
   label,
   placeholder,
   error,
@@ -88,29 +89,28 @@ export default function DateTimeField({
   const selectedValue = isControlled ? value : uncontrolledValue;
   const displayTimezone = resolveDisplayTimezone(timezone, value, defaultValue);
   const resolvedPlaceholder =
-    placeholder ??
-    (timePrecision === "seconds" ? "YYYY-MM-DD HH:mm:ss" : "YYYY-MM-DD HH:mm");
+    placeholder ?? defaultDatetimeFormat(timePrecision, ampm);
   const [text, setText] = useState(() =>
-    toDisplay(selectedValue, displayTimezone, timePrecision)
+    toDisplay(selectedValue, displayTimezone, timePrecision, ampm, format)
   );
 
   useEffect(() => {
     setText((current) => {
       if (selectedValue != null && selectedValue.isValid()) {
-        return toDisplay(selectedValue, displayTimezone, timePrecision);
+        return toDisplay(selectedValue, displayTimezone, timePrecision, ampm, format);
       }
 
       // Keep in-progress edits when the committed value becomes null (e.g. backspace).
       // Clear when the field previously showed a complete datetime (external clear).
-      if (isCompleteDatetime(current, timePrecision)) {
-        const parsed = parseDatetimeString(current, displayTimezone, timePrecision);
+      if (isCompleteDatetimeString(current, timePrecision, ampm)) {
+        const parsed = parseDatetimeString(current, displayTimezone, timePrecision, ampm);
         if (parsed != null) {
           return "";
         }
       }
       return current;
     });
-  }, [selectedValue, displayTimezone, timePrecision]);
+  }, [selectedValue, displayTimezone, timePrecision, ampm, format]);
 
   const emit = (next: Dayjs | null, validationError: PickerValidationError) => {
     if (!isControlled) {
@@ -120,7 +120,7 @@ export default function DateTimeField({
   };
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const nextText = formatDatetimeInput(event.target.value, timePrecision);
+    const nextText = formatDatetimeInput(event.target.value, timePrecision, ampm);
     setText(nextText);
 
     if (nextText === "") {
@@ -128,12 +128,12 @@ export default function DateTimeField({
       return;
     }
 
-    if (!isCompleteDatetime(nextText, timePrecision)) {
+    if (!isCompleteDatetimeString(nextText, timePrecision, ampm)) {
       emit(null, "invalidDate");
       return;
     }
 
-    const parsed = parseDatetimeString(nextText, displayTimezone, timePrecision);
+    const parsed = parseDatetimeString(nextText, displayTimezone, timePrecision, ampm);
     if (parsed == null) {
       emit(null, "invalidDate");
       return;
@@ -175,7 +175,7 @@ export default function DateTimeField({
             className
           )}
           autoComplete="off"
-          inputMode="numeric"
+          inputMode={ampm ? "text" : "numeric"}
         />
         {endAdornment ? (
           <span

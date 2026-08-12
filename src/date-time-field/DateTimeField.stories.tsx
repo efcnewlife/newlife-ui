@@ -69,6 +69,25 @@ export const WithSeconds: Story = {
   render: (args) => <DateTimeField {...args} />,
 };
 
+export const Ampm: Story = {
+  args: {
+    ampm: true,
+    value: dayjs.utc("2026-06-20T15:30:00.000Z"),
+    timezone: "UTC",
+  },
+  render: (args) => <DateTimeField {...args} />,
+};
+
+export const AmpmWithDisplayFormat: Story = {
+  args: {
+    ampm: true,
+    format: "MMM D, YYYY h:mm A",
+    value: dayjs.utc("2026-06-20T15:30:00.000Z"),
+    timezone: "UTC",
+  },
+  render: (args) => <DateTimeField {...args} />,
+};
+
 export const Validation: Story = {
   args: {
     id: "date-time-field-validation",

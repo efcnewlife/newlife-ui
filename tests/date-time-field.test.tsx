@@ -176,4 +176,135 @@ describe("DateTimeField", () => {
 
     expect(screen.getByLabelText("Starts at")).toHaveValue("");
   });
+
+  it("displays a controlled value in 12-hour shape when ampm is true", () => {
+    const value = dayjs.utc("2026-06-20T15:30:00.000Z");
+    render(
+      <DateTimeField
+        id="starts-at"
+        label="Starts at"
+        value={value}
+        timezone="UTC"
+        ampm
+      />
+    );
+
+    expect(screen.getByLabelText("Starts at")).toHaveValue("2026-06-20 03:30 PM");
+  });
+
+  it("uses text inputMode when ampm is true and numeric when false", () => {
+    const { rerender } = render(
+      <DateTimeField id="starts-at" label="Starts at" value={null} ampm />
+    );
+    expect(screen.getByLabelText("Starts at")).not.toHaveAttribute("inputMode", "numeric");
+
+    rerender(<DateTimeField id="starts-at" label="Starts at" value={null} />);
+    expect(screen.getByLabelText("Starts at")).toHaveAttribute("inputMode", "numeric");
+  });
+
+  it("parses a typed 12-hour datetime when ampm is true", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+
+    render(
+      <DateTimeField
+        id="starts-at"
+        label="Starts at"
+        value={null}
+        timezone="UTC"
+        ampm
+        onChange={onChange}
+      />
+    );
+
+    await user.type(screen.getByLabelText("Starts at"), "202606200330PM");
+
+    const [value, meta] = onChange.mock.calls.at(-1)!;
+    expect(value.toISOString()).toBe("2026-06-20T15:30:00.000Z");
+    expect(meta.validationError).toBeNull();
+  });
+
+  it("accepts a pasted 24-hour datetime when ampm is true and redisplays 12-hour", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+
+    const Harness = () => {
+      const [value, setValue] = useState<Dayjs | null>(null);
+      return (
+        <DateTimeField
+          id="starts-at"
+          label="Starts at"
+          value={value}
+          timezone="UTC"
+          ampm
+          onChange={(next, meta) => {
+            onChange(next, meta);
+            setValue(next);
+          }}
+        />
+      );
+    };
+
+    render(<Harness />);
+
+    await user.type(screen.getByLabelText("Starts at"), "202606201530");
+
+    const [value, meta] = onChange.mock.calls.at(-1)!;
+    expect(value.toISOString()).toBe("2026-06-20T15:30:00.000Z");
+    expect(meta.validationError).toBeNull();
+    expect(screen.getByLabelText("Starts at")).toHaveValue("2026-06-20 03:30 PM");
+  });
+
+  it("uses format only for committed display and keeps ampm parse shape while typing", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+
+    const Harness = () => {
+      const [current, setCurrent] = useState<Dayjs | null>(null);
+      return (
+        <DateTimeField
+          id="starts-at"
+          label="Starts at"
+          value={current}
+          timezone="UTC"
+          ampm
+          format="MMM D, YYYY h:mm A"
+          onChange={(next, meta) => {
+            onChange(next, meta);
+            setCurrent(next);
+          }}
+        />
+      );
+    };
+
+    render(<Harness />);
+
+    expect(screen.getByLabelText("Starts at")).toHaveAttribute(
+      "placeholder",
+      "YYYY-MM-DD hh:mm A"
+    );
+
+    await user.type(screen.getByLabelText("Starts at"), "202606200200PM");
+
+    const [next, meta] = onChange.mock.calls.at(-1)!;
+    expect(next.toISOString()).toBe("2026-06-20T14:00:00.000Z");
+    expect(meta.validationError).toBeNull();
+    expect(screen.getByLabelText("Starts at")).toHaveValue("Jun 20, 2026 2:00 PM");
+  });
+
+  it("renders committed values with format while ampm still selects the clock surface contract", () => {
+    const value = dayjs.utc("2026-06-20T15:30:00.000Z");
+    render(
+      <DateTimeField
+        id="starts-at"
+        label="Starts at"
+        value={value}
+        timezone="UTC"
+        ampm
+        format="MMM D, YYYY h:mm A"
+      />
+    );
+
+    expect(screen.getByLabelText("Starts at")).toHaveValue("Jun 20, 2026 3:30 PM");
+  });
 });

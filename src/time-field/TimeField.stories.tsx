@@ -40,6 +40,23 @@ export const SecondsPrecision: Story = {
   render: (args) => <TimeField {...args} />,
 };
 
+export const Ampm: Story = {
+  args: {
+    ampm: true,
+    value: dayjs("1970-01-01T14:30:00"),
+  },
+  render: (args) => <TimeField {...args} />,
+};
+
+export const AmpmWithDisplayFormat: Story = {
+  args: {
+    ampm: true,
+    format: "h:mm A",
+    value: dayjs("1970-01-01T14:30:00"),
+  },
+  render: (args) => <TimeField {...args} />,
+};
+
 export const ControlledDayjs: Story = {
   render: (args) => {
     const [value, setValue] = useState<Dayjs | null>(dayjs("1970-01-01T14:30:00"));
