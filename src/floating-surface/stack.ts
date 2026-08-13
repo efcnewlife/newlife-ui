@@ -25,6 +25,11 @@ class FloatingSurfaceStackManager {
     return this.stack.length > 0;
   }
 
+  isTop(id: FloatingSurfaceId): boolean {
+    const top = this.stack[this.stack.length - 1];
+    return top?.id === id;
+  }
+
   dismissTop(): boolean {
     const top = this.stack[this.stack.length - 1];
     if (!top) {

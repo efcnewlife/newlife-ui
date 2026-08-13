@@ -140,6 +140,7 @@ export function FloatingSurface({
 }: FloatingSurfaceProps) {
   const surfaceRef = useRef<HTMLDivElement | null>(null);
   const onDismissRef = useRef(onDismiss);
+  const stackIdRef = useRef<ReturnType<typeof floatingSurfaceStackManager.register> | null>(null);
   const [coords, setCoords] = useState<Coords | null>(null);
 
   useEffect(() => {
@@ -179,8 +180,10 @@ export function FloatingSurface({
     const id = floatingSurfaceStackManager.register(() => {
       onDismissRef.current?.();
     });
+    stackIdRef.current = id;
 
     return () => {
+      stackIdRef.current = null;
       floatingSurfaceStackManager.unregister(id);
     };
   }, [open, onDismiss]);
@@ -203,6 +206,12 @@ export function FloatingSurface({
         target instanceof Element &&
         target.closest(ignoreOutsidePressSelector)
       ) {
+        return;
+      }
+      // Nested portaled surfaces (Select inside Dropdown) register above this one.
+      // Only the top surface may dismiss; otherwise the parent swallows the option click.
+      const stackId = stackIdRef.current;
+      if (!stackId || !floatingSurfaceStackManager.isTop(stackId)) {
         return;
       }
 

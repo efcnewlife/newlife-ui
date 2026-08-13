@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Nested Floating surfaces**: outside press only dismisses the topmost surface, so choosing a Select option inside a Dropdown no longer closes the Dropdown and swallows the click.
+
 ## [0.3.3] - 2026-08-12
 
 ### Summary
