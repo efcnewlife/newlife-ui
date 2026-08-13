@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.3.4] - 2026-08-13
+
+### Summary
+
+Nested Floating surfaces (for example Select inside Dropdown) dismiss only the topmost surface on outside press, so option clicks are no longer swallowed.
+
 ### Fixed
 
 - **Nested Floating surfaces**: outside press only dismisses the topmost surface, so choosing a Select option inside a Dropdown no longer closes the Dropdown and swallows the click.
