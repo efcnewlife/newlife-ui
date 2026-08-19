@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
+import { CONTROL_SIZES, SizeStack } from "../../.storybook/size-stack";
 import { dayjs, type Dayjs } from "../lib/dayjs";
 import type { PickerChangeMeta } from "../picker/types";
 import DateTimeField from "./index";
@@ -39,6 +40,19 @@ export const Default: Story = {
   render: (args) => <DateTimeField {...args} />,
 };
 
+export const Sizes: Story = {
+  args: {
+    value: dayjs.utc("2026-06-20T15:30:00.000Z"),
+    timezone: "UTC",
+  },
+  render: (args) => (
+    <SizeStack
+      sizes={CONTROL_SIZES}
+      render={(size) => <DateTimeField {...args} id={`date-time-field-${size}`} label={`Starts at (${size})`} size={size} />}
+    />
+  ),
+};
+
 export const WithError: Story = {
   args: { error: "Start time is required", required: true },
   render: (args) => <DateTimeField {...args} />,
@@ -46,17 +60,8 @@ export const WithError: Story = {
 
 export const ControlledUtcWithTimezone: Story = {
   render: (args) => {
-    const [value, setValue] = useState<Dayjs | null>(
-      dayjs.utc("2026-06-20T15:30:00.000Z")
-    );
-    return (
-      <DateTimeField
-        {...args}
-        value={value}
-        timezone="America/New_York"
-        onChange={(next) => setValue(next)}
-      />
-    );
+    const [value, setValue] = useState<Dayjs | null>(dayjs.utc("2026-06-20T15:30:00.000Z"));
+    return <DateTimeField {...args} value={value} timezone="America/New_York" onChange={(next) => setValue(next)} />;
   },
 };
 
@@ -113,8 +118,7 @@ export const Validation: Story = {
           }}
         />
         <p className="text-sm text-on-surface-variant">
-          Type digits only (for example <code>202606201530</code>); separators are
-          inserted automatically.
+          Type digits only (for example <code>202606201530</code>); separators are inserted automatically.
         </p>
         {meta ? (
           <pre className="text-xs text-on-surface-variant">
@@ -125,7 +129,7 @@ export const Validation: Story = {
                 source: meta.source,
               },
               null,
-              2
+              2,
             )}
           </pre>
         ) : null}

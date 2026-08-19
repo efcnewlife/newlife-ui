@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { CONTROL_SIZES, SizeStack } from "../../.storybook/size-stack";
 import PhoneInput from "./index";
 
 const countries = [
@@ -66,4 +67,13 @@ export const Disabled: Story = {
 export const SelectAtEnd: Story = {
   args: { selectPosition: "end" },
   render: (args) => <PhoneInput {...args} />,
+};
+
+export const Sizes: Story = {
+  render: (args) => (
+    <SizeStack
+      sizes={CONTROL_SIZES}
+      render={(size) => <PhoneInput {...args} id={`phone-${size}`} label={`Phone number (${size})`} size={size} />}
+    />
+  ),
 };

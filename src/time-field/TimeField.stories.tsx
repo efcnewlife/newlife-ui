@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
+import { CONTROL_SIZES, SizeStack } from "../../.storybook/size-stack";
 import { dayjs, type Dayjs } from "../lib/dayjs";
 import type { PickerChangeMeta } from "../picker/types";
 import TimeField from "./index";
@@ -28,6 +29,16 @@ const validationMessage = (meta: PickerChangeMeta): string | undefined => {
 
 export const Default: Story = {
   render: (args) => <TimeField {...args} />,
+};
+
+export const Sizes: Story = {
+  args: { value: dayjs("1970-01-01T14:30:00") },
+  render: (args) => (
+    <SizeStack
+      sizes={CONTROL_SIZES}
+      render={(size) => <TimeField {...args} id={`time-field-${size}`} label={`Start time (${size})`} size={size} />}
+    />
+  ),
 };
 
 export const WithError: Story = {
@@ -60,13 +71,7 @@ export const AmpmWithDisplayFormat: Story = {
 export const ControlledDayjs: Story = {
   render: (args) => {
     const [value, setValue] = useState<Dayjs | null>(dayjs("1970-01-01T14:30:00"));
-    return (
-      <TimeField
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next)}
-      />
-    );
+    return <TimeField {...args} value={value} onChange={(next) => setValue(next)} />;
   },
 };
 
@@ -92,10 +97,8 @@ export const Validation: Story = {
           }}
         />
         <p className="text-sm text-on-surface-variant">
-          Type digits only (for example <code>0945</code>); colons are inserted
-          automatically. Partial input like <code>094</code> sets{" "}
-          <code>meta.validationError</code>, which hosts map to{" "}
-          <code>error</code>.
+          Type digits only (for example <code>0945</code>); colons are inserted automatically. Partial input like <code>094</code> sets{" "}
+          <code>meta.validationError</code>, which hosts map to <code>error</code>.
         </p>
         <pre className="rounded-lg bg-surface-variant p-3 text-xs text-on-surface">
           {JSON.stringify(
@@ -106,7 +109,7 @@ export const Validation: Story = {
               source: meta?.source ?? null,
             },
             null,
-            2
+            2,
           )}
         </pre>
       </div>

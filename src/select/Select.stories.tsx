@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
+import { CONTROL_SIZES, SizeStack } from "../../.storybook/size-stack";
 import { Select } from "./Select";
 
 const options = [
@@ -31,30 +32,14 @@ export const Default: Story = {
 export const Controlled: Story = {
   render: (args) => {
     const [value, setValue] = useState<string | number | null>(null);
-    return (
-      <Select
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next as string | number | null)}
-        clearable
-        searchable
-      />
-    );
+    return <Select {...args} value={value} onChange={(next) => setValue(next as string | number | null)} clearable searchable />;
   },
 };
 
 export const Multiple: Story = {
   render: (args) => {
     const [value, setValue] = useState<(string | number | null)[]>([]);
-    return (
-      <Select
-        {...args}
-        multiple
-        value={value}
-        onChange={(next) => setValue((next as (string | number | null)[]) ?? [])}
-        searchable
-      />
-    );
+    return <Select {...args} multiple value={value} onChange={(next) => setValue((next as (string | number | null)[]) ?? [])} searchable />;
   },
 };
 
@@ -73,9 +58,11 @@ export const GhostVariant: Story = {
   render: (args) => <Select {...args} />,
 };
 
-export const ControlSizeXs: Story = {
-  args: { size: "xs", value: "en" },
-  render: (args) => <Select {...args} />,
+export const Sizes: Story = {
+  args: { value: "en" },
+  render: (args) => (
+    <SizeStack sizes={CONTROL_SIZES} render={(size) => <Select {...args} id={`select-${size}`} label={`Locale (${size})`} size={size} />} />
+  ),
 };
 
 export const OpenWithSelection: Story = {

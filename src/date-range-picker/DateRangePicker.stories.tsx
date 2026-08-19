@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
+import { CONTROL_SIZES, SizeStack } from "../../.storybook/size-stack";
 import { dayjs } from "../lib/dayjs";
 import type { DateRangeValue } from "../picker/date-range";
 import DateRangePicker from "./index";
@@ -23,19 +24,37 @@ export const Default: Story = {
   render: (args) => <DateRangePicker {...args} />,
 };
 
-export const Controlled: Story = {
+export const Sizes: Story = {
   render: (args) => {
     const [value, setValue] = useState<DateRangeValue | null>({
       start: dayjs("2026-08-10"),
       end: dayjs("2026-08-15"),
     });
     return (
-      <DateRangePicker
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next)}
+      <SizeStack
+        sizes={CONTROL_SIZES}
+        render={(size) => (
+          <DateRangePicker
+            {...args}
+            id={`date-range-picker-${size}`}
+            label={`Date range (${size})`}
+            size={size}
+            value={value}
+            onChange={(next) => setValue(next)}
+          />
+        )}
       />
     );
+  },
+};
+
+export const Controlled: Story = {
+  render: (args) => {
+    const [value, setValue] = useState<DateRangeValue | null>({
+      start: dayjs("2026-08-10"),
+      end: dayjs("2026-08-15"),
+    });
+    return <DateRangePicker {...args} value={value} onChange={(next) => setValue(next)} />;
   },
 };
 
@@ -46,13 +65,7 @@ export const WithSubmitButton: Story = {
   },
   render: (args) => {
     const [value, setValue] = useState<DateRangeValue | null>(null);
-    return (
-      <DateRangePicker
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next)}
-      />
-    );
+    return <DateRangePicker {...args} value={value} onChange={(next) => setValue(next)} />;
   },
 };
 
@@ -75,13 +88,7 @@ export const WithShortcuts: Story = {
   },
   render: (args) => {
     const [value, setValue] = useState<DateRangeValue | null>(null);
-    return (
-      <DateRangePicker
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next)}
-      />
-    );
+    return <DateRangePicker {...args} value={value} onChange={(next) => setValue(next)} />;
   },
 };
 
@@ -116,13 +123,7 @@ export const WithShortcutsAndSubmit: Story = {
       start: dayjs("2026-08-10"),
       end: dayjs("2026-08-15"),
     });
-    return (
-      <DateRangePicker
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next)}
-      />
-    );
+    return <DateRangePicker {...args} value={value} onChange={(next) => setValue(next)} />;
   },
 };
 
@@ -133,12 +134,6 @@ export const Clearable: Story = {
       start: dayjs("2026-08-10"),
       end: dayjs("2026-08-15"),
     });
-    return (
-      <DateRangePicker
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next)}
-      />
-    );
+    return <DateRangePicker {...args} value={value} onChange={(next) => setValue(next)} />;
   },
 };

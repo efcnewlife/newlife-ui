@@ -40,4 +40,20 @@ describe("Select", () => {
     await user.click(screen.getByRole("combobox"));
     expect(screen.getByRole("option", { name: "English" })).toHaveClass("px-4", "py-2");
   });
+
+  it("rounds the first and last option rows to match the listbox", async () => {
+    const user = userEvent.setup();
+    render(<Select id="locale-corners" label="Locale" options={options} />);
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByRole("option", { name: "English" })).toHaveClass("rounded-t-lg");
+    expect(screen.getByRole("option", { name: "Traditional Chinese" })).toHaveClass("rounded-b-lg");
+  });
+
+  it("does not round the first option when Search options is shown", async () => {
+    const user = userEvent.setup();
+    render(<Select id="locale-search" label="Locale" options={options} searchable />);
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByRole("option", { name: "English" })).not.toHaveClass("rounded-t-lg");
+    expect(screen.getByRole("option", { name: "Traditional Chinese" })).toHaveClass("rounded-b-lg");
+  });
 });

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { BADGE_SIZES, SizeStack } from "../../.storybook/size-stack";
 import Badge from "./Badge";
 
 const meta: Meta<typeof Badge> = {
@@ -41,4 +42,9 @@ export const LightInfo: Story = {
 export const Small: Story = {
   args: { size: "sm", color: "dark", variant: "light" },
   render: (args) => <Badge {...args} />,
+};
+
+export const Sizes: Story = {
+  args: { variant: "light", color: "primary" },
+  render: (args) => <SizeStack sizes={BADGE_SIZES} render={(size) => <Badge {...args} size={size} />} />,
 };

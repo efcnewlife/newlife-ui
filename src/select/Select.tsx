@@ -313,7 +313,7 @@ export const Select: React.FC<SelectProps> = ({
           matchAnchorWidth
           placement="bottom-start"
           offset={4}
-          className={cn(`w-full rounded-lg shadow-theme-lg ${surfacePanel}`)}
+          className={cn(`w-full overflow-hidden rounded-lg shadow-theme-lg ${surfacePanel}`)}
         >
           <div role="listbox">
             {searchable && (
@@ -348,6 +348,8 @@ export const Select: React.FC<SelectProps> = ({
                         isFocused && comboboxOptionFocused,
                         isSelected && !isFocused && selectOptionActive,
                         option.disabled && cn(textMuted, "cursor-not-allowed opacity-60"),
+                        index === 0 && !searchable && "rounded-t-lg",
+                        index === filteredOptions.length - 1 && "rounded-b-lg",
                       )}
                       onClick={() => handleOptionClick(option)}
                       onMouseEnter={() => !option.disabled && setFocusedIndex(index)}

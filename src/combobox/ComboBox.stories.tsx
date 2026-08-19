@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
+import { CONTROL_SIZES, SizeStack } from "../../.storybook/size-stack";
 import ComboBox, { type ComboBoxOption } from "./index";
 
 const options: ComboBoxOption<string>[] = [
@@ -61,25 +62,30 @@ export const Multiple: Story = {
 export const WithError: Story = {
   args: { error: "Selection required" },
   render: (args) => (
-    <ComboBox<string>
-      id={args.id}
-      label={args.label}
-      options={options}
-      placeholder={args.placeholder}
-      error={args.error}
-    />
+    <ComboBox<string> id={args.id} label={args.label} options={options} placeholder={args.placeholder} error={args.error} />
   ),
 };
 
 export const Loading: Story = {
   args: { loading: true },
   render: (args) => (
-    <ComboBox<string>
-      id={args.id}
-      label={args.label}
-      options={options}
-      placeholder={args.placeholder}
-      loading={args.loading}
+    <ComboBox<string> id={args.id} label={args.label} options={options} placeholder={args.placeholder} loading={args.loading} />
+  ),
+};
+
+export const Sizes: Story = {
+  render: (args) => (
+    <SizeStack
+      sizes={CONTROL_SIZES}
+      render={(size) => (
+        <ComboBox<string>
+          id={`combobox-${size}`}
+          label={`Framework (${size})`}
+          options={options}
+          placeholder={args.placeholder}
+          size={size}
+        />
+      )}
     />
   ),
 };

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
+import { CONTROL_SIZES, SizeStack } from "../../.storybook/size-stack";
 import { dayjs, type Dayjs } from "../lib/dayjs";
 import DatePicker from "./index";
 
@@ -39,26 +40,14 @@ export const WithSubmitButton: Story = {
   },
   render: (args) => {
     const [value, setValue] = useState<Dayjs | null>(dayjs("2026-08-10"));
-    return (
-      <DatePicker
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next)}
-      />
-    );
+    return <DatePicker {...args} value={value} onChange={(next) => setValue(next)} />;
   },
 };
 
 export const ControlledDayjs: Story = {
   render: (args) => {
     const [value, setValue] = useState<Dayjs | null>(dayjs("2026-06-20"));
-    return (
-      <DatePicker
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next)}
-      />
-    );
+    return <DatePicker {...args} value={value} onChange={(next) => setValue(next)} />;
   },
 };
 
@@ -66,25 +55,26 @@ export const Clearable: Story = {
   args: { clearable: true },
   render: (args) => {
     const [value, setValue] = useState<Dayjs | null>(dayjs("2026-06-20"));
-    return (
-      <DatePicker
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next)}
-      />
-    );
+    return <DatePicker {...args} value={value} onChange={(next) => setValue(next)} />;
   },
 };
 
-export const ControlSizeXs: Story = {
-  args: { size: "xs" },
+export const Sizes: Story = {
   render: (args) => {
     const [value, setValue] = useState<Dayjs | null>(dayjs("2026-06-20"));
     return (
-      <DatePicker
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next)}
+      <SizeStack
+        sizes={CONTROL_SIZES}
+        render={(size) => (
+          <DatePicker
+            {...args}
+            id={`date-picker-${size}`}
+            label={`Start date (${size})`}
+            size={size}
+            value={value}
+            onChange={(next) => setValue(next)}
+          />
+        )}
       />
     );
   },
