@@ -1,8 +1,8 @@
 import { useCallback, useRef, useState } from "react";
 import { MdCalendarMonth, MdClear } from "react-icons/md";
 import { cn } from "../cn";
-import DateCalendar from "../date-calendar";
 import type { DateCalendarLabels, WeekStartsOn } from "../date-calendar";
+import DateCalendar from "../date-calendar";
 import DateField from "../date-field";
 import { FloatingSurface } from "../floating-surface";
 import type { Dayjs } from "../lib/dayjs";
@@ -28,6 +28,8 @@ export interface DatePickerProps {
   disabled?: boolean;
   clearable?: boolean;
   wrapperClassName?: string;
+  labelClassName?: string;
+  className?: string;
   weekStartsOn?: WeekStartsOn;
   showSubmitButton?: boolean;
   showTodayButton?: boolean;
@@ -52,6 +54,8 @@ export default function DatePicker({
   disabled,
   clearable = true,
   wrapperClassName,
+  labelClassName,
+  className,
   weekStartsOn,
   showSubmitButton,
   showTodayButton,
@@ -97,7 +101,7 @@ export default function DatePicker({
   const iconButtonClassName = cn(
     "inline-flex size-7 items-center justify-center rounded-md transition-colors",
     textMuted,
-    disabled && "cursor-not-allowed"
+    disabled && "cursor-not-allowed",
   );
 
   return (
@@ -115,7 +119,8 @@ export default function DatePicker({
         required={required}
         disabled={disabled}
         wrapperClassName={wrapperClassName}
-        className={showClear ? "pr-16" : undefined}
+        labelClassName={labelClassName}
+        className={cn(showClear && "pr-16", className)}
         onFocus={() => {
           if (!disabled) {
             setOpen(true);
@@ -138,10 +143,7 @@ export default function DatePicker({
               aria-label="Open calendar"
               aria-expanded={open}
               disabled={disabled}
-              className={cn(
-                iconButtonClassName,
-                "hover:bg-surface-variant hover:text-on-surface"
-              )}
+              className={cn(iconButtonClassName, "hover:bg-surface-variant hover:text-on-surface")}
               onClick={() => {
                 if (!disabled) {
                   setOpen((current) => !current);

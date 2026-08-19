@@ -25,7 +25,7 @@ function OptionCheckbox({ checked, disabled }: { checked: boolean; disabled?: bo
       className={cn(
         "flex size-5 shrink-0 items-center justify-center rounded border transition-colors",
         checked ? comboboxCheckboxChecked : comboboxCheckboxUnchecked,
-        disabled && "opacity-50"
+        disabled && "opacity-50",
       )}
       role="checkbox"
       aria-checked={checked}
@@ -57,6 +57,7 @@ interface SelectProps {
   required?: boolean;
   className?: string;
   wrapperClassName?: string;
+  labelClassName?: string;
   searchable?: boolean;
   multiple?: boolean;
   clearable?: boolean;
@@ -87,6 +88,7 @@ export const Select: React.FC<SelectProps> = ({
   required = false,
   className = "",
   wrapperClassName,
+  labelClassName,
   searchable = false,
   multiple = false,
   clearable = false,
@@ -214,10 +216,10 @@ export const Select: React.FC<SelectProps> = ({
   }
 
   const selectClasses = cn(
-    "relative w-full rounded-lg border appearance-none shadow-theme-xs focus:outline-hidden focus:ring-3",
+    "relative flex w-full items-center rounded-lg border appearance-none shadow-theme-xs focus:outline-hidden focus:ring-3",
     sizeClasses[size],
     stateClasses,
-    className
+    className,
   );
 
   return (
@@ -228,6 +230,7 @@ export const Select: React.FC<SelectProps> = ({
       error={error}
       hint={hint}
       wrapperClassName={wrapperClassName}
+      labelClassName={labelClassName}
     >
       <div className="relative" ref={selectRef}>
         {/* selector trigger */}
@@ -241,16 +244,13 @@ export const Select: React.FC<SelectProps> = ({
           aria-haspopup="listbox"
           id={id}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex w-full items-center justify-between">
             <div className="flex items-center gap-2 flex-1 min-w-0">
               {selectedOptions.length > 0 ? (
                 <div className="flex items-center gap-1 flex-wrap">
                   {multiple ? (
                     selectedOptions.map((option) => (
-                      <span
-                        key={option.value}
-                        className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-md ${tagPrimary}`}
-                      >
+                      <span key={option.value} className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-md ${tagPrimary}`}>
                         {option.icon}
                         {option.label}
                         <button
@@ -346,16 +346,14 @@ export const Select: React.FC<SelectProps> = ({
                         !option.disabled && !isFocused && !isSelected && "hover:bg-primary hover:text-on-primary",
                         isFocused && comboboxOptionFocused,
                         isSelected && !isFocused && selectOptionActive,
-                        option.disabled && cn(textMuted, "cursor-not-allowed opacity-60")
+                        option.disabled && cn(textMuted, "cursor-not-allowed opacity-60"),
                       )}
                       onClick={() => handleOptionClick(option)}
                       onMouseEnter={() => !option.disabled && setFocusedIndex(index)}
                       role="option"
                       aria-selected={isSelected}
                     >
-                      {multiple ? (
-                        <OptionCheckbox checked={isSelected} disabled={option.disabled} />
-                      ) : null}
+                      {multiple ? <OptionCheckbox checked={isSelected} disabled={option.disabled} /> : null}
                       {option.icon}
                       {option.label}
                     </div>

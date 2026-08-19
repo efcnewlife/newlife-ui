@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **`className`** on `DatePicker` and `TimePicker`, forwarded to the field control.
+- **`labelClassName`** on `FormField`, `Select`, `DateField`, `TimeField`, `DatePicker`, and `TimePicker`.
+
+### Changed
+
+- **`Select`**: trigger is a flex row so selected text stays vertically centered when height is overridden.
+
 ## [0.3.4] - 2026-08-13
 
 ### Summary

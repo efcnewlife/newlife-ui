@@ -30,6 +30,7 @@ export interface TimeFieldProps {
   required?: boolean;
   disabled?: boolean;
   wrapperClassName?: string;
+  labelClassName?: string;
   className?: string;
   readOnly?: boolean;
   onFocus?: () => void;
@@ -38,12 +39,7 @@ export interface TimeFieldProps {
   endAdornment?: ReactNode;
 }
 
-const toDisplay = (
-  value: Dayjs | null | undefined,
-  timePrecision: TimePrecision,
-  ampm: boolean,
-  format?: string
-): string => {
+const toDisplay = (value: Dayjs | null | undefined, timePrecision: TimePrecision, ampm: boolean, format?: string): string => {
   if (value == null || !value.isValid()) {
     return "";
   }
@@ -64,6 +60,7 @@ export default function TimeField({
   required,
   disabled,
   wrapperClassName,
+  labelClassName,
   className,
   readOnly,
   onFocus,
@@ -71,14 +68,10 @@ export default function TimeField({
   endAdornment,
 }: TimeFieldProps) {
   const isControlled = value !== undefined;
-  const [uncontrolledValue, setUncontrolledValue] = useState<Dayjs | null>(
-    defaultValue
-  );
+  const [uncontrolledValue, setUncontrolledValue] = useState<Dayjs | null>(defaultValue);
   const selectedValue = isControlled ? value : uncontrolledValue;
   const resolvedPlaceholder = placeholder ?? defaultTimeFormat(timePrecision, ampm);
-  const [text, setText] = useState(() =>
-    toDisplay(selectedValue, timePrecision, ampm, format)
-  );
+  const [text, setText] = useState(() => toDisplay(selectedValue, timePrecision, ampm, format));
 
   useEffect(() => {
     setText((current) => {
@@ -129,13 +122,7 @@ export default function TimeField({
   };
 
   return (
-    <FormField
-      id={id}
-      label={label}
-      required={required}
-      error={error}
-      wrapperClassName={wrapperClassName}
-    >
+    <FormField id={id} label={label} required={required} error={error} wrapperClassName={wrapperClassName} labelClassName={labelClassName}>
       <div className="relative">
         <input
           id={id}
@@ -146,23 +133,12 @@ export default function TimeField({
           onChange={handleChange}
           onFocus={onFocus}
           onBlur={onBlur}
-          className={cn(
-            fieldBase,
-            error && fieldError,
-            disabled && fieldDisabled,
-            endAdornment && "pr-11",
-            className
-          )}
+          className={cn(fieldBase, error && fieldError, disabled && fieldDisabled, endAdornment && "pr-11", className)}
           autoComplete="off"
           inputMode={ampm ? "text" : "numeric"}
         />
         {endAdornment ? (
-          <span
-            className={cn(
-              "pointer-events-none absolute inset-y-0 right-3 flex items-center",
-              disabled && "opacity-40"
-            )}
-          >
+          <span className={cn("pointer-events-none absolute inset-y-0 right-3 flex items-center", disabled && "opacity-40")}>
             <span className="pointer-events-auto flex items-center">{endAdornment}</span>
           </span>
         ) : null}

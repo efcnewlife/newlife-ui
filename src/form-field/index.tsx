@@ -10,22 +10,15 @@ export interface FormFieldProps {
   error?: string | undefined;
   hint?: string;
   wrapperClassName?: string;
+  labelClassName?: string;
   children: ReactNode;
 }
 
-const FormField: FC<FormFieldProps> = ({
-  id,
-  label,
-  required = false,
-  error,
-  hint,
-  wrapperClassName,
-  children,
-}) => {
+const FormField: FC<FormFieldProps> = ({ id, label, required = false, error, hint, wrapperClassName, labelClassName, children }) => {
   return (
     <div className={wrapperClassName}>
       {label && (
-        <Label htmlFor={id}>
+        <Label htmlFor={id} className={labelClassName}>
           {label} {required && <span className="text-error">*</span>}
         </Label>
       )}
