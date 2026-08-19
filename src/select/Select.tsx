@@ -9,6 +9,9 @@ import {
   comboboxCheckboxUnchecked,
   comboboxOptionDefault,
   comboboxOptionFocused,
+  CONTROL_ADORNMENT_ICON_CLASSES,
+  CONTROL_SIZE_CLASSES,
+  type ControlSize,
   fieldBase,
   fieldDisabled,
   fieldError,
@@ -61,7 +64,7 @@ interface SelectProps {
   searchable?: boolean;
   multiple?: boolean;
   clearable?: boolean;
-  size?: "sm" | "md" | "lg";
+  size?: ControlSize;
   variant?: "default" | "bordered" | "ghost";
   /** Defaults when not using i18n in the host app */
   labels?: {
@@ -189,13 +192,6 @@ export const Select: React.FC<SelectProps> = ({
     }
   };
 
-  // size style
-  const sizeClasses = {
-    sm: "h-9 text-sm px-3 py-2",
-    md: "h-11 text-sm px-4 py-2.5",
-    lg: "h-12 text-base px-4 py-3",
-  };
-
   const variantClasses = {
     default: fieldBase,
     bordered: "border-2 border-outline focus:border-primary focus:ring-primary/20 bg-surface text-on-surface",
@@ -216,9 +212,9 @@ export const Select: React.FC<SelectProps> = ({
   }
 
   const selectClasses = cn(
-    "relative flex w-full items-center rounded-lg border appearance-none shadow-theme-xs focus:outline-hidden focus:ring-3",
-    sizeClasses[size],
+    "relative flex w-full items-center overflow-hidden rounded-lg border appearance-none shadow-theme-xs focus:outline-hidden focus:ring-3",
     stateClasses,
+    CONTROL_SIZE_CLASSES[size],
     className,
   );
 
@@ -297,7 +293,12 @@ export const Select: React.FC<SelectProps> = ({
                 aria-label={labels.toggleOptions}
               >
                 <MdKeyboardArrowDown
-                  className={cn(`size-5 ${textMuted} transition-transform duration-200`, isOpen && "rotate-180")}
+                  className={cn(
+                    textMuted,
+                    "transition-transform duration-200",
+                    CONTROL_ADORNMENT_ICON_CLASSES[size],
+                    isOpen && "rotate-180",
+                  )}
                   aria-hidden="true"
                 />
               </button>

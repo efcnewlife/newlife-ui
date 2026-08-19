@@ -10,7 +10,7 @@ import {
   validateCalendarDate,
 } from "../picker/datetime";
 import type { PickerChangeMeta, PickerValidationError } from "../picker/types";
-import { fieldBase, fieldDisabled, fieldError } from "../theme/role-classes";
+import { CONTROL_SIZE_CLASSES, type ControlSize, fieldBase, fieldDisabled, fieldError } from "../theme/role-classes";
 
 export interface DateFieldProps {
   id: string;
@@ -28,6 +28,7 @@ export interface DateFieldProps {
   wrapperClassName?: string;
   labelClassName?: string;
   className?: string;
+  size?: ControlSize;
   readOnly?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
@@ -60,6 +61,7 @@ export default function DateField({
   wrapperClassName,
   labelClassName,
   className,
+  size = "md",
   readOnly,
   onFocus,
   onBlur,
@@ -135,7 +137,14 @@ export default function DateField({
           onChange={handleChange}
           onFocus={onFocus}
           onBlur={onBlur}
-          className={cn(fieldBase, error && fieldError, disabled && fieldDisabled, endAdornment && "pr-11", className)}
+          className={cn(
+            fieldBase,
+            error && fieldError,
+            disabled && fieldDisabled,
+            CONTROL_SIZE_CLASSES[size],
+            endAdornment && "pr-11",
+            className,
+          )}
           autoComplete="off"
           inputMode="numeric"
         />

@@ -269,4 +269,17 @@ describe("TimeField", () => {
     expect(meta.validationError).toBeNull();
     expect(screen.getByLabelText("Start time")).toHaveValue("2:00 PM");
   });
+
+  it("defaults Control size to md and accepts xs", () => {
+    const { rerender } = render(<TimeField id="start-time" label="Start time" />);
+    expect(screen.getByLabelText("Start time")).toHaveClass("h-11", "text-sm", "px-4");
+
+    rerender(<TimeField id="start-time" label="Start time" size="xs" />);
+    expect(screen.getByLabelText("Start time")).toHaveClass("h-8", "text-xs", "px-2.5");
+  });
+
+  it("forwards labelClassName to the FormField label", () => {
+    render(<TimeField id="start-time" label="Start time" labelClassName="text-on-primary" />);
+    expect(screen.getByText("Start time")).toHaveClass("text-on-primary");
+  });
 });

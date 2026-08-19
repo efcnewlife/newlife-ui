@@ -24,6 +24,7 @@ export default meta;
 type Story = StoryObj<typeof Select>;
 
 export const Default: Story = {
+  args: { size: "md" },
   render: (args) => <Select {...args} />,
 };
 
@@ -69,6 +70,11 @@ export const Disabled: Story = {
 
 export const GhostVariant: Story = {
   args: { variant: "ghost", value: "en" },
+  render: (args) => <Select {...args} />,
+};
+
+export const ControlSizeXs: Story = {
+  args: { size: "xs", value: "en" },
   render: (args) => <Select {...args} />,
 };
 

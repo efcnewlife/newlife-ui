@@ -13,7 +13,7 @@ import {
 } from "../picker/datetime";
 import type { TimePrecision } from "../picker/time";
 import type { PickerChangeMeta, PickerValidationError } from "../picker/types";
-import { fieldBase, fieldDisabled, fieldError } from "../theme/role-classes";
+import { CONTROL_SIZE_CLASSES, type ControlSize, fieldBase, fieldDisabled, fieldError } from "../theme/role-classes";
 
 export type DateTimeFieldTimePrecision = TimePrecision;
 
@@ -38,7 +38,9 @@ export interface DateTimeFieldProps {
   required?: boolean;
   disabled?: boolean;
   wrapperClassName?: string;
+  labelClassName?: string;
   className?: string;
+  size?: ControlSize;
   readOnly?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
@@ -78,7 +80,9 @@ export default function DateTimeField({
   required,
   disabled,
   wrapperClassName,
+  labelClassName,
   className,
+  size = "md",
   readOnly,
   onFocus,
   onBlur,
@@ -156,6 +160,7 @@ export default function DateTimeField({
       required={required}
       error={error}
       wrapperClassName={wrapperClassName}
+      labelClassName={labelClassName}
     >
       <div className="relative">
         <input
@@ -171,6 +176,7 @@ export default function DateTimeField({
             fieldBase,
             error && fieldError,
             disabled && fieldDisabled,
+            CONTROL_SIZE_CLASSES[size],
             endAdornment && "pr-11",
             className
           )}

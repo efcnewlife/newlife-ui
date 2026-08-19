@@ -12,6 +12,7 @@ export { default as NotificationContainer } from "./notification/NotificationCon
 export { default as Button } from "./button";
 export { default as FormField } from "./form-field";
 export type { FormFieldProps } from "./form-field";
+export type { ControlSize } from "./theme/role-classes";
 export { default as Label } from "./label";
 export { default as Input } from "./input";
 export { default as TextArea } from "./textarea";

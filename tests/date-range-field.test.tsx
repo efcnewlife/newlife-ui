@@ -126,4 +126,17 @@ describe("DateRangeField", () => {
       source: "field",
     });
   });
+
+  it("defaults Control size to md and accepts xs", () => {
+    const { rerender } = render(<DateRangeField id="range" label="Date range" />);
+    expect(screen.getByLabelText("Date range")).toHaveClass("h-11", "text-sm", "px-4");
+
+    rerender(<DateRangeField id="range" label="Date range" size="xs" />);
+    expect(screen.getByLabelText("Date range")).toHaveClass("h-8", "text-xs", "px-2.5");
+  });
+
+  it("forwards labelClassName to the FormField label", () => {
+    render(<DateRangeField id="range" label="Date range" labelClassName="text-on-primary" />);
+    expect(screen.getByText("Date range")).toHaveClass("text-on-primary");
+  });
 });

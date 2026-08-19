@@ -7,7 +7,7 @@ import DateField from "../date-field";
 import { FloatingSurface } from "../floating-surface";
 import type { Dayjs } from "../lib/dayjs";
 import type { PickerChangeMeta } from "../picker/types";
-import { textMuted } from "../theme/role-classes";
+import { CONTROL_ADORNMENT_BUTTON_CLASSES, CONTROL_ADORNMENT_ICON_CLASSES, type ControlSize, textMuted } from "../theme/role-classes";
 
 export interface DatePickerLabels extends DateCalendarLabels {
   clear?: string;
@@ -30,6 +30,7 @@ export interface DatePickerProps {
   wrapperClassName?: string;
   labelClassName?: string;
   className?: string;
+  size?: ControlSize;
   weekStartsOn?: WeekStartsOn;
   showSubmitButton?: boolean;
   showTodayButton?: boolean;
@@ -56,6 +57,7 @@ export default function DatePicker({
   wrapperClassName,
   labelClassName,
   className,
+  size = "md",
   weekStartsOn,
   showSubmitButton,
   showTodayButton,
@@ -99,7 +101,8 @@ export default function DatePicker({
   };
 
   const iconButtonClassName = cn(
-    "inline-flex size-7 items-center justify-center rounded-md transition-colors",
+    "inline-flex items-center justify-center rounded-md transition-colors",
+    CONTROL_ADORNMENT_BUTTON_CLASSES[size],
     textMuted,
     disabled && "cursor-not-allowed",
   );
@@ -121,6 +124,7 @@ export default function DatePicker({
         wrapperClassName={wrapperClassName}
         labelClassName={labelClassName}
         className={cn(showClear && "pr-16", className)}
+        size={size}
         onFocus={() => {
           if (!disabled) {
             setOpen(true);
@@ -135,7 +139,7 @@ export default function DatePicker({
                 className={cn(iconButtonClassName, "hover:text-on-surface")}
                 onClick={handleClear}
               >
-                <MdClear className="size-5" />
+                <MdClear className={CONTROL_ADORNMENT_ICON_CLASSES[size]} />
               </button>
             ) : null}
             <button
@@ -150,7 +154,7 @@ export default function DatePicker({
                 }
               }}
             >
-              <MdCalendarMonth className="size-5" />
+              <MdCalendarMonth className={CONTROL_ADORNMENT_ICON_CLASSES[size]} />
             </button>
           </span>
         }

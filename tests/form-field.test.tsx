@@ -40,6 +40,15 @@ describe("FormField", () => {
     expect(container.firstChild).toHaveClass("field-root");
   });
 
+  it("applies labelClassName on the label", () => {
+    render(
+      <FormField id="email" label="Email" labelClassName="text-on-primary">
+        <input id="email" type="text" />
+      </FormField>
+    );
+    expect(screen.getByText("Email")).toHaveClass("text-on-primary");
+  });
+
   it("renders a single root DOM node", () => {
     const { container } = render(
       <FormField id="email" label="Email" error="Invalid">

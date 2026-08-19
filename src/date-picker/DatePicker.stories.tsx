@@ -18,6 +18,7 @@ export default meta;
 type Story = StoryObj<typeof DatePicker>;
 
 export const Default: Story = {
+  args: { size: "md" },
   render: (args) => <DatePicker {...args} />,
 };
 
@@ -63,6 +64,20 @@ export const ControlledDayjs: Story = {
 
 export const Clearable: Story = {
   args: { clearable: true },
+  render: (args) => {
+    const [value, setValue] = useState<Dayjs | null>(dayjs("2026-06-20"));
+    return (
+      <DatePicker
+        {...args}
+        value={value}
+        onChange={(next) => setValue(next)}
+      />
+    );
+  },
+};
+
+export const ControlSizeXs: Story = {
+  args: { size: "xs" },
   render: (args) => {
     const [value, setValue] = useState<Dayjs | null>(dayjs("2026-06-20"));
     return (

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import FormField from "./index";
-import { fieldBase } from "../theme/role-classes";
+import { CONTROL_SIZE_CLASSES, fieldBase } from "../theme/role-classes";
+import { cn } from "../cn";
 
 const meta: Meta<typeof FormField> = {
   title: "Components/FormField",
@@ -18,7 +19,7 @@ type Story = StoryObj<typeof FormField>;
 export const Default: Story = {
   render: (args) => (
     <FormField {...args}>
-      <input id={args.id} type="text" placeholder="Control slot" className={fieldBase} />
+      <input id={args.id} type="text" placeholder="Control slot" className={cn(fieldBase, CONTROL_SIZE_CLASSES.md)} />
     </FormField>
   ),
 };
@@ -29,7 +30,7 @@ export const WithError: Story = {
   },
   render: (args) => (
     <FormField {...args}>
-      <input id={args.id} type="text" className={fieldBase} />
+      <input id={args.id} type="text" className={cn(fieldBase, CONTROL_SIZE_CLASSES.md)} />
     </FormField>
   ),
 };
@@ -40,7 +41,7 @@ export const WithHint: Story = {
   },
   render: (args) => (
     <FormField {...args}>
-      <input id={args.id} type="text" className={fieldBase} />
+      <input id={args.id} type="text" className={cn(fieldBase, CONTROL_SIZE_CLASSES.md)} />
     </FormField>
   ),
 };
@@ -52,7 +53,7 @@ export const WithWrapperClassName: Story = {
   },
   render: (args) => (
     <FormField {...args}>
-      <input id={args.id} type="text" placeholder="Wrapped field" className={fieldBase} />
+      <input id={args.id} type="text" placeholder="Wrapped field" className={cn(fieldBase, CONTROL_SIZE_CLASSES.md)} />
     </FormField>
   ),
 };

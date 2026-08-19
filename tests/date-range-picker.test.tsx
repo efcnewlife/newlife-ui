@@ -194,4 +194,22 @@ describe("DateRangePicker", () => {
 
     expect(screen.queryByRole("button", { name: "Today" })).not.toBeInTheDocument();
   });
+
+  it("forwards className and Control size xs to the field", () => {
+    render(
+      <DateRangePicker
+        id="range"
+        label="Date range"
+        value={{ start: dayjs("2026-08-10"), end: dayjs("2026-08-15") }}
+        size="xs"
+        className="host-class"
+      />
+    );
+    expect(screen.getByLabelText("Date range")).toHaveClass("h-8", "text-xs", "px-2.5", "host-class", "pr-16");
+  });
+
+  it("forwards labelClassName to the FormField label", () => {
+    render(<DateRangePicker id="range" label="Date range" labelClassName="text-on-primary" />);
+    expect(screen.getByText("Date range")).toHaveClass("text-on-primary");
+  });
 });

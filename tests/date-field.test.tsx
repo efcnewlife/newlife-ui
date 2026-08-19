@@ -179,4 +179,17 @@ describe("DateField", () => {
     const [value] = onChange.mock.calls.at(-1)!;
     expect(value.format("YYYY-MM-DD")).toBe("2020-12-24");
   });
+
+  it("defaults Control size to md and accepts xs", () => {
+    const { rerender } = render(<DateField id="start-date" label="Start date" />);
+    expect(screen.getByLabelText("Start date")).toHaveClass("h-11", "text-sm", "px-4");
+
+    rerender(<DateField id="start-date" label="Start date" size="xs" />);
+    expect(screen.getByLabelText("Start date")).toHaveClass("h-8", "text-xs", "px-2.5");
+  });
+
+  it("forwards labelClassName to the FormField label", () => {
+    render(<DateField id="start-date" label="Start date" labelClassName="text-on-primary" />);
+    expect(screen.getByText("Start date")).toHaveClass("text-on-primary");
+  });
 });

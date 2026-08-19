@@ -17,6 +17,7 @@ export default meta;
 type Story = StoryObj<typeof Input>;
 
 export const Default: Story = {
+  args: { size: "md" },
   render: (args) => <Input {...args} />,
 };
 
@@ -61,5 +62,14 @@ export const Disabled: Story = {
 
 export const Required: Story = {
   args: { required: true },
+  render: (args) => <Input {...args} />,
+};
+
+export const ControlSizeXs: Story = {
+  args: {
+    id: "input-xs",
+    size: "xs",
+    label: "Compact email",
+  },
   render: (args) => <Input {...args} />,
 };

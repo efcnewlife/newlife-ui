@@ -223,4 +223,34 @@ describe("TimePicker", () => {
       )
     ).toBe(true);
   });
+
+  it("merges className with clear padding", () => {
+    render(
+      <TimePicker
+        id="start-time"
+        label="Start time"
+        value={dayjs("1970-01-01T14:30:00")}
+        className="host-class"
+      />
+    );
+    expect(screen.getByLabelText("Start time")).toHaveClass("host-class", "pr-16");
+  });
+
+  it("forwards Control size xs to the field without shrinking hour options", async () => {
+    const user = userEvent.setup();
+    render(
+      <TimePicker id="start-time" label="Start time" value={dayjs("1970-01-01T14:30:00")} size="xs" />
+    );
+    expect(screen.getByLabelText("Start time")).toHaveClass("h-8", "text-xs", "px-2.5");
+
+    await user.click(screen.getByRole("button", { name: /open time picker/i }));
+    const hours = screen.getByRole("listbox", { name: /hours/i });
+    const hourOption = hours.querySelector('[role="option"]');
+    expect(hourOption).toHaveClass("py-2", "text-sm");
+  });
+
+  it("forwards labelClassName to the FormField label", () => {
+    render(<TimePicker id="start-time" label="Start time" labelClassName="text-on-primary" />);
+    expect(screen.getByText("Start time")).toHaveClass("text-on-primary");
+  });
 });

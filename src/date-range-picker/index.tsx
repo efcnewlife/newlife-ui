@@ -13,7 +13,12 @@ import {
   type DateRangeValue,
 } from "../picker/date-range";
 import type { PickerChangeMeta } from "../picker/types";
-import { textMuted } from "../theme/role-classes";
+import {
+  CONTROL_ADORNMENT_BUTTON_CLASSES,
+  CONTROL_ADORNMENT_ICON_CLASSES,
+  type ControlSize,
+  textMuted,
+} from "../theme/role-classes";
 
 export interface DateRangePickerLabels extends DateRangeCalendarLabels {
   clear?: string;
@@ -34,6 +39,9 @@ export interface DateRangePickerProps {
   disabled?: boolean;
   clearable?: boolean;
   wrapperClassName?: string;
+  labelClassName?: string;
+  className?: string;
+  size?: ControlSize;
   weekStartsOn?: WeekStartsOn;
   defaultMonth?: Dayjs;
   showSubmitButton?: boolean;
@@ -61,6 +69,9 @@ export default function DateRangePicker({
   disabled,
   clearable = true,
   wrapperClassName,
+  labelClassName,
+  className,
+  size = "md",
   weekStartsOn,
   defaultMonth,
   showSubmitButton,
@@ -126,7 +137,8 @@ export default function DateRangePicker({
   };
 
   const iconButtonClassName = cn(
-    "inline-flex size-7 items-center justify-center rounded-md transition-colors",
+    "inline-flex items-center justify-center rounded-md transition-colors",
+    CONTROL_ADORNMENT_BUTTON_CLASSES[size],
     textMuted,
     disabled && "cursor-not-allowed"
   );
@@ -146,7 +158,9 @@ export default function DateRangePicker({
         required={required}
         disabled={disabled}
         wrapperClassName={wrapperClassName}
-        className={showClear ? "pr-16" : undefined}
+        labelClassName={labelClassName}
+        className={cn(showClear && "pr-16", className)}
+        size={size}
         onFocus={() => {
           if (!disabled) {
             setOpen(true);
@@ -161,7 +175,7 @@ export default function DateRangePicker({
                 className={cn(iconButtonClassName, "hover:text-on-surface")}
                 onClick={handleClear}
               >
-                <MdClear className="size-5" />
+                <MdClear className={CONTROL_ADORNMENT_ICON_CLASSES[size]} />
               </button>
             ) : null}
             <button
@@ -179,7 +193,7 @@ export default function DateRangePicker({
                 }
               }}
             >
-              <MdCalendarMonth className="size-5" />
+              <MdCalendarMonth className={CONTROL_ADORNMENT_ICON_CLASSES[size]} />
             </button>
           </span>
         }

@@ -94,4 +94,39 @@ describe("DatePicker", () => {
     );
     expect(screen.queryByRole("button", { name: "Clear" })).not.toBeInTheDocument();
   });
+
+  it("merges className with clear padding and still applies className when clear is hidden", () => {
+    const { rerender } = render(
+      <DatePicker id="start-date" label="Start date" value={dayjs("2026-06-20")} className="host-class" />
+    );
+    expect(screen.getByLabelText("Start date")).toHaveClass("host-class", "pr-16");
+
+    rerender(
+      <DatePicker
+        id="start-date"
+        label="Start date"
+        value={dayjs("2026-06-20")}
+        clearable={false}
+        className="host-class"
+      />
+    );
+    expect(screen.getByLabelText("Start date")).toHaveClass("host-class");
+    expect(screen.getByLabelText("Start date")).not.toHaveClass("pr-16");
+  });
+
+  it("forwards Control size xs to the field without shrinking calendar day cells", async () => {
+    const user = userEvent.setup();
+    render(
+      <DatePicker id="start-date" label="Start date" value={dayjs("2026-06-20")} size="xs" />
+    );
+    expect(screen.getByLabelText("Start date")).toHaveClass("h-8", "text-xs", "px-2.5");
+
+    await user.click(screen.getByRole("button", { name: /open calendar/i }));
+    expect(screen.getByRole("button", { name: "June 15, 2026" })).toHaveClass("size-6");
+  });
+
+  it("forwards labelClassName to the FormField label", () => {
+    render(<DatePicker id="start-date" label="Start date" labelClassName="text-on-primary" />);
+    expect(screen.getByText("Start date")).toHaveClass("text-on-primary");
+  });
 });

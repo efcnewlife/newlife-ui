@@ -12,8 +12,32 @@ export const accentPrimaryContainer =
 export const buttonOutline =
   "bg-surface text-on-surface ring-1 ring-inset ring-outline hover:bg-surface-variant";
 
+export type ControlSize = "xs" | "sm" | "md" | "lg";
+
+/** Density for single-line form controls. Applied after fieldBase so size beats the shell. */
+export const CONTROL_SIZE_CLASSES: Record<ControlSize, string> = {
+  xs: "h-8 px-2.5 text-xs leading-none",
+  sm: "h-9 px-3 text-sm leading-none",
+  md: "h-11 px-4 text-sm leading-none",
+  lg: "h-12 px-4 text-base leading-none",
+};
+
+export const CONTROL_ADORNMENT_BUTTON_CLASSES: Record<ControlSize, string> = {
+  xs: "size-6",
+  sm: "size-7",
+  md: "size-7",
+  lg: "size-7",
+};
+
+export const CONTROL_ADORNMENT_ICON_CLASSES: Record<ControlSize, string> = {
+  xs: "size-4",
+  sm: "size-5",
+  md: "size-5",
+  lg: "size-5",
+};
+
 export const fieldShell =
-  "h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs focus:outline-hidden focus:ring-3";
+  "w-full rounded-lg border appearance-none shadow-theme-xs focus:outline-hidden focus:ring-3";
 
 export const fieldBase =
   `${fieldShell} border-outline bg-surface text-on-surface placeholder:text-on-surface-variant focus:border-outline-focus focus:ring-primary/20`;

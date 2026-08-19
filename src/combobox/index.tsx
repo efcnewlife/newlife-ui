@@ -10,6 +10,9 @@ import {
   comboboxOptionDefault,
   comboboxOptionFocused,
   comboboxSpinner,
+  CONTROL_ADORNMENT_ICON_CLASSES,
+  CONTROL_SIZE_CLASSES,
+  type ControlSize,
   fieldBase,
   fieldDisabled,
   fieldError,
@@ -40,6 +43,7 @@ interface ComboBoxPropsBase<T = any> {
   required?: boolean;
   className?: string;
   wrapperClassName?: string;
+  labelClassName?: string;
   inputClassName?: string;
   displayValue?: (option: ComboBoxOption<T> | null) => string;
   filterFunction?: (option: ComboBoxOption<T>, query: string) => boolean;
@@ -47,7 +51,7 @@ interface ComboBoxPropsBase<T = any> {
   allowCreate?: boolean;
   onCreateOption?: (query: string) => T;
   clearable?: boolean;
-  size?: "sm" | "md" | "lg";
+  size?: ControlSize;
   onQueryChange?: (query: string) => void;
   /** Called when dropdown opens (focus or click toggle). Use to e.g. fetch options from API. */
   onOpen?: () => void;
@@ -129,6 +133,7 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
     required = false,
     className = "",
     wrapperClassName,
+    labelClassName,
     inputClassName = "",
     displayValue = defaultDisplayValue,
     filterFunction = defaultFilterFunction,
@@ -317,13 +322,6 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
     }
   }, [focusedIndex]);
 
-  // size style
-  const sizeClasses = {
-    sm: "h-9 text-sm px-3 py-2",
-    md: "h-11 text-sm px-4 py-2.5",
-    lg: "h-12 text-base px-4 py-3",
-  };
-
   // status style
   let stateClasses = "";
   if (disabled) {
@@ -342,9 +340,10 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
   const rightPadding = hasClearButton ? "pr-16" : "pr-10";
 
   const inputClasses = cn(
-    "block w-full rounded-lg border appearance-none shadow-theme-xs focus:outline-hidden focus:ring-3 placeholder:text-on-surface-variant",
-    sizeClasses[size],
+    fieldBase,
+    "block placeholder:text-on-surface-variant",
     stateClasses,
+    CONTROL_SIZE_CLASSES[size],
     rightPadding,
     inputClassName
   );
@@ -359,6 +358,7 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
       error={error}
       hint={hint}
       wrapperClassName={wrapperClassName}
+      labelClassName={labelClassName}
     >
       <div className={cn("relative", className)} ref={comboboxRef}>
         <div className="relative">
@@ -404,7 +404,12 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
               aria-label="Toggle options"
             >
               <MdKeyboardArrowDown
-                className={cn(`size-5 ${textMuted} transition-transform duration-200`, isOpen && "rotate-180")}
+                className={cn(
+                  textMuted,
+                  "transition-transform duration-200",
+                  CONTROL_ADORNMENT_ICON_CLASSES[size],
+                  isOpen && "rotate-180",
+                )}
                 aria-hidden="true"
               />
             </button>
