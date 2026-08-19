@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-08-19
+
+### Summary
+
+Single-line form controls share **Control size** (`xs` / `sm` / `md` / `lg`). Default stays `md` (44px). Compact toolbars use `xs` (`h-8`). Existing Select `size="sm"` hosts shrink to 36px.
+
 ### Added
 
 - **Control size** (`xs` / `sm` / `md` / `lg`) on single-line form controls: `Input`, `PhoneInput`, `Select`, `ComboBox`, date/time Fields, and Pickers. Default remains `md` (`h-11`). `xs` is `h-8` for compact toolbars. See ADR 0006.
@@ -18,6 +24,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **`Select` / `ComboBox`**: add `xs`; drop vertical padding from size steps so `sm` is `h-9`. Trigger/input stay vertically centered. Option lists are unchanged.
 - **Pickers**: in-shell calendar/clock/clear chrome shrinks at `xs` only (`size-6` / `size-4`). Floating surfaces stay at current size.
 - Hosts already passing Select `size="sm"` (for example locale Select) now get a 36px shell instead of 44px.
+
+### Fixed
+
+- **Select** listbox: first and last option hover follows the panel corner radius; the first option stays square when Search options is shown.
 
 ## [0.3.4] - 2026-08-13
 
