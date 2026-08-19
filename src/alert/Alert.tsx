@@ -47,6 +47,7 @@ const sizeStyles: Record<
     gap: string;
     icon: string;
     title: string;
+    titleSpacing: string;
     message: string;
     link: string;
   }
@@ -55,7 +56,8 @@ const sizeStyles: Record<
     container: "rounded-lg p-3",
     gap: "gap-2",
     icon: "size-5",
-    title: "mb-0.5 text-xs font-semibold",
+    title: "text-xs font-semibold",
+    titleSpacing: "mb-0.5",
     message: "text-xs",
     link: "mt-2 text-xs",
   },
@@ -63,7 +65,8 @@ const sizeStyles: Record<
     container: "rounded-xl p-4",
     gap: "gap-3",
     icon: "size-6",
-    title: "mb-1 text-sm font-semibold",
+    title: "text-sm font-semibold",
+    titleSpacing: "mb-1",
     message: "text-sm",
     link: "mt-3 text-sm",
   },
@@ -71,7 +74,8 @@ const sizeStyles: Record<
     container: "rounded-xl p-5",
     gap: "gap-4",
     icon: "size-7",
-    title: "mb-1.5 text-base font-semibold",
+    title: "text-base font-semibold",
+    titleSpacing: "mb-1.5",
     message: "text-sm",
     link: "mt-4 text-sm",
   },
@@ -128,17 +132,18 @@ const Alert: FC<AlertProps> = ({
   const styles = sizeStyles[size];
   const iconClassName = cn("fill-current shrink-0", styles.icon, variantClasses[variant].icon);
   const hasMessage = Boolean(message);
+  const hasBody = hasMessage || showLink;
   const linkClassName = cn("inline-block font-medium", styles.link, alertLink);
 
   return (
     <div className={cn("border", styles.container, widthStyles[width], variantClasses[variant].container, className)} role="alert">
-      <div className={cn("flex items-start", styles.gap)}>
-        <div className="-mt-0.5 shrink-0">
+      <div className={cn("flex", hasBody ? "items-start" : "items-center", styles.gap)}>
+        <div className={cn("shrink-0", hasBody && "-mt-0.5")}>
           <SeverityIcon variant={variant} className={iconClassName} />
         </div>
 
         <div className="min-w-0 flex-1">
-          <h4 className={cn(styles.title, alertTitle)}>{title}</h4>
+          <h4 className={cn(styles.title, hasMessage && styles.titleSpacing, alertTitle)}>{title}</h4>
 
           {hasMessage ? (
             <p className={cn(styles.message, alertMessage, "break-words")} style={getMessageStyle(messageLines)}>

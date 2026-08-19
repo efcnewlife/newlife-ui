@@ -23,10 +23,20 @@ describe("Alert", () => {
     expect(screen.getByRole("alert").querySelector("p")).toBeNull();
   });
 
+  it("vertically centers a title-only notice", () => {
+    render(<Alert variant="info" title="Notice" />);
+    expect(screen.getByRole("alert").firstElementChild).toHaveClass("items-center");
+    expect(screen.getByText("Notice")).not.toHaveClass("mb-1");
+  });
+
+  it("keeps a title-and-message notice top-aligned", () => {
+    render(<Alert variant="info" title="Notice" message="Details" />);
+    expect(screen.getByRole("alert").firstElementChild).toHaveClass("items-start");
+    expect(screen.getByText("Notice")).toHaveClass("mb-1");
+  });
+
   it("applies size classes", () => {
-    const { rerender } = render(
-      <Alert variant="info" title="Notice" message="Details" size="sm" />
-    );
+    const { rerender } = render(<Alert variant="info" title="Notice" message="Details" size="sm" />);
     expect(screen.getByRole("alert")).toHaveClass("p-3");
 
     rerender(<Alert variant="info" title="Notice" message="Details" size="lg" />);
@@ -34,9 +44,7 @@ describe("Alert", () => {
   });
 
   it("applies width classes", () => {
-    const { rerender } = render(
-      <Alert variant="info" title="Notice" message="Details" width="full" />
-    );
+    const { rerender } = render(<Alert variant="info" title="Notice" message="Details" width="full" />);
     expect(screen.getByRole("alert")).toHaveClass("w-full");
 
     rerender(<Alert variant="info" title="Notice" message="Details" width="md" />);
@@ -69,9 +77,7 @@ describe("Alert", () => {
   });
 
   it("merges custom className", () => {
-    render(
-      <Alert variant="info" title="Notice" message="Details" className="shadow-lg" />
-    );
+    render(<Alert variant="info" title="Notice" message="Details" className="shadow-lg" />);
     expect(screen.getByRole("alert")).toHaveClass("shadow-lg");
   });
 });
