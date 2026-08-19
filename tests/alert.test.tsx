@@ -10,6 +10,19 @@ describe("Alert", () => {
     expect(screen.getByText("Details here")).toBeInTheDocument();
   });
 
+  it("renders a title-only notice without a message element", () => {
+    render(<Alert variant="info" title="Notice" />);
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+    expect(screen.getByText("Notice")).toBeInTheDocument();
+    expect(screen.getByRole("alert").querySelector("p")).toBeNull();
+  });
+
+  it("hides the message element when message is empty", () => {
+    render(<Alert variant="info" title="Notice" message="" />);
+    expect(screen.getByText("Notice")).toBeInTheDocument();
+    expect(screen.getByRole("alert").querySelector("p")).toBeNull();
+  });
+
   it("applies size classes", () => {
     const { rerender } = render(
       <Alert variant="info" title="Notice" message="Details" size="sm" />

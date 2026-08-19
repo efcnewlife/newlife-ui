@@ -2,6 +2,7 @@ import { render } from "@testing-library/react";
 import { describe, it } from "vitest";
 import Alert from "../../src/alert/Alert";
 import Badge from "../../src/badge/Badge";
+import Banner from "../../src/banner/Banner";
 import Button from "../../src/button";
 import ButtonGroup from "../../src/buttons-group";
 import Checkbox from "../../src/checkbox";
@@ -77,6 +78,7 @@ describe("component smoke renders", () => {
         <ProgressBar progress={40} />
         <Badge>Badge</Badge>
         <Alert variant="info" title="Title" message="Message" />
+        <Banner variant="info" message="Announcement" />
         <Notification variant="success" title="Toast" />
         <Tooltip content="Tip">
           <span>Hover</span>

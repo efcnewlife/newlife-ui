@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **Banner**: presentational full-bleed top strip (`info` | `warning` | `error`) with a host-composed message, optional dismiss (`onDismiss` + `labels.dismiss`), and `role="status"`. See ADR 0007.
+
+### Changed
+
+- **Alert** `message` is optional. Title-only alerts omit the message element; `messageLines` applies only when a message is shown.
+
 ## [0.4.0] - 2026-08-19
 
 ### Summary

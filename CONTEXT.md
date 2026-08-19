@@ -64,8 +64,20 @@ _Avoid_: moment, raw `Date` as the public contract, `YYYY-MM-DD` / `YYYY-MM-DDTH
 The optional second argument to field/picker `onChange`, carrying change context (`validationError`, `source`) rather than a parallel string or flatpickr instance.
 _Avoid_: dateStr-as-second-truth, flatpickr `instance` in the public contract
 
+**Alert**:
+An inline status notice bound to nearby content (a form, section, or panel). It has a title and an optional message. It is not a page-level announcement and not a toast.
+_Avoid_: Banner, Notification, toast, parentBanner as the library product
+
+**Banner**:
+A page- or app-level announcement strip placed above host navigation. It occupies layout space and pushes the nav and content down; it does not overlay them. It is a full-bleed top strip of its parent (hosts place it as the outermost first child when it must span the full window, including above a sidebar). It is not an Alert-shaped card: no title, no control size or Alert width scale. It has one message; the message is host-composed copy and may include inline links. Severity is info, warning, or error — not success. A severity icon is part of the strip. It is dismissible only when the host supplies a dismiss action (icon control; accessible name from host labels, defaulting to "Dismiss"); whether it stays dismissed is a host concern. The library does not stack Banners — a host that needs two announcements renders two instances. Portal and booking hosts share this meaning. The host renders it and decides when it is shown. It is not a local form status, not a toast, and not a Floating surface.
+_Avoid_: Alert, Notification, Hero, marketing banner, parentBanner as the library product, success as a Banner severity, overlaying or covering the host nav, Alert size/width as the Banner chrome
+
+**Notification**:
+A transient floating toast for a completed or imminent event. It is not a persistent page announcement and not an inline form status.
+_Avoid_: Banner, Alert, snackbar as a separate product name
+
 **Floating surface**:
-The layer that opens from a control trigger and paints above surrounding UI — Select/ComboBox listboxes, picker popovers, Dropdown menus, Popover panels, and Tooltip bubbles. It is not the Modal shell or scrim.
+The layer that opens from a control trigger and paints above surrounding UI — Select/ComboBox listboxes, picker popovers, Dropdown menus, Popover panels, and Tooltip bubbles. It is not the Modal shell or scrim, and it is not a Banner.
 _Avoid_: dropdown (as the umbrella term), overlay panel (ambiguous with Modal), portal (implementation mechanism, not the product concept)
 
 **Control size**:
