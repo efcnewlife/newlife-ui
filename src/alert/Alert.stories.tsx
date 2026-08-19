@@ -60,6 +60,14 @@ export const Info: Story = {
   render: (args) => <Alert {...args} />,
 };
 
+export const TitleOnly: Story = {
+  args: {
+    variant: "info",
+    title: "Saved",
+  },
+  render: ({ message: _message, ...args }) => <Alert {...args} />,
+};
+
 export const WithLink: Story = {
   args: {
     variant: "info",

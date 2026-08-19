@@ -1,0 +1,3 @@
+# Banner is not a dismissible Alert
+
+Page- and app-level announcements need a full-bleed strip above host navigation. We did not extend Alert: Alert stays an inline titled card (`success | error | warning | info`, optional message, optional link). Banner is a presentational strip (`info | warning | error` only) with one host-composed message, optional dismiss owned by the host, document-flow placement that pushes chrome down, and `status` rather than live `alert`. Success stays on Alert and Notification so a green top strip cannot replace a toast. Hosts render Banner; the library does not add an imperative show API or a stack.

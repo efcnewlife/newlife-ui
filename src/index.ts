@@ -12,6 +12,8 @@ export type { NotificationAction, NotificationItem } from "./notification/types"
 export { default as Alert } from "./alert/Alert";
 export type { AlertLinkComponentProps, AlertSize, AlertWidth } from "./alert/Alert";
 export { default as Badge } from "./badge/Badge";
+export { default as Banner } from "./banner/Banner";
+export type { BannerLabels, BannerProps, BannerVariant } from "./banner/Banner";
 export { default as Button } from "./button";
 export { default as ButtonGroup } from "./buttons-group";
 export { default as Checkbox } from "./checkbox";
