@@ -3,7 +3,14 @@ import type { FC } from "react";
 import { MdClose } from "react-icons/md";
 import { cn } from "../cn";
 import FormField from "../form-field";
-import { fieldBase, fieldDisabled, fieldError, fieldSuccess } from "../theme/role-classes";
+import {
+  CONTROL_SIZE_CLASSES,
+  type ControlSize,
+  fieldBase,
+  fieldDisabled,
+  fieldError,
+  fieldSuccess,
+} from "../theme/role-classes";
 
 interface InputProps {
   type?: "text" | "number" | "email" | "password" | "date" | "time" | string;
@@ -16,6 +23,8 @@ interface InputProps {
   onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
   className?: string;
   wrapperClassName?: string;
+  labelClassName?: string;
+  size?: ControlSize;
   min?: string | number;
   max?: string | number;
   step?: number;
@@ -41,6 +50,8 @@ const Input: FC<InputProps> = ({
   onFocus,
   className = "",
   wrapperClassName,
+  labelClassName,
+  size = "md",
   min,
   max,
   step,
@@ -67,23 +78,23 @@ const Input: FC<InputProps> = ({
     }
   };
 
-  const rightPadding = shouldShowClear ? "pr-10" : "";
+  const isXs = size === "xs";
+  const rightPadding = shouldShowClear ? (isXs ? "pr-8" : "pr-10") : "";
+  const iconPadding = icon ? (iconPosition === "left" ? (isXs ? "pl-8" : "pl-11") : isXs ? "pr-8" : "pr-11") : "";
 
-  let inputClasses = cn(fieldBase, rightPadding, className);
+  const inputClasses = cn(
+    fieldBase,
+    disabled && fieldDisabled,
+    !disabled && error && fieldError,
+    !disabled && !error && success && fieldSuccess,
+    CONTROL_SIZE_CLASSES[size],
+    rightPadding,
+    iconPadding,
+    className,
+  );
 
-  if (disabled) {
-    inputClasses = cn(inputClasses, fieldDisabled);
-  } else if (error && error !== undefined) {
-    inputClasses = cn(inputClasses, fieldError);
-  } else if (success) {
-    inputClasses = cn(inputClasses, fieldSuccess);
-  }
-
-  const iconClasses = `absolute z-30 -translate-y-1/2 top-1/2 ${iconPosition === "left" ? "left-4" : "right-4"} ${
-    iconClick ? "cursor-pointer" : ""
-  }`;
-
-  const inputPadding = icon ? (iconPosition === "left" ? "pl-11" : "pr-11") : "";
+  const iconInsetClass = isXs ? (iconPosition === "left" ? "left-2.5" : "right-2.5") : iconPosition === "left" ? "left-4" : "right-4";
+  const iconClasses = cn("absolute z-30 -translate-y-1/2 top-1/2", iconInsetClass, iconClick && "cursor-pointer");
 
   return (
     <FormField
@@ -93,6 +104,7 @@ const Input: FC<InputProps> = ({
       error={error}
       hint={hint}
       wrapperClassName={wrapperClassName}
+      labelClassName={labelClassName}
     >
       <div className="relative">
         <input
@@ -107,7 +119,7 @@ const Input: FC<InputProps> = ({
           max={max}
           step={step}
           disabled={disabled}
-          className={`${inputPadding} ${inputClasses}`}
+          className={inputClasses}
         />
 
         {shouldShowClear && (
@@ -115,7 +127,10 @@ const Input: FC<InputProps> = ({
             type="button"
             onClick={handleClear}
             disabled={disabled}
-            className="absolute inset-y-0 right-0 flex items-center pr-3 focus:outline-hidden text-on-surface-variant hover:text-on-surface"
+            className={cn(
+              "absolute inset-y-0 right-0 flex items-center focus:outline-hidden text-on-surface-variant hover:text-on-surface",
+              isXs ? "pr-2" : "pr-3",
+            )}
             aria-label="Clear input"
           >
             <MdClose className="size-4" />

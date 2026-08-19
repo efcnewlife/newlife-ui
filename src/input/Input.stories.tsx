@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
+import { CONTROL_SIZES, SizeStack } from "../../.storybook/size-stack";
 import Input from "./index";
 
 const meta: Meta<typeof Input> = {
@@ -17,20 +18,14 @@ export default meta;
 type Story = StoryObj<typeof Input>;
 
 export const Default: Story = {
+  args: { size: "md" },
   render: (args) => <Input {...args} />,
 };
 
 export const Controlled: Story = {
   render: (args) => {
     const [value, setValue] = useState("");
-    return (
-      <Input
-        {...args}
-        value={value}
-        onChange={(event) => setValue(event.target.value)}
-        clearable
-      />
-    );
+    return <Input {...args} value={value} onChange={(event) => setValue(event.target.value)} clearable />;
   },
 };
 
@@ -62,4 +57,10 @@ export const Disabled: Story = {
 export const Required: Story = {
   args: { required: true },
   render: (args) => <Input {...args} />,
+};
+
+export const Sizes: Story = {
+  render: (args) => (
+    <SizeStack sizes={CONTROL_SIZES} render={(size) => <Input {...args} id={`input-${size}`} label={`Email (${size})`} size={size} />} />
+  ),
 };

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { SizeStack, SPINNER_SIZES } from "../../.storybook/size-stack";
 import Spinner from "./index";
 
 const meta: Meta<typeof Spinner> = {
@@ -32,4 +33,9 @@ export const OnDarkSurface: Story = {
 export const Gray: Story = {
   args: { color: "gray", size: "sm" },
   render: (args) => <Spinner {...args} />,
+};
+
+export const Sizes: Story = {
+  args: { color: "primary" },
+  render: (args) => <SizeStack sizes={SPINNER_SIZES} render={(size) => <Spinner {...args} size={size} />} />,
 };

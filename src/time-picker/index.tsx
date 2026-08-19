@@ -3,12 +3,10 @@ import { MdAccessTime, MdClear } from "react-icons/md";
 import { cn } from "../cn";
 import { FloatingSurface } from "../floating-surface";
 import type { Dayjs } from "../lib/dayjs";
-import DigitalTimeSurface, {
-  type DigitalTimeVariant,
-} from "../picker/digital-time-surface";
+import DigitalTimeSurface, { type DigitalTimeVariant } from "../picker/digital-time-surface";
 import type { TimePrecision } from "../picker/time";
 import type { PickerChangeMeta } from "../picker/types";
-import { textMuted } from "../theme/role-classes";
+import { CONTROL_ADORNMENT_BUTTON_CLASSES, CONTROL_ADORNMENT_ICON_CLASSES, type ControlSize, textMuted } from "../theme/role-classes";
 import TimeField from "../time-field";
 
 export type { DigitalTimeVariant };
@@ -35,6 +33,9 @@ export interface TimePickerProps {
   disabled?: boolean;
   clearable?: boolean;
   wrapperClassName?: string;
+  labelClassName?: string;
+  className?: string;
+  size?: ControlSize;
   labels?: TimePickerLabels;
 }
 
@@ -57,12 +58,13 @@ export default function TimePicker({
   disabled,
   clearable = true,
   wrapperClassName,
+  labelClassName,
+  className,
+  size = "md",
   labels,
 }: TimePickerProps) {
   const isControlled = value !== undefined;
-  const [uncontrolledValue, setUncontrolledValue] = useState<Dayjs | null>(
-    defaultValue
-  );
+  const [uncontrolledValue, setUncontrolledValue] = useState<Dayjs | null>(defaultValue);
   const selectedValue = isControlled ? value : uncontrolledValue;
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -90,9 +92,10 @@ export default function TimePicker({
   };
 
   const iconButtonClassName = cn(
-    "inline-flex size-7 items-center justify-center rounded-md transition-colors",
+    "inline-flex items-center justify-center rounded-md transition-colors",
+    CONTROL_ADORNMENT_BUTTON_CLASSES[size],
     textMuted,
-    disabled && "cursor-not-allowed"
+    disabled && "cursor-not-allowed",
   );
 
   return (
@@ -110,7 +113,9 @@ export default function TimePicker({
         required={required}
         disabled={disabled}
         wrapperClassName={wrapperClassName}
-        className={showClear ? "pr-16" : undefined}
+        labelClassName={labelClassName}
+        className={cn(showClear && "pr-16", className)}
+        size={size}
         onFocus={() => {
           if (!disabled) {
             setOpen(true);
@@ -125,7 +130,7 @@ export default function TimePicker({
                 className={cn(iconButtonClassName, "hover:text-on-surface")}
                 onClick={handleClear}
               >
-                <MdClear className="size-5" />
+                <MdClear className={CONTROL_ADORNMENT_ICON_CLASSES[size]} />
               </button>
             ) : null}
             <button
@@ -133,17 +138,14 @@ export default function TimePicker({
               aria-label="Open time picker"
               aria-expanded={open}
               disabled={disabled}
-              className={cn(
-                iconButtonClassName,
-                "hover:bg-surface-variant hover:text-on-surface"
-              )}
+              className={cn(iconButtonClassName, "hover:bg-surface-variant hover:text-on-surface")}
               onClick={() => {
                 if (!disabled) {
                   setOpen((current) => !current);
                 }
               }}
             >
-              <MdAccessTime className="size-5" />
+              <MdAccessTime className={CONTROL_ADORNMENT_ICON_CLASSES[size]} />
             </button>
           </span>
         }

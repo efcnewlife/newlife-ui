@@ -9,6 +9,9 @@ import {
   comboboxCheckboxUnchecked,
   comboboxOptionDefault,
   comboboxOptionFocused,
+  CONTROL_ADORNMENT_ICON_CLASSES,
+  CONTROL_SIZE_CLASSES,
+  type ControlSize,
   fieldBase,
   fieldDisabled,
   fieldError,
@@ -25,7 +28,7 @@ function OptionCheckbox({ checked, disabled }: { checked: boolean; disabled?: bo
       className={cn(
         "flex size-5 shrink-0 items-center justify-center rounded border transition-colors",
         checked ? comboboxCheckboxChecked : comboboxCheckboxUnchecked,
-        disabled && "opacity-50"
+        disabled && "opacity-50",
       )}
       role="checkbox"
       aria-checked={checked}
@@ -57,10 +60,11 @@ interface SelectProps {
   required?: boolean;
   className?: string;
   wrapperClassName?: string;
+  labelClassName?: string;
   searchable?: boolean;
   multiple?: boolean;
   clearable?: boolean;
-  size?: "sm" | "md" | "lg";
+  size?: ControlSize;
   variant?: "default" | "bordered" | "ghost";
   /** Defaults when not using i18n in the host app */
   labels?: {
@@ -87,6 +91,7 @@ export const Select: React.FC<SelectProps> = ({
   required = false,
   className = "",
   wrapperClassName,
+  labelClassName,
   searchable = false,
   multiple = false,
   clearable = false,
@@ -187,13 +192,6 @@ export const Select: React.FC<SelectProps> = ({
     }
   };
 
-  // size style
-  const sizeClasses = {
-    sm: "h-9 text-sm px-3 py-2",
-    md: "h-11 text-sm px-4 py-2.5",
-    lg: "h-12 text-base px-4 py-3",
-  };
-
   const variantClasses = {
     default: fieldBase,
     bordered: "border-2 border-outline focus:border-primary focus:ring-primary/20 bg-surface text-on-surface",
@@ -214,10 +212,10 @@ export const Select: React.FC<SelectProps> = ({
   }
 
   const selectClasses = cn(
-    "relative w-full rounded-lg border appearance-none shadow-theme-xs focus:outline-hidden focus:ring-3",
-    sizeClasses[size],
+    "relative flex w-full items-center overflow-hidden rounded-lg border appearance-none shadow-theme-xs focus:outline-hidden focus:ring-3",
     stateClasses,
-    className
+    CONTROL_SIZE_CLASSES[size],
+    className,
   );
 
   return (
@@ -228,6 +226,7 @@ export const Select: React.FC<SelectProps> = ({
       error={error}
       hint={hint}
       wrapperClassName={wrapperClassName}
+      labelClassName={labelClassName}
     >
       <div className="relative" ref={selectRef}>
         {/* selector trigger */}
@@ -241,16 +240,13 @@ export const Select: React.FC<SelectProps> = ({
           aria-haspopup="listbox"
           id={id}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex w-full items-center justify-between">
             <div className="flex items-center gap-2 flex-1 min-w-0">
               {selectedOptions.length > 0 ? (
                 <div className="flex items-center gap-1 flex-wrap">
                   {multiple ? (
                     selectedOptions.map((option) => (
-                      <span
-                        key={option.value}
-                        className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-md ${tagPrimary}`}
-                      >
+                      <span key={option.value} className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-md ${tagPrimary}`}>
                         {option.icon}
                         {option.label}
                         <button
@@ -297,7 +293,12 @@ export const Select: React.FC<SelectProps> = ({
                 aria-label={labels.toggleOptions}
               >
                 <MdKeyboardArrowDown
-                  className={cn(`size-5 ${textMuted} transition-transform duration-200`, isOpen && "rotate-180")}
+                  className={cn(
+                    textMuted,
+                    "transition-transform duration-200",
+                    CONTROL_ADORNMENT_ICON_CLASSES[size],
+                    isOpen && "rotate-180",
+                  )}
                   aria-hidden="true"
                 />
               </button>
@@ -312,7 +313,7 @@ export const Select: React.FC<SelectProps> = ({
           matchAnchorWidth
           placement="bottom-start"
           offset={4}
-          className={cn(`w-full rounded-lg shadow-theme-lg ${surfacePanel}`)}
+          className={cn(`w-full overflow-hidden rounded-lg shadow-theme-lg ${surfacePanel}`)}
         >
           <div role="listbox">
             {searchable && (
@@ -346,16 +347,16 @@ export const Select: React.FC<SelectProps> = ({
                         !option.disabled && !isFocused && !isSelected && "hover:bg-primary hover:text-on-primary",
                         isFocused && comboboxOptionFocused,
                         isSelected && !isFocused && selectOptionActive,
-                        option.disabled && cn(textMuted, "cursor-not-allowed opacity-60")
+                        option.disabled && cn(textMuted, "cursor-not-allowed opacity-60"),
+                        index === 0 && !searchable && "rounded-t-lg",
+                        index === filteredOptions.length - 1 && "rounded-b-lg",
                       )}
                       onClick={() => handleOptionClick(option)}
                       onMouseEnter={() => !option.disabled && setFocusedIndex(index)}
                       role="option"
                       aria-selected={isSelected}
                     >
-                      {multiple ? (
-                        <OptionCheckbox checked={isSelected} disabled={option.disabled} />
-                      ) : null}
+                      {multiple ? <OptionCheckbox checked={isSelected} disabled={option.disabled} /> : null}
                       {option.icon}
                       {option.label}
                     </div>

@@ -10,7 +10,7 @@ import {
   validateCalendarDate,
 } from "../picker/datetime";
 import type { PickerChangeMeta, PickerValidationError } from "../picker/types";
-import { fieldBase, fieldDisabled, fieldError } from "../theme/role-classes";
+import { CONTROL_SIZE_CLASSES, type ControlSize, fieldBase, fieldDisabled, fieldError } from "../theme/role-classes";
 
 export interface DateFieldProps {
   id: string;
@@ -26,7 +26,9 @@ export interface DateFieldProps {
   required?: boolean;
   disabled?: boolean;
   wrapperClassName?: string;
+  labelClassName?: string;
   className?: string;
+  size?: ControlSize;
   readOnly?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
@@ -57,7 +59,9 @@ export default function DateField({
   required,
   disabled,
   wrapperClassName,
+  labelClassName,
   className,
+  size = "md",
   readOnly,
   onFocus,
   onBlur,
@@ -121,15 +125,8 @@ export default function DateField({
     emit(parsed, validationError);
   };
 
-
   return (
-    <FormField
-      id={id}
-      label={label}
-      required={required}
-      error={error}
-      wrapperClassName={wrapperClassName}
-    >
+    <FormField id={id} label={label} required={required} error={error} wrapperClassName={wrapperClassName} labelClassName={labelClassName}>
       <div className="relative">
         <input
           id={id}
@@ -144,19 +141,15 @@ export default function DateField({
             fieldBase,
             error && fieldError,
             disabled && fieldDisabled,
+            CONTROL_SIZE_CLASSES[size],
             endAdornment && "pr-11",
-            className
+            className,
           )}
           autoComplete="off"
           inputMode="numeric"
         />
         {endAdornment ? (
-          <span
-            className={cn(
-              "pointer-events-none absolute inset-y-0 right-3 flex items-center",
-              disabled && "opacity-40"
-            )}
-          >
+          <span className={cn("pointer-events-none absolute inset-y-0 right-3 flex items-center", disabled && "opacity-40")}>
             <span className="pointer-events-auto flex items-center">{endAdornment}</span>
           </span>
         ) : null}
@@ -164,4 +157,3 @@ export default function DateField({
     </FormField>
   );
 }
-

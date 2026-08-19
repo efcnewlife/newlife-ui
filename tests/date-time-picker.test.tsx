@@ -300,4 +300,23 @@ describe("DateTimePicker", () => {
     const labels = Array.from(minutes.querySelectorAll('[role="option"]')).map((option) => option.textContent);
     expect(labels).toEqual(["00", "15", "30", "45"]);
   });
+
+  it("forwards className and Control size xs to the field", () => {
+    render(
+      <DateTimePicker
+        id="starts-at"
+        label="Starts at"
+        value={dayjs.utc("2026-06-20T15:00:00.000Z")}
+        timezone="UTC"
+        size="xs"
+        className="host-class"
+      />,
+    );
+    expect(screen.getByLabelText("Starts at")).toHaveClass("h-8", "text-xs", "px-2.5", "host-class", "pr-16");
+  });
+
+  it("forwards labelClassName to the FormField label", () => {
+    render(<DateTimePicker id="starts-at" label="Starts at" labelClassName="text-on-primary" />);
+    expect(screen.getByText("Starts at")).toHaveClass("text-on-primary");
+  });
 });

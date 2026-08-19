@@ -307,4 +307,17 @@ describe("DateTimeField", () => {
 
     expect(screen.getByLabelText("Starts at")).toHaveValue("Jun 20, 2026 3:30 PM");
   });
+
+  it("defaults Control size to md and accepts xs", () => {
+    const { rerender } = render(<DateTimeField id="starts-at" label="Starts at" />);
+    expect(screen.getByLabelText("Starts at")).toHaveClass("h-11", "text-sm", "px-4");
+
+    rerender(<DateTimeField id="starts-at" label="Starts at" size="xs" />);
+    expect(screen.getByLabelText("Starts at")).toHaveClass("h-8", "text-xs", "px-2.5");
+  });
+
+  it("forwards labelClassName to the FormField label", () => {
+    render(<DateTimeField id="starts-at" label="Starts at" labelClassName="text-on-primary" />);
+    expect(screen.getByText("Starts at")).toHaveClass("text-on-primary");
+  });
 });

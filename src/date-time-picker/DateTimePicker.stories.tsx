@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
+import { CONTROL_SIZES, SizeStack } from "../../.storybook/size-stack";
 import { dayjs, type Dayjs } from "../lib/dayjs";
 import DateTimePicker from "./index";
 
@@ -19,6 +20,28 @@ type Story = StoryObj<typeof DateTimePicker>;
 
 export const Default: Story = {
   render: (args) => <DateTimePicker {...args} />,
+};
+
+export const Sizes: Story = {
+  render: (args) => {
+    const [value, setValue] = useState<Dayjs | null>(dayjs.utc("2026-06-20T15:30:00.000Z"));
+    return (
+      <SizeStack
+        sizes={CONTROL_SIZES}
+        render={(size) => (
+          <DateTimePicker
+            {...args}
+            id={`date-time-picker-${size}`}
+            label={`Starts at (${size})`}
+            size={size}
+            value={value}
+            timezone="UTC"
+            onChange={(next) => setValue(next)}
+          />
+        )}
+      />
+    );
+  },
 };
 
 export const ControlledUtcWithTimezone: Story = {

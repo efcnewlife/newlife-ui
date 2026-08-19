@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { MdAdd } from "react-icons/md";
+import { BUTTON_SIZES, SizeStack } from "../../.storybook/size-stack";
 import Button from "./index";
 
 const meta: Meta<typeof Button> = {
@@ -32,6 +33,11 @@ export const Small: Story = {
 export const Large: Story = {
   args: { size: "lg", variant: "primary" },
   render: (args) => <Button {...args} />,
+};
+
+export const Sizes: Story = {
+  args: { variant: "primary" },
+  render: (args) => <SizeStack sizes={BUTTON_SIZES} render={(size) => <Button {...args} size={size} />} />,
 };
 
 export const Disabled: Story = {

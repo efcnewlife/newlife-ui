@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import FormField from "../form-field";
 import {
   borderOutlineVariant,
+  CONTROL_SIZE_CLASSES,
+  type ControlSize,
   fieldBase,
   fieldDisabled,
   fieldError,
@@ -26,11 +28,13 @@ interface PhoneInputProps {
   hint?: string;
   required?: boolean;
   wrapperClassName?: string;
+  labelClassName?: string;
+  size?: ControlSize;
   selectPosition?: "start" | "end";
 }
 
 const countrySelectClass = cn(
-  "appearance-none bg-none border-0 bg-transparent py-3 pl-3.5 pr-8 leading-tight",
+  "appearance-none bg-none border-0 bg-transparent h-full pl-3.5 pr-8 leading-none",
   textOnSurface,
   borderOutlineVariant,
   focusRingPrimary,
@@ -50,6 +54,8 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   hint,
   required = false,
   wrapperClassName,
+  labelClassName,
+  size = "md",
   selectPosition = "start",
 }) => {
   const countryCodes: Record<string, string> = countries.reduce((acc, { name, code }) => ({ ...acc, [name]: code }), {});
@@ -80,13 +86,13 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
     }
   }, [value]);
 
-  let inputClasses = cn(fieldBase, selectPosition === "start" ? "pl-[96px]" : "pr-[84px]");
-
-  if (disabled) {
-    inputClasses = cn(inputClasses, fieldDisabled);
-  } else if (error && error !== undefined) {
-    inputClasses = cn(inputClasses, fieldError);
-  }
+  const inputClasses = cn(
+    fieldBase,
+    CONTROL_SIZE_CLASSES[size],
+    selectPosition === "start" ? "pl-[96px]" : "pr-[84px]",
+    disabled && fieldDisabled,
+    !disabled && error && fieldError,
+  );
 
   return (
     <FormField
@@ -96,10 +102,11 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
       error={error}
       hint={hint}
       wrapperClassName={wrapperClassName}
+      labelClassName={labelClassName}
     >
       <div className="relative flex">
         {selectPosition === "start" && (
-          <div className="absolute">
+          <div className="absolute inset-y-0">
             <select
               value={selectedCountry}
               onChange={handleCountryChange}
@@ -137,7 +144,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
         />
 
         {selectPosition === "end" && (
-          <div className="absolute right-0">
+          <div className="absolute inset-y-0 right-0">
             <select
               value={selectedCountry}
               onChange={handleCountryChange}

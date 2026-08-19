@@ -12,7 +12,7 @@ import {
   type TimePrecision,
 } from "../picker/time";
 import type { PickerChangeMeta, PickerValidationError } from "../picker/types";
-import { fieldBase, fieldDisabled, fieldError } from "../theme/role-classes";
+import { CONTROL_SIZE_CLASSES, type ControlSize, fieldBase, fieldDisabled, fieldError } from "../theme/role-classes";
 
 export interface TimeFieldProps {
   id: string;
@@ -30,7 +30,9 @@ export interface TimeFieldProps {
   required?: boolean;
   disabled?: boolean;
   wrapperClassName?: string;
+  labelClassName?: string;
   className?: string;
+  size?: ControlSize;
   readOnly?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
@@ -38,12 +40,7 @@ export interface TimeFieldProps {
   endAdornment?: ReactNode;
 }
 
-const toDisplay = (
-  value: Dayjs | null | undefined,
-  timePrecision: TimePrecision,
-  ampm: boolean,
-  format?: string
-): string => {
+const toDisplay = (value: Dayjs | null | undefined, timePrecision: TimePrecision, ampm: boolean, format?: string): string => {
   if (value == null || !value.isValid()) {
     return "";
   }
@@ -64,21 +61,19 @@ export default function TimeField({
   required,
   disabled,
   wrapperClassName,
+  labelClassName,
   className,
+  size = "md",
   readOnly,
   onFocus,
   onBlur,
   endAdornment,
 }: TimeFieldProps) {
   const isControlled = value !== undefined;
-  const [uncontrolledValue, setUncontrolledValue] = useState<Dayjs | null>(
-    defaultValue
-  );
+  const [uncontrolledValue, setUncontrolledValue] = useState<Dayjs | null>(defaultValue);
   const selectedValue = isControlled ? value : uncontrolledValue;
   const resolvedPlaceholder = placeholder ?? defaultTimeFormat(timePrecision, ampm);
-  const [text, setText] = useState(() =>
-    toDisplay(selectedValue, timePrecision, ampm, format)
-  );
+  const [text, setText] = useState(() => toDisplay(selectedValue, timePrecision, ampm, format));
 
   useEffect(() => {
     setText((current) => {
@@ -129,13 +124,7 @@ export default function TimeField({
   };
 
   return (
-    <FormField
-      id={id}
-      label={label}
-      required={required}
-      error={error}
-      wrapperClassName={wrapperClassName}
-    >
+    <FormField id={id} label={label} required={required} error={error} wrapperClassName={wrapperClassName} labelClassName={labelClassName}>
       <div className="relative">
         <input
           id={id}
@@ -150,19 +139,15 @@ export default function TimeField({
             fieldBase,
             error && fieldError,
             disabled && fieldDisabled,
+            CONTROL_SIZE_CLASSES[size],
             endAdornment && "pr-11",
-            className
+            className,
           )}
           autoComplete="off"
           inputMode={ampm ? "text" : "numeric"}
         />
         {endAdornment ? (
-          <span
-            className={cn(
-              "pointer-events-none absolute inset-y-0 right-3 flex items-center",
-              disabled && "opacity-40"
-            )}
-          >
+          <span className={cn("pointer-events-none absolute inset-y-0 right-3 flex items-center", disabled && "opacity-40")}>
             <span className="pointer-events-auto flex items-center">{endAdornment}</span>
           </span>
         ) : null}

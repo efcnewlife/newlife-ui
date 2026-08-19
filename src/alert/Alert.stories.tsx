@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { ALERT_SIZES, SizeStack } from "../../.storybook/size-stack";
 import Alert from "./Alert";
 
 const meta: Meta<typeof Alert> = {
@@ -34,6 +35,10 @@ type Story = StoryObj<typeof Alert>;
 export const Success: Story = {
   args: { variant: "success" },
   render: (args) => <Alert {...args} />,
+};
+
+export const Sizes: Story = {
+  render: (args) => <SizeStack sizes={ALERT_SIZES} className="max-w-lg" render={(size) => <Alert {...args} size={size} />} />,
 };
 
 export const Error: Story = {

@@ -10,6 +10,9 @@ import {
   comboboxOptionDefault,
   comboboxOptionFocused,
   comboboxSpinner,
+  CONTROL_ADORNMENT_ICON_CLASSES,
+  CONTROL_SIZE_CLASSES,
+  type ControlSize,
   fieldBase,
   fieldDisabled,
   fieldError,
@@ -40,6 +43,7 @@ interface ComboBoxPropsBase<T = any> {
   required?: boolean;
   className?: string;
   wrapperClassName?: string;
+  labelClassName?: string;
   inputClassName?: string;
   displayValue?: (option: ComboBoxOption<T> | null) => string;
   filterFunction?: (option: ComboBoxOption<T>, query: string) => boolean;
@@ -47,7 +51,7 @@ interface ComboBoxPropsBase<T = any> {
   allowCreate?: boolean;
   onCreateOption?: (query: string) => T;
   clearable?: boolean;
-  size?: "sm" | "md" | "lg";
+  size?: ControlSize;
   onQueryChange?: (query: string) => void;
   /** Called when dropdown opens (focus or click toggle). Use to e.g. fetch options from API. */
   onOpen?: () => void;
@@ -103,7 +107,7 @@ function OptionCheckbox({ checked, disabled }: { checked: boolean; disabled?: bo
       className={cn(
         "flex size-5 shrink-0 items-center justify-center rounded border transition-colors",
         checked ? comboboxCheckboxChecked : comboboxCheckboxUnchecked,
-        disabled && "opacity-50"
+        disabled && "opacity-50",
       )}
       role="checkbox"
       aria-checked={checked}
@@ -129,6 +133,7 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
     required = false,
     className = "",
     wrapperClassName,
+    labelClassName,
     inputClassName = "",
     displayValue = defaultDisplayValue,
     filterFunction = defaultFilterFunction,
@@ -191,9 +196,7 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
   const handleSelect = (option: ComboBoxOption<T>) => {
     if (option.disabled) return;
     if (multiple) {
-      const next = valueArray.includes(option.value)
-        ? valueArray.filter((v) => v !== option.value)
-        : [...valueArray, option.value];
+      const next = valueArray.includes(option.value) ? valueArray.filter((v) => v !== option.value) : [...valueArray, option.value];
       (onChange as (v: T[] | null) => void)?.(next.length > 0 ? next : null);
     } else {
       (onChange as (v: T | null) => void)?.(option.value);
@@ -317,13 +320,6 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
     }
   }, [focusedIndex]);
 
-  // size style
-  const sizeClasses = {
-    sm: "h-9 text-sm px-3 py-2",
-    md: "h-11 text-sm px-4 py-2.5",
-    lg: "h-12 text-base px-4 py-3",
-  };
-
   // status style
   let stateClasses = "";
   if (disabled) {
@@ -336,17 +332,16 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
     stateClasses = fieldBase;
   }
 
-  const hasClearButton =
-    clearable &&
-    (multiple ? valueArray.length > 0 : value !== null && value !== undefined);
+  const hasClearButton = clearable && (multiple ? valueArray.length > 0 : value !== null && value !== undefined);
   const rightPadding = hasClearButton ? "pr-16" : "pr-10";
 
   const inputClasses = cn(
-    "block w-full rounded-lg border appearance-none shadow-theme-xs focus:outline-hidden focus:ring-3 placeholder:text-on-surface-variant",
-    sizeClasses[size],
+    fieldBase,
+    "block placeholder:text-on-surface-variant",
     stateClasses,
+    CONTROL_SIZE_CLASSES[size],
     rightPadding,
-    inputClassName
+    inputClassName,
   );
 
   const allOptions = canCreate ? [{ value: null, label: query } as ComboBoxOption<T>, ...filteredOptions] : filteredOptions;
@@ -359,6 +354,7 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
       error={error}
       hint={hint}
       wrapperClassName={wrapperClassName}
+      labelClassName={labelClassName}
     >
       <div className={cn("relative", className)} ref={comboboxRef}>
         <div className="relative">
@@ -404,7 +400,7 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
               aria-label="Toggle options"
             >
               <MdKeyboardArrowDown
-                className={cn(`size-5 ${textMuted} transition-transform duration-200`, isOpen && "rotate-180")}
+                className={cn(textMuted, "transition-transform duration-200", CONTROL_ADORNMENT_ICON_CLASSES[size], isOpen && "rotate-180")}
                 aria-hidden="true"
               />
             </button>
@@ -419,7 +415,7 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
           placement="bottom-start"
           offset={4}
           className={cn(
-            `w-full overflow-auto rounded-lg py-1 text-base shadow-theme-lg outline outline-black/5 sm:text-sm ${surfacePanel}`
+            `w-full overflow-auto rounded-lg py-1 text-base shadow-theme-lg outline outline-black/5 sm:text-sm ${surfacePanel}`,
           )}
         >
           <div role="listbox">
@@ -437,7 +433,7 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
                       className={cn(
                         "cursor-default flex items-center gap-2 px-3 py-2 select-none transition-colors",
                         focusedIndex === 0 ? comboboxOptionFocused : comboboxOptionDefault,
-                        "hover:bg-primary hover:text-on-primary"
+                        "hover:bg-primary hover:text-on-primary",
                       )}
                       onClick={handleCreate}
                       onMouseEnter={() => setFocusedIndex(0)}
@@ -450,9 +446,7 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
                   )}
                   {filteredOptions.map((option, index) => {
                     const optionIndex = canCreate ? index + 1 : index;
-                    const isSelected = multiple
-                      ? valueArray.includes(option.value)
-                      : valueSingle === option.value;
+                    const isSelected = multiple ? valueArray.includes(option.value) : valueSingle === option.value;
                     return (
                       <div
                         key={String(option.value)}
@@ -462,9 +456,9 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
                           focusedIndex === optionIndex
                             ? comboboxOptionFocused
                             : option.disabled
-                            ? `${textMuted} cursor-not-allowed opacity-60`
-                            : comboboxOptionDefault,
-                          !option.disabled && "hover:bg-primary hover:text-on-primary"
+                              ? `${textMuted} cursor-not-allowed opacity-60`
+                              : comboboxOptionDefault,
+                          !option.disabled && "hover:bg-primary hover:text-on-primary",
                         )}
                         onClick={() => !option.disabled && handleSelect(option)}
                         onMouseEnter={() => !option.disabled && setFocusedIndex(optionIndex)}
@@ -486,9 +480,7 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
         </FloatingSurface>
         {/* Hidden form input */}
         {multiple ? (
-          valueArray.map((v) => (
-            <input key={String(v)} type="hidden" name={name} value={String(v)} />
-          ))
+          valueArray.map((v) => <input key={String(v)} type="hidden" name={name} value={String(v)} />)
         ) : (
           <input type="hidden" name={name} value={value != null ? String(value) : ""} />
         )}

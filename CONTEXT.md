@@ -67,3 +67,7 @@ _Avoid_: dateStr-as-second-truth, flatpickr `instance` in the public contract
 **Floating surface**:
 The layer that opens from a control trigger and paints above surrounding UI — Select/ComboBox listboxes, picker popovers, Dropdown menus, Popover panels, and Tooltip bubbles. It is not the Modal shell or scrim.
 _Avoid_: dropdown (as the umbrella term), overlay panel (ambiguous with Modal), portal (implementation mechanism, not the product concept)
+
+**Control size**:
+A density step on a single-line form control (Input, PhoneInput, Select, ComboBox, DateField, TimeField, DateTimeField, DateRangeField, and the pickers built on those fields). Steps are xs, sm, md (the default), and lg. It sizes the control shell and in-shell adornments only. It does not size the floating surface and does not size the label.
+_Avoid_: Button size (a different contract; not unified with this scale), using className as the official compact density, FileInput / TextArea as part of this scale until they join it, Tailwind font-size names (`base`, `xl`, `2xl`) as control size steps

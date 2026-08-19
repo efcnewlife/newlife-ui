@@ -17,7 +17,13 @@ import {
 import DigitalTimeSurface, { type DigitalTimeVariant } from "../picker/digital-time-surface";
 import type { TimePrecision } from "../picker/time";
 import type { PickerChangeMeta } from "../picker/types";
-import { surfacePanel, textMuted } from "../theme/role-classes";
+import {
+  CONTROL_ADORNMENT_BUTTON_CLASSES,
+  CONTROL_ADORNMENT_ICON_CLASSES,
+  type ControlSize,
+  surfacePanel,
+  textMuted,
+} from "../theme/role-classes";
 
 export type { DigitalTimeVariant };
 export type DateTimePickerTimePrecision = TimePrecision;
@@ -51,6 +57,9 @@ export interface DateTimePickerProps {
   required?: boolean;
   disabled?: boolean;
   wrapperClassName?: string;
+  labelClassName?: string;
+  className?: string;
+  size?: ControlSize;
   weekStartsOn?: WeekStartsOn;
   showSubmitButton?: boolean;
   onSubmit?: () => void;
@@ -81,6 +90,9 @@ export default function DateTimePicker({
   required,
   disabled,
   wrapperClassName,
+  labelClassName,
+  className,
+  size = "md",
   weekStartsOn,
   showSubmitButton = false,
   onSubmit,
@@ -169,7 +181,8 @@ export default function DateTimePicker({
   const timeValue = selectedValue != null && selectedValue.isValid() ? utcToDisplayTimeOfDay(selectedValue, displayTimezone) : null;
 
   const iconButtonClassName = cn(
-    "inline-flex size-7 items-center justify-center rounded-md transition-colors",
+    "inline-flex items-center justify-center rounded-md transition-colors",
+    CONTROL_ADORNMENT_BUTTON_CLASSES[size],
     textMuted,
     disabled && "cursor-not-allowed",
   );
@@ -199,7 +212,9 @@ export default function DateTimePicker({
         required={required}
         disabled={disabled}
         wrapperClassName={wrapperClassName}
-        className={showClear ? "pr-16" : undefined}
+        labelClassName={labelClassName}
+        className={cn(showClear && "pr-16", className)}
+        size={size}
         onFocus={() => {
           if (!disabled) {
             setOpen(true);
@@ -214,7 +229,7 @@ export default function DateTimePicker({
                 className={cn(iconButtonClassName, "hover:text-on-surface")}
                 onClick={handleClear}
               >
-                <MdClear className="size-5" />
+                <MdClear className={CONTROL_ADORNMENT_ICON_CLASSES[size]} />
               </button>
             ) : null}
             <button
@@ -229,7 +244,7 @@ export default function DateTimePicker({
                 }
               }}
             >
-              <MdCalendarMonth className="size-5" />
+              <MdCalendarMonth className={CONTROL_ADORNMENT_ICON_CLASSES[size]} />
             </button>
           </span>
         }
