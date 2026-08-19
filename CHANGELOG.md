@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-08-19
+
+### Summary
+
+Presentational **Banner** for page-level announcements. Alert `message` is optional so title-only notices do not need dummy copy.
+
 ### Added
 
 - **Banner**: presentational full-bleed top strip (`info` | `warning` | `error`) with a host-composed message, optional dismiss (`onDismiss` + `labels.dismiss`), and `role="status"`. See ADR 0007.
@@ -13,6 +19,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Changed
 
 - **Alert** `message` is optional. Title-only alerts omit the message element; `messageLines` applies only when a message is shown.
+
+### Fixed
+
+- **Alert**: title-only notices vertically center the icon and title (no leftover message spacing).
 
 ## [0.4.0] - 2026-08-19
 
