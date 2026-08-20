@@ -42,6 +42,7 @@ The `package.json` in this repo must keep `"name": "@efcnewlife/newlife-ui"`.
 
 ```bash
 pnpm install
+./scripts/install-git-hooks.sh   # once per clone; see AGENTS.md Branch names
 pnpm run build
 ```
 
