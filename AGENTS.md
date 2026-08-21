@@ -43,7 +43,7 @@ pnpm run storybook          # http://localhost:6006
 pnpm run build-storybook
 ```
 
-CI (`.github/workflows/ci.yml`) runs `typecheck`, `build`, `test`, and `build-storybook` on PRs to `main` and pushes to `main`. PRs also run `.github/workflows/branch-name.yml` (`Branch name` check). Add `format:check` to CI in the follow-up full-tree Prettier apply PR.
+CI (`.github/workflows/ci.yml`) runs `format:check`, `typecheck`, `build`, `test`, and `build-storybook` on PRs to `main` and pushes to `main`. PRs also run `.github/workflows/branch-name.yml` (`Branch name` check).
 
 After hooks install, `.githooks/pre-commit` formats **staged** Prettier targets via `scripts/format-staged.sh` and re-stages. Emergency: `git commit --no-verify`. See ADR 0008.
 
