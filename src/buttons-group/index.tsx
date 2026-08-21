@@ -33,7 +33,8 @@ const ButtonGroup = ({ variant = "primary", buttons, className, minWidth = "309p
   const lastIndex = buttons.length - 1;
 
   const getButtonClassName = (button: ButtonGroupButton, index: number, isActive: boolean) => {
-    const baseClasses = "inline-flex items-center gap-2 px-4 py-3 text-sm font-medium transition first:rounded-l-lg last:rounded-r-lg";
+    const baseClasses =
+      "inline-flex items-center gap-2 px-4 py-3 text-sm font-medium transition first:rounded-l-lg last:rounded-r-lg";
     const isFirstButton = index === 0;
     const isLastButton = index === lastIndex;
 
@@ -82,11 +83,7 @@ const ButtonGroup = ({ variant = "primary", buttons, className, minWidth = "309p
         buttonClassName = cn(buttonClassName, button.className);
         break;
       default:
-        buttonClassName = cn(
-          baseClasses,
-          buttonGroupInactiveSecondary,
-          button.className
-        );
+        buttonClassName = cn(baseClasses, buttonGroupInactiveSecondary, button.className);
         break;
     }
 

@@ -14,7 +14,16 @@ export interface FormFieldProps {
   children: ReactNode;
 }
 
-const FormField: FC<FormFieldProps> = ({ id, label, required = false, error, hint, wrapperClassName, labelClassName, children }) => {
+const FormField: FC<FormFieldProps> = ({
+  id,
+  label,
+  required = false,
+  error,
+  hint,
+  wrapperClassName,
+  labelClassName,
+  children,
+}) => {
   return (
     <div className={wrapperClassName}>
       {label && (

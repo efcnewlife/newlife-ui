@@ -19,9 +19,7 @@ describe("Input", () => {
   });
 
   it("applies wrapperClassName on outer field wrapper", () => {
-    const { container } = render(
-      <Input id="email-wrapper" wrapperClassName="field-root" className="input-custom" />
-    );
+    const { container } = render(<Input id="email-wrapper" wrapperClassName="field-root" className="input-custom" />);
     expect(container.firstChild).toHaveClass("field-root");
     expect(document.getElementById("email-wrapper")).toHaveClass("input-custom");
   });

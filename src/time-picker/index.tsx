@@ -6,7 +6,12 @@ import type { Dayjs } from "../lib/dayjs";
 import DigitalTimeSurface, { type DigitalTimeVariant } from "../picker/digital-time-surface";
 import type { TimePrecision } from "../picker/time";
 import type { PickerChangeMeta } from "../picker/types";
-import { CONTROL_ADORNMENT_BUTTON_CLASSES, CONTROL_ADORNMENT_ICON_CLASSES, type ControlSize, textMuted } from "../theme/role-classes";
+import {
+  CONTROL_ADORNMENT_BUTTON_CLASSES,
+  CONTROL_ADORNMENT_ICON_CLASSES,
+  type ControlSize,
+  textMuted,
+} from "../theme/role-classes";
 import TimeField from "../time-field";
 
 export type { DigitalTimeVariant };
@@ -95,7 +100,7 @@ export default function TimePicker({
     "inline-flex items-center justify-center rounded-md transition-colors",
     CONTROL_ADORNMENT_BUTTON_CLASSES[size],
     textMuted,
-    disabled && "cursor-not-allowed",
+    disabled && "cursor-not-allowed"
   );
 
   return (

@@ -11,9 +11,7 @@ export const pushTwoDigitSection = (
 ): { value: string; complete: boolean } => {
   const pad2 = (value: string): string => value.padStart(2, "0");
 
-  const applyFirstDigit = (
-    nextDigit: string
-  ): { value: string; complete: boolean } => {
+  const applyFirstDigit = (nextDigit: string): { value: string; complete: boolean } => {
     const numeric = Number(nextDigit);
     if (numeric * 10 > max) {
       if (numeric < min || numeric > max) {

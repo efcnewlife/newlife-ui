@@ -136,7 +136,10 @@ const Alert: FC<AlertProps> = ({
   const linkClassName = cn("inline-block font-medium", styles.link, alertLink);
 
   return (
-    <div className={cn("border", styles.container, widthStyles[width], variantClasses[variant].container, className)} role="alert">
+    <div
+      className={cn("border", styles.container, widthStyles[width], variantClasses[variant].container, className)}
+      role="alert"
+    >
       <div className={cn("flex", hasBody ? "items-start" : "items-center", styles.gap)}>
         <div className={cn("shrink-0", hasBody && "-mt-0.5")}>
           <SeverityIcon variant={variant} className={iconClassName} />

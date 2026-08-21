@@ -4,19 +4,8 @@ import { sliderRange, sliderThumb, sliderTrack } from "../theme/role-classes";
 
 export type SliderProps = SliderPrimitive.Root.Props;
 
-const Slider = ({
-  className,
-  defaultValue,
-  value,
-  min = 0,
-  max = 100,
-  ...props
-}: SliderProps) => {
-  const thumbValues = Array.isArray(value)
-    ? value
-    : Array.isArray(defaultValue)
-      ? defaultValue
-      : [min, max];
+const Slider = ({ className, defaultValue, value, min = 0, max = 100, ...props }: SliderProps) => {
+  const thumbValues = Array.isArray(value) ? value : Array.isArray(defaultValue) ? defaultValue : [min, max];
   const thumbCount = thumbValues.length;
 
   return (
@@ -30,9 +19,7 @@ const Slider = ({
       thumbAlignment="edge"
       {...props}
     >
-      <SliderPrimitive.Control
-        className="relative flex w-full touch-none select-none items-center data-disabled:opacity-50 data-vertical:h-full data-vertical:w-auto data-vertical:flex-col"
-      >
+      <SliderPrimitive.Control className="relative flex w-full touch-none select-none items-center data-disabled:opacity-50 data-vertical:h-full data-vertical:w-auto data-vertical:flex-col">
         <SliderPrimitive.Track
           data-slot="slider-track"
           className={cn(
@@ -42,10 +29,7 @@ const Slider = ({
         >
           <SliderPrimitive.Indicator
             data-slot="slider-range"
-            className={cn(
-              "select-none data-horizontal:h-full data-vertical:w-full",
-              sliderRange
-            )}
+            className={cn("select-none data-horizontal:h-full data-vertical:w-full", sliderRange)}
           />
         </SliderPrimitive.Track>
         {Array.from({ length: thumbCount }, (_, index) => (

@@ -30,7 +30,9 @@ export const Sizes: Story = {
   render: (args) => (
     <SizeStack
       sizes={CONTROL_SIZES}
-      render={(size) => <DateRangeField {...args} id={`date-range-field-${size}`} label={`Date range (${size})`} size={size} />}
+      render={(size) => (
+        <DateRangeField {...args} id={`date-range-field-${size}`} label={`Date range (${size})`} size={size} />
+      )}
     />
   ),
 };

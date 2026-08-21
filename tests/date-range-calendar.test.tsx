@@ -16,13 +16,7 @@ describe("DateRangeCalendar", () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
-    render(
-      <DateRangeCalendar
-        value={null}
-        defaultMonth={dayjs("2026-08-01")}
-        onChange={onChange}
-      />
-    );
+    render(<DateRangeCalendar value={null} defaultMonth={dayjs("2026-08-01")} onChange={onChange} />);
 
     await user.click(screen.getByRole("button", { name: "August 10, 2026" }));
 
@@ -30,9 +24,7 @@ describe("DateRangeCalendar", () => {
     const [value, meta] = onChange.mock.calls[0];
     expect(value.start.format("YYYY-MM-DD")).toBe("2026-08-10");
     expect(value.end).toBeNull();
-    expect(meta).toEqual(
-      expect.objectContaining({ source: "view", validationError: null })
-    );
+    expect(meta).toEqual(expect.objectContaining({ source: "view", validationError: null }));
   });
 
   it("completes the range on the second click and normalizes out-of-order clicks", async () => {
@@ -40,22 +32,12 @@ describe("DateRangeCalendar", () => {
     const onChange = vi.fn();
 
     const { rerender } = render(
-      <DateRangeCalendar
-        value={null}
-        defaultMonth={dayjs("2026-08-01")}
-        onChange={onChange}
-      />
+      <DateRangeCalendar value={null} defaultMonth={dayjs("2026-08-01")} onChange={onChange} />
     );
 
     await user.click(screen.getByRole("button", { name: "August 15, 2026" }));
     const half = onChange.mock.calls[0][0];
-    rerender(
-      <DateRangeCalendar
-        value={half}
-        defaultMonth={dayjs("2026-08-01")}
-        onChange={onChange}
-      />
-    );
+    rerender(<DateRangeCalendar value={half} defaultMonth={dayjs("2026-08-01")} onChange={onChange} />);
 
     await user.click(screen.getByRole("button", { name: "August 10, 2026" }));
     const [value] = onChange.mock.calls[1];
@@ -68,20 +50,12 @@ describe("DateRangeCalendar", () => {
     const onChange = vi.fn();
 
     const { rerender } = render(
-      <DateRangeCalendar
-        value={null}
-        defaultMonth={dayjs("2026-08-01")}
-        onChange={onChange}
-      />
+      <DateRangeCalendar value={null} defaultMonth={dayjs("2026-08-01")} onChange={onChange} />
     );
 
     await user.click(screen.getByRole("button", { name: "August 12, 2026" }));
     rerender(
-      <DateRangeCalendar
-        value={onChange.mock.calls[0][0]}
-        defaultMonth={dayjs("2026-08-01")}
-        onChange={onChange}
-      />
+      <DateRangeCalendar value={onChange.mock.calls[0][0]} defaultMonth={dayjs("2026-08-01")} onChange={onChange} />
     );
     await user.click(screen.getByRole("button", { name: "August 12, 2026" }));
 
@@ -98,13 +72,7 @@ describe("DateRangeCalendar", () => {
       end: dayjs("2026-08-15"),
     };
 
-    render(
-      <DateRangeCalendar
-        value={complete}
-        defaultMonth={dayjs("2026-08-01")}
-        onChange={onChange}
-      />
-    );
+    render(<DateRangeCalendar value={complete} defaultMonth={dayjs("2026-08-01")} onChange={onChange} />);
 
     await user.click(screen.getByRole("button", { name: "August 20, 2026" }));
 
@@ -121,18 +89,9 @@ describe("DateRangeCalendar", () => {
       />
     );
 
-    expect(screen.getByRole("button", { name: "August 10, 2026" })).toHaveAttribute(
-      "data-range",
-      "start"
-    );
-    expect(screen.getByRole("button", { name: "August 11, 2026" })).toHaveAttribute(
-      "data-range",
-      "in-range"
-    );
-    expect(screen.getByRole("button", { name: "August 12, 2026" })).toHaveAttribute(
-      "data-range",
-      "end"
-    );
+    expect(screen.getByRole("button", { name: "August 10, 2026" })).toHaveAttribute("data-range", "start");
+    expect(screen.getByRole("button", { name: "August 11, 2026" })).toHaveAttribute("data-range", "in-range");
+    expect(screen.getByRole("button", { name: "August 12, 2026" })).toHaveAttribute("data-range", "end");
   });
 
   it("marks same-day ranges as start-end", () => {
@@ -143,33 +102,28 @@ describe("DateRangeCalendar", () => {
       />
     );
 
-    expect(screen.getByRole("button", { name: "August 12, 2026" })).toHaveAttribute(
-      "data-range",
-      "start-end"
-    );
+    expect(screen.getByRole("button", { name: "August 12, 2026" })).toHaveAttribute("data-range", "start-end");
   });
 
   it("shows a dashed preview range while hovering after half-selection", async () => {
     const user = userEvent.setup();
 
-    render(
-      <DateRangeCalendar
-        value={{ start: dayjs("2026-08-10"), end: null }}
-        defaultMonth={dayjs("2026-08-01")}
-      />
-    );
+    render(<DateRangeCalendar value={{ start: dayjs("2026-08-10"), end: null }} defaultMonth={dayjs("2026-08-01")} />);
 
     await user.hover(screen.getByRole("button", { name: "August 14, 2026" }));
 
-    expect(
-      screen.getByRole("button", { name: "August 10, 2026" }).parentElement
-    ).toHaveAttribute("data-preview", "preview-start");
-    expect(
-      screen.getByRole("button", { name: "August 12, 2026" }).parentElement
-    ).toHaveAttribute("data-preview", "preview-in");
-    expect(
-      screen.getByRole("button", { name: "August 14, 2026" }).parentElement
-    ).toHaveAttribute("data-preview", "preview-end");
+    expect(screen.getByRole("button", { name: "August 10, 2026" }).parentElement).toHaveAttribute(
+      "data-preview",
+      "preview-start"
+    );
+    expect(screen.getByRole("button", { name: "August 12, 2026" }).parentElement).toHaveAttribute(
+      "data-preview",
+      "preview-in"
+    );
+    expect(screen.getByRole("button", { name: "August 14, 2026" }).parentElement).toHaveAttribute(
+      "data-preview",
+      "preview-end"
+    );
   });
 
   it("disables days outside minDate and maxDate", () => {
@@ -188,25 +142,11 @@ describe("DateRangeCalendar", () => {
   });
 
   it("shifts weekday headers when weekStartsOn is Monday", () => {
-    render(
-      <DateRangeCalendar
-        value={null}
-        defaultMonth={dayjs("2026-08-01")}
-        weekStartsOn={1}
-      />
-    );
+    render(<DateRangeCalendar value={null} defaultMonth={dayjs("2026-08-01")} weekStartsOn={1} />);
 
     const headers = screen.getAllByRole("row", { name: /weekday/i })[0];
     const cells = within(headers).getAllByRole("columnheader");
-    expect(cells.map((cell) => cell.textContent)).toEqual([
-      "M",
-      "T",
-      "W",
-      "TH",
-      "F",
-      "S",
-      "S",
-    ]);
+    expect(cells.map((cell) => cell.textContent)).toEqual(["M", "T", "W", "TH", "F", "S", "S"]);
   });
 
   it("renders host shortcuts and applies getValue on click", async () => {

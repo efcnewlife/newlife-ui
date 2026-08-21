@@ -48,7 +48,9 @@ export const Sizes: Story = {
   render: (args) => (
     <SizeStack
       sizes={CONTROL_SIZES}
-      render={(size) => <DateTimeField {...args} id={`date-time-field-${size}`} label={`Starts at (${size})`} size={size} />}
+      render={(size) => (
+        <DateTimeField {...args} id={`date-time-field-${size}`} label={`Starts at (${size})`} size={size} />
+      )}
     />
   ),
 };
@@ -129,7 +131,7 @@ export const Validation: Story = {
                 source: meta.source,
               },
               null,
-              2,
+              2
             )}
           </pre>
         ) : null}

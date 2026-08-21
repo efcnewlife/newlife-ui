@@ -18,13 +18,7 @@ type Story = StoryObj<typeof DateCalendar>;
 export const Default: Story = {
   render: (args) => {
     const [value, setValue] = useState<Dayjs | null>(args.value ?? dayjs("2026-08-10"));
-    return (
-      <DateCalendar
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next)}
-      />
-    );
+    return <DateCalendar {...args} value={value} onChange={(next) => setValue(next)} />;
   },
 };
 
@@ -32,13 +26,7 @@ export const WeekStartsMonday: Story = {
   args: { weekStartsOn: 1 },
   render: (args) => {
     const [value, setValue] = useState<Dayjs | null>(dayjs("2026-08-10"));
-    return (
-      <DateCalendar
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next)}
-      />
-    );
+    return <DateCalendar {...args} value={value} onChange={(next) => setValue(next)} />;
   },
 };
 
@@ -49,13 +37,7 @@ export const WithSubmit: Story = {
   },
   render: (args) => {
     const [value, setValue] = useState<Dayjs | null>(dayjs("2026-08-10"));
-    return (
-      <DateCalendar
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next)}
-      />
-    );
+    return <DateCalendar {...args} value={value} onChange={(next) => setValue(next)} />;
   },
 };
 
@@ -67,12 +49,6 @@ export const WithTodayAndSubmit: Story = {
   },
   render: (args) => {
     const [value, setValue] = useState<Dayjs | null>(dayjs("2026-08-10"));
-    return (
-      <DateCalendar
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next)}
-      />
-    );
+    return <DateCalendar {...args} value={value} onChange={(next) => setValue(next)} />;
   },
 };

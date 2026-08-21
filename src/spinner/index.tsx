@@ -26,7 +26,13 @@ const colorMap: Record<SpinnerColor, string> = {
   gray: "border-outline",
 };
 
-const Spinner: React.FC<SpinnerProps> = ({ size = "md", color = "primary", className = "", showText = false, text = "Loading..." }) => {
+const Spinner: React.FC<SpinnerProps> = ({
+  size = "md",
+  color = "primary",
+  className = "",
+  showText = false,
+  text = "Loading...",
+}) => {
   const sizeClass = sizeMap[size];
   const colorClass = colorMap[color];
 

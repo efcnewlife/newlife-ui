@@ -7,13 +7,7 @@ interface FileInputProps {
 }
 
 const FileInput: FC<FileInputProps> = ({ className = "", onChange }) => {
-  return (
-    <input
-      type="file"
-      className={`${fileInputBase} ${className}`}
-      onChange={onChange}
-    />
-  );
+  return <input type="file" className={`${fileInputBase} ${className}`} onChange={onChange} />;
 };
 
 export default FileInput;

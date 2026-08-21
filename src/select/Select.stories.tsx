@@ -32,14 +32,30 @@ export const Default: Story = {
 export const Controlled: Story = {
   render: (args) => {
     const [value, setValue] = useState<string | number | null>(null);
-    return <Select {...args} value={value} onChange={(next) => setValue(next as string | number | null)} clearable searchable />;
+    return (
+      <Select
+        {...args}
+        value={value}
+        onChange={(next) => setValue(next as string | number | null)}
+        clearable
+        searchable
+      />
+    );
   },
 };
 
 export const Multiple: Story = {
   render: (args) => {
     const [value, setValue] = useState<(string | number | null)[]>([]);
-    return <Select {...args} multiple value={value} onChange={(next) => setValue((next as (string | number | null)[]) ?? [])} searchable />;
+    return (
+      <Select
+        {...args}
+        multiple
+        value={value}
+        onChange={(next) => setValue((next as (string | number | null)[]) ?? [])}
+        searchable
+      />
+    );
   },
 };
 
@@ -61,7 +77,10 @@ export const GhostVariant: Story = {
 export const Sizes: Story = {
   args: { value: "en" },
   render: (args) => (
-    <SizeStack sizes={CONTROL_SIZES} render={(size) => <Select {...args} id={`select-${size}`} label={`Locale (${size})`} size={size} />} />
+    <SizeStack
+      sizes={CONTROL_SIZES}
+      render={(size) => <Select {...args} id={`select-${size}`} label={`Locale (${size})`} size={size} />}
+    />
   ),
 };
 

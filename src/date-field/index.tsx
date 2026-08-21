@@ -126,7 +126,14 @@ export default function DateField({
   };
 
   return (
-    <FormField id={id} label={label} required={required} error={error} wrapperClassName={wrapperClassName} labelClassName={labelClassName}>
+    <FormField
+      id={id}
+      label={label}
+      required={required}
+      error={error}
+      wrapperClassName={wrapperClassName}
+      labelClassName={labelClassName}
+    >
       <div className="relative">
         <input
           id={id}
@@ -143,13 +150,15 @@ export default function DateField({
             disabled && fieldDisabled,
             CONTROL_SIZE_CLASSES[size],
             endAdornment && "pr-11",
-            className,
+            className
           )}
           autoComplete="off"
           inputMode="numeric"
         />
         {endAdornment ? (
-          <span className={cn("pointer-events-none absolute inset-y-0 right-3 flex items-center", disabled && "opacity-40")}>
+          <span
+            className={cn("pointer-events-none absolute inset-y-0 right-3 flex items-center", disabled && "opacity-40")}
+          >
             <span className="pointer-events-auto flex items-center">{endAdornment}</span>
           </span>
         ) : null}

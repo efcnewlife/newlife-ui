@@ -76,18 +76,9 @@ const buildMonthGrid = (viewMonth: Dayjs, weekStartsOn: WeekStartsOn): Dayjs[] =
 
 type RangePosition = "start" | "end" | "start-end" | "in-range" | null;
 
-type PreviewPosition =
-  | "preview-start"
-  | "preview-end"
-  | "preview-in"
-  | "preview-start-end"
-  | null;
+type PreviewPosition = "preview-start" | "preview-end" | "preview-in" | "preview-start-end" | null;
 
-const rangePositionForDay = (
-  dayKey: string,
-  value: DateRangeValue | null,
-  timezone?: string
-): RangePosition => {
+const rangePositionForDay = (dayKey: string, value: DateRangeValue | null, timezone?: string): RangePosition => {
   if (value?.start == null) {
     return null;
   }
@@ -114,11 +105,7 @@ const rangePositionForDay = (
   return null;
 };
 
-const previewPositionForDay = (
-  dayKey: string,
-  startKey: string | null,
-  hoverKey: string | null
-): PreviewPosition => {
+const previewPositionForDay = (dayKey: string, startKey: string | null, hoverKey: string | null): PreviewPosition => {
   if (startKey == null || hoverKey == null) {
     return null;
   }
@@ -188,9 +175,7 @@ export default function DateRangeCalendar({
   disabled = false,
 }: DateRangeCalendarProps) {
   const isControlled = value !== undefined;
-  const [uncontrolledValue, setUncontrolledValue] = useState<DateRangeValue | null>(
-    defaultValue
-  );
+  const [uncontrolledValue, setUncontrolledValue] = useState<DateRangeValue | null>(defaultValue);
   const selectedValue = isControlled ? value : uncontrolledValue;
   const [hoveredDay, setHoveredDay] = useState<Dayjs | null>(null);
 
@@ -205,13 +190,8 @@ export default function DateRangeCalendar({
   const showFooter = showSubmitButton;
   const isSelectingEnd = isHalfDateRange(selectedValue);
   const startKey =
-    isSelectingEnd && selectedValue.start != null
-      ? dayjsToCalendarString(selectedValue.start, timezone)
-      : null;
-  const hoverKey =
-    isSelectingEnd && hoveredDay != null
-      ? dayjsToCalendarString(hoveredDay, timezone)
-      : null;
+    isSelectingEnd && selectedValue.start != null ? dayjsToCalendarString(selectedValue.start, timezone) : null;
+  const hoverKey = isSelectingEnd && hoveredDay != null ? dayjsToCalendarString(hoveredDay, timezone) : null;
 
   useEffect(() => {
     if (selectedValue?.start?.isValid()) {
@@ -277,10 +257,7 @@ export default function DateRangeCalendar({
         <div className="flex w-64 items-center justify-center">
           <button
             type="button"
-            className={cn(
-              "min-w-32 rounded px-1 text-center text-base font-bold",
-              textOnSurface
-            )}
+            className={cn("min-w-32 rounded px-1 text-center text-base font-bold", textOnSurface)}
             disabled
           >
             {month.format("MMMM YYYY")}
@@ -307,16 +284,9 @@ export default function DateRangeCalendar({
           {calendarDays.map((day) => {
             const isOutside = day.month() !== month.month();
             const dayKey = dayjsToCalendarString(day, timezone);
-            const rangePos = rangePositionForDay(
-              dayKey,
-              selectedValue ?? null,
-              timezone
-            );
+            const rangePos = rangePositionForDay(dayKey, selectedValue ?? null, timezone);
             const previewPos = previewPositionForDay(dayKey, startKey, hoverKey);
-            const isSelected =
-              rangePos === "start" ||
-              rangePos === "end" ||
-              rangePos === "start-end";
+            const isSelected = rangePos === "start" || rangePos === "end" || rangePos === "start-end";
             const ariaLabel = day.format("MMMM D, YYYY");
 
             return (
@@ -345,9 +315,7 @@ export default function DateRangeCalendar({
                     calendarDayBase,
                     isOutside ? textMuted : textOnSurface,
                     rangePos === "in-range" && calendarDayInRange,
-                    isSelected
-                      ? calendarDaySelected
-                      : !rangePos && calendarDayHover,
+                    isSelected ? calendarDaySelected : !rangePos && calendarDayHover,
                     "disabled:pointer-events-none disabled:opacity-40"
                   )}
                   onClick={() => handleDayClick(day)}
@@ -396,11 +364,7 @@ export default function DateRangeCalendar({
 
   return (
     <div
-      className={cn(
-        "inline-flex flex-col items-center gap-2.5 rounded-2xl py-3.5",
-        surfacePanel,
-        className
-      )}
+      className={cn("inline-flex flex-col items-center gap-2.5 rounded-2xl py-3.5", surfacePanel, className)}
       data-disabled={disabled || undefined}
       onMouseLeave={() => setHoveredDay(null)}
     >
@@ -443,10 +407,7 @@ export default function DateRangeCalendar({
           <div className="flex w-full items-center justify-end">
             <button
               type="button"
-              className={cn(
-                "h-8 min-w-16 rounded-md px-3 text-center text-xs font-bold",
-                accentPrimarySolid
-              )}
+              className={cn("h-8 min-w-16 rounded-md px-3 text-center text-xs font-bold", accentPrimarySolid)}
               onClick={onSubmit}
               disabled={disabled}
             >

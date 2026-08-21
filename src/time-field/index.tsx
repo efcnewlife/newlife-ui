@@ -40,7 +40,12 @@ export interface TimeFieldProps {
   endAdornment?: ReactNode;
 }
 
-const toDisplay = (value: Dayjs | null | undefined, timePrecision: TimePrecision, ampm: boolean, format?: string): string => {
+const toDisplay = (
+  value: Dayjs | null | undefined,
+  timePrecision: TimePrecision,
+  ampm: boolean,
+  format?: string
+): string => {
   if (value == null || !value.isValid()) {
     return "";
   }
@@ -124,7 +129,14 @@ export default function TimeField({
   };
 
   return (
-    <FormField id={id} label={label} required={required} error={error} wrapperClassName={wrapperClassName} labelClassName={labelClassName}>
+    <FormField
+      id={id}
+      label={label}
+      required={required}
+      error={error}
+      wrapperClassName={wrapperClassName}
+      labelClassName={labelClassName}
+    >
       <div className="relative">
         <input
           id={id}
@@ -141,13 +153,15 @@ export default function TimeField({
             disabled && fieldDisabled,
             CONTROL_SIZE_CLASSES[size],
             endAdornment && "pr-11",
-            className,
+            className
           )}
           autoComplete="off"
           inputMode={ampm ? "text" : "numeric"}
         />
         {endAdornment ? (
-          <span className={cn("pointer-events-none absolute inset-y-0 right-3 flex items-center", disabled && "opacity-40")}>
+          <span
+            className={cn("pointer-events-none absolute inset-y-0 right-3 flex items-center", disabled && "opacity-40")}
+          >
             <span className="pointer-events-auto flex items-center">{endAdornment}</span>
           </span>
         ) : null}

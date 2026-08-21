@@ -62,14 +62,26 @@ export const Multiple: Story = {
 export const WithError: Story = {
   args: { error: "Selection required" },
   render: (args) => (
-    <ComboBox<string> id={args.id} label={args.label} options={options} placeholder={args.placeholder} error={args.error} />
+    <ComboBox<string>
+      id={args.id}
+      label={args.label}
+      options={options}
+      placeholder={args.placeholder}
+      error={args.error}
+    />
   ),
 };
 
 export const Loading: Story = {
   args: { loading: true },
   render: (args) => (
-    <ComboBox<string> id={args.id} label={args.label} options={options} placeholder={args.placeholder} loading={args.loading} />
+    <ComboBox<string>
+      id={args.id}
+      label={args.label}
+      options={options}
+      placeholder={args.placeholder}
+      loading={args.loading}
+    />
   ),
 };
 

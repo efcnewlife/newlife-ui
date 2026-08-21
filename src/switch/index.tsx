@@ -25,7 +25,13 @@ const resolveColor = (color: SwitchProps["color"]): SwitchColor => {
   return color ?? "primary";
 };
 
-const Switch: React.FC<SwitchProps> = ({ label, defaultChecked = false, disabled = false, onChange, color = "primary" }) => {
+const Switch: React.FC<SwitchProps> = ({
+  label,
+  defaultChecked = false,
+  disabled = false,
+  onChange,
+  color = "primary",
+}) => {
   const [isChecked, setIsChecked] = useState(defaultChecked);
   const resolvedColor = resolveColor(color);
 

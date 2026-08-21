@@ -30,19 +30,13 @@ export const isCompleteDateRange = (
   return value != null && value.start != null && value.end != null;
 };
 
-export const isHalfDateRange = (
-  value: DateRangeValue | null | undefined
-): value is { start: Dayjs; end: null } => {
+export const isHalfDateRange = (value: DateRangeValue | null | undefined): value is { start: Dayjs; end: null } => {
   return value != null && value.start != null && value.end == null;
 };
 
-const dayKey = (value: Dayjs, timezone?: string): string =>
-  dayjsToCalendarString(value, timezone);
+const dayKey = (value: Dayjs, timezone?: string): string => dayjsToCalendarString(value, timezone);
 
-export const normalizeDateRange = (
-  value: DateRangeValue | null,
-  timezone?: string
-): DateRangeValue | null => {
+export const normalizeDateRange = (value: DateRangeValue | null, timezone?: string): DateRangeValue | null => {
   if (value == null) {
     return null;
   }
@@ -69,10 +63,7 @@ export const applyDateRangeDayClick = (
   clicked: Dayjs,
   timezone?: string
 ): DateRangeValue => {
-  const resolved = calendarStringToDayjs(
-    dayjsToCalendarString(clicked, timezone),
-    timezone
-  );
+  const resolved = calendarStringToDayjs(dayjsToCalendarString(clicked, timezone), timezone);
 
   if (current == null || isCompleteDateRange(current) || current.start == null) {
     return { start: resolved, end: null };
@@ -86,10 +77,7 @@ export const applyDateRangeDayClick = (
   return { start: current.start, end: resolved };
 };
 
-export const formatDateRangeDisplay = (
-  value: DateRangeValue | null | undefined,
-  timezone?: string
-): string => {
+export const formatDateRangeDisplay = (value: DateRangeValue | null | undefined, timezone?: string): string => {
   if (value == null || value.start == null || !value.start.isValid()) {
     return "";
   }
@@ -112,9 +100,7 @@ const splitRangeText = (text: string): { startText: string; endText: string | nu
   }
 
   // Space-hyphen-space between two calendar dates (not internal YYYY-MM-DD dashes).
-  const spacedHyphen = text.match(
-    /^(\d{4}-\d{2}-\d{0,2})\s+-\s+(.*)$/
-  );
+  const spacedHyphen = text.match(/^(\d{4}-\d{2}-\d{0,2})\s+-\s+(.*)$/);
   if (spacedHyphen) {
     return {
       startText: spacedHyphen[1].trim(),

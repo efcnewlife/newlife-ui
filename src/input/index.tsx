@@ -90,10 +90,16 @@ const Input: FC<InputProps> = ({
     CONTROL_SIZE_CLASSES[size],
     rightPadding,
     iconPadding,
-    className,
+    className
   );
 
-  const iconInsetClass = isXs ? (iconPosition === "left" ? "left-2.5" : "right-2.5") : iconPosition === "left" ? "left-4" : "right-4";
+  const iconInsetClass = isXs
+    ? iconPosition === "left"
+      ? "left-2.5"
+      : "right-2.5"
+    : iconPosition === "left"
+      ? "left-4"
+      : "right-4";
   const iconClasses = cn("absolute z-30 -translate-y-1/2 top-1/2", iconInsetClass, iconClick && "cursor-pointer");
 
   return (
@@ -129,7 +135,7 @@ const Input: FC<InputProps> = ({
             disabled={disabled}
             className={cn(
               "absolute inset-y-0 right-0 flex items-center focus:outline-hidden text-on-surface-variant hover:text-on-surface",
-              isXs ? "pr-2" : "pr-3",
+              isXs ? "pr-2" : "pr-3"
             )}
             aria-label="Clear input"
           >

@@ -97,8 +97,8 @@ export const Validation: Story = {
           }}
         />
         <p className="text-sm text-on-surface-variant">
-          Type digits only (for example <code>0945</code>); colons are inserted automatically. Partial input like <code>094</code> sets{" "}
-          <code>meta.validationError</code>, which hosts map to <code>error</code>.
+          Type digits only (for example <code>0945</code>); colons are inserted automatically. Partial input like{" "}
+          <code>094</code> sets <code>meta.validationError</code>, which hosts map to <code>error</code>.
         </p>
         <pre className="rounded-lg bg-surface-variant p-3 text-xs text-on-surface">
           {JSON.stringify(
@@ -109,7 +109,7 @@ export const Validation: Story = {
               source: meta?.source ?? null,
             },
             null,
-            2,
+            2
           )}
         </pre>
       </div>

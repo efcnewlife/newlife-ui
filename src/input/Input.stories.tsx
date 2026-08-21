@@ -61,6 +61,9 @@ export const Required: Story = {
 
 export const Sizes: Story = {
   render: (args) => (
-    <SizeStack sizes={CONTROL_SIZES} render={(size) => <Input {...args} id={`input-${size}`} label={`Email (${size})`} size={size} />} />
+    <SizeStack
+      sizes={CONTROL_SIZES}
+      render={(size) => <Input {...args} id={`input-${size}`} label={`Email (${size})`} size={size} />}
+    />
   ),
 };

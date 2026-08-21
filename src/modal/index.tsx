@@ -112,19 +112,30 @@ export const Modal: React.FC<ModalProps> = ({
           }}
         />
       )}
-      <div ref={modalRef} className={`${contentClasses} ${contentWrapperClasses} ${className}`} onClick={(e) => e.stopPropagation()}>
+      <div
+        ref={modalRef}
+        className={`${contentClasses} ${contentWrapperClasses} ${className}`}
+        onClick={(e) => e.stopPropagation()}
+      >
         {(title || showCloseButton) && (
           <div className="flex items-center justify-between pb-2 shrink-0">
             {title && <h3 className={`text-lg font-semibold ${textOnSurface}`}>{title}</h3>}
             {showCloseButton && (
-              <button onClick={onClose} className={`flex h-8 w-8 items-center justify-center rounded-full sm:h-11 sm:w-11 ${modalCloseButton}`}>
+              <button
+                onClick={onClose}
+                className={`flex h-8 w-8 items-center justify-center rounded-full sm:h-11 sm:w-11 ${modalCloseButton}`}
+              >
                 <MdClose className="w-6 h-6" />
               </button>
             )}
           </div>
         )}
         <div className={`${hasFooter ? "flex-1 overflow-y-auto min-h-0" : ""} ${childrenClassName}`}>{children}</div>
-        {footer && <div className={`flex gap-3 pt-4 shrink-0 ${footerAlign === "left" ? "justify-start" : "justify-end"}`}>{footer}</div>}
+        {footer && (
+          <div className={`flex gap-3 pt-4 shrink-0 ${footerAlign === "left" ? "justify-start" : "justify-end"}`}>
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   );

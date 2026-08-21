@@ -121,7 +121,7 @@ export const WithFloatingSurfaces: Story = {
               id="story-room"
               label="Room"
               value={room}
-              onChange={(next) => setRoom(Array.isArray(next) ? next[0] ?? null : next)}
+              onChange={(next) => setRoom(Array.isArray(next) ? (next[0] ?? null) : next)}
               options={[
                 { value: "a", label: "Room A" },
                 { value: "b", label: "Room B" },

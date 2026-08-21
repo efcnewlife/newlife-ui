@@ -7,18 +7,14 @@ import TimeField from "../src/time-field";
 
 describe("TimeField", () => {
   it("renders a controlled time-of-day Day.js value without a clock icon", () => {
-    const { container } = render(
-      <TimeField id="start-time" label="Start time" value={dayjs("1970-01-01T14:30:00")} />
-    );
+    const { container } = render(<TimeField id="start-time" label="Start time" value={dayjs("1970-01-01T14:30:00")} />);
 
     expect(screen.getByLabelText("Start time")).toHaveValue("14:30");
     expect(container.querySelector("svg")).toBeNull();
   });
 
   it("shows FormField label and error", () => {
-    render(
-      <TimeField id="start-time" label="Start time" error="Time is required" required />
-    );
+    render(<TimeField id="start-time" label="Start time" error="Time is required" required />);
 
     expect(screen.getByText("Start time")).toBeInTheDocument();
     expect(screen.getByText("Time is required")).toBeInTheDocument();
@@ -28,14 +24,7 @@ describe("TimeField", () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
-    render(
-      <TimeField
-        id="start-time"
-        label="Start time"
-        value={null}
-        onChange={onChange}
-      />
-    );
+    render(<TimeField id="start-time" label="Start time" value={null} onChange={onChange} />);
 
     const input = screen.getByLabelText("Start time");
     await user.clear(input);
@@ -58,14 +47,7 @@ describe("TimeField", () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
-    render(
-      <TimeField
-        id="start-time"
-        label="Start time"
-        value={null}
-        onChange={onChange}
-      />
-    );
+    render(<TimeField id="start-time" label="Start time" value={null} onChange={onChange} />);
 
     await user.type(screen.getByLabelText("Start time"), "11:00");
     const [first] = onChange.mock.calls.at(-1)!;
@@ -83,15 +65,7 @@ describe("TimeField", () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
-    render(
-      <TimeField
-        id="start-time"
-        label="Start time"
-        value={null}
-        timePrecision="seconds"
-        onChange={onChange}
-      />
-    );
+    render(<TimeField id="start-time" label="Start time" value={null} timePrecision="seconds" onChange={onChange} />);
 
     await user.type(screen.getByLabelText("Start time"), "09:45:30");
 
@@ -104,14 +78,7 @@ describe("TimeField", () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
-    render(
-      <TimeField
-        id="start-time"
-        label="Start time"
-        value={null}
-        onChange={onChange}
-      />
-    );
+    render(<TimeField id="start-time" label="Start time" value={null} onChange={onChange} />);
 
     await user.type(screen.getByLabelText("Start time"), "094");
 
@@ -129,14 +96,7 @@ describe("TimeField", () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
-    render(
-      <TimeField
-        id="start-time"
-        label="Start time"
-        value={null}
-        onChange={onChange}
-      />
-    );
+    render(<TimeField id="start-time" label="Start time" value={null} onChange={onChange} />);
 
     const input = screen.getByLabelText("Start time");
     await user.type(input, "0945");
@@ -152,9 +112,7 @@ describe("TimeField", () => {
     const onChange = vi.fn();
 
     const Harness = () => {
-      const [value, setValue] = useState<dayjs.Dayjs | null>(
-        dayjs("1970-01-01T09:45:00")
-      );
+      const [value, setValue] = useState<dayjs.Dayjs | null>(dayjs("1970-01-01T09:45:00"));
       return (
         <TimeField
           id="start-time"
@@ -182,9 +140,7 @@ describe("TimeField", () => {
   });
 
   it("displays a controlled value in 12-hour shape when ampm is true", () => {
-    render(
-      <TimeField id="start-time" label="Start time" value={dayjs("1970-01-01T14:30:00")} ampm />
-    );
+    render(<TimeField id="start-time" label="Start time" value={dayjs("1970-01-01T14:30:00")} ampm />);
 
     expect(screen.getByLabelText("Start time")).toHaveValue("02:30 PM");
   });
@@ -198,9 +154,7 @@ describe("TimeField", () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
-    render(
-      <TimeField id="start-time" label="Start time" value={null} ampm onChange={onChange} />
-    );
+    render(<TimeField id="start-time" label="Start time" value={null} ampm onChange={onChange} />);
 
     await user.type(screen.getByLabelText("Start time"), "0230PM");
 

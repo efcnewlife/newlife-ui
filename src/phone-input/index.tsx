@@ -58,7 +58,10 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   size = "md",
   selectPosition = "start",
 }) => {
-  const countryCodes: Record<string, string> = countries.reduce((acc, { name, code }) => ({ ...acc, [name]: code }), {});
+  const countryCodes: Record<string, string> = countries.reduce(
+    (acc, { name, code }) => ({ ...acc, [name]: code }),
+    {}
+  );
 
   const [selectedCountry, setSelectedCountry] = useState<string>("TWN");
   const [phoneNumber, setPhoneNumber] = useState<string>(value ? value : countryCodes[selectedCountry]);
@@ -91,7 +94,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
     CONTROL_SIZE_CLASSES[size],
     selectPosition === "start" ? "pl-[96px]" : "pr-[84px]",
     disabled && fieldDisabled,
-    !disabled && error && fieldError,
+    !disabled && error && fieldError
   );
 
   return (
@@ -120,7 +123,14 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
               ))}
             </select>
             <div className={`absolute inset-y-0 flex items-center pointer-events-none bg-none right-3 ${textMuted}`}>
-              <svg className="stroke-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg
+                className="stroke-current"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <path
                   d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396"
                   stroke="currentColor"
@@ -158,7 +168,14 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
               ))}
             </select>
             <div className={`absolute inset-y-0 flex items-center pointer-events-none right-3 ${textMuted}`}>
-              <svg className="stroke-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg
+                className="stroke-current"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <path
                   d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396"
                   stroke="currentColor"

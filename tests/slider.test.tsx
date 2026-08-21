@@ -22,13 +22,7 @@ describe("Slider", () => {
     const onValueChange = vi.fn();
 
     const { container } = render(
-      <Slider
-        defaultValue={[50]}
-        max={100}
-        step={1}
-        aria-label="Brightness"
-        onValueChange={onValueChange}
-      />
+      <Slider defaultValue={[50]} max={100} step={1} aria-label="Brightness" onValueChange={onValueChange} />
     );
 
     const input = container.querySelector('input[type="range"]') as HTMLInputElement | null;
@@ -44,13 +38,7 @@ describe("Slider", () => {
     const onValueChange = vi.fn();
 
     const { container } = render(
-      <Slider
-        defaultValue={[50]}
-        max={100}
-        disabled
-        aria-label="Locked"
-        onValueChange={onValueChange}
-      />
+      <Slider defaultValue={[50]} max={100} disabled aria-label="Locked" onValueChange={onValueChange} />
     );
 
     const input = container.querySelector('input[type="range"]') as HTMLInputElement | null;

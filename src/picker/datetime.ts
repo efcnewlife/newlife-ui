@@ -2,11 +2,7 @@ import type { Dayjs } from "../lib/dayjs";
 import { dayjs } from "../lib/dayjs";
 import type { PickerValidationError } from "../picker/types";
 import { pushTwoDigitSection } from "./digit-section";
-import {
-  extractMeridianSuffix,
-  hour12To24,
-  isUnambiguous24hHour,
-} from "./meridian";
+import { extractMeridianSuffix, hour12To24, isUnambiguous24hHour } from "./meridian";
 import { createTimeOfDay, type TimePrecision } from "./time";
 
 export const resolveDisplayTimezone = (
@@ -20,8 +16,7 @@ export const resolveDisplayTimezone = (
 
   const candidate = value ?? defaultValue;
   if (candidate) {
-    const candidateTimezone = (candidate as Dayjs & { $x?: { $timezone?: string } }).$x
-      ?.$timezone;
+    const candidateTimezone = (candidate as Dayjs & { $x?: { $timezone?: string } }).$x?.$timezone;
     if (candidateTimezone) {
       return candidateTimezone;
     }
@@ -96,7 +91,6 @@ export const formatCalendarDateInput = (text: string): string => {
   return `${year}-${month}-${day}`;
 };
 
-
 export const toZonedDayjs = (value: Dayjs, displayTimezone: string): Dayjs => {
   if (displayTimezone === "system") {
     return value.local();
@@ -107,10 +101,7 @@ export const toZonedDayjs = (value: Dayjs, displayTimezone: string): Dayjs => {
   return value.tz(displayTimezone);
 };
 
-export const defaultDatetimeFormat = (
-  timePrecision: TimePrecision = "minutes",
-  ampm = false
-): string => {
+export const defaultDatetimeFormat = (timePrecision: TimePrecision = "minutes", ampm = false): string => {
   if (ampm) {
     return timePrecision === "seconds" ? "YYYY-MM-DD hh:mm:ss A" : "YYYY-MM-DD hh:mm A";
   }
@@ -149,10 +140,8 @@ export const wallClockToUtc = (
 
 const DATETIME_24H_MINUTES = /^(\d{4})-(\d{2})-(\d{2}) ([01]\d|2[0-3]):([0-5]\d)$/;
 const DATETIME_24H_SECONDS = /^(\d{4})-(\d{2})-(\d{2}) ([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
-const DATETIME_12H_MINUTES =
-  /^(\d{4})-(\d{2})-(\d{2}) (0?[1-9]|1[0-2]):([0-5]\d) (AM|PM)$/i;
-const DATETIME_12H_SECONDS =
-  /^(\d{4})-(\d{2})-(\d{2}) (0?[1-9]|1[0-2]):([0-5]\d):([0-5]\d) (AM|PM)$/i;
+const DATETIME_12H_MINUTES = /^(\d{4})-(\d{2})-(\d{2}) (0?[1-9]|1[0-2]):([0-5]\d) (AM|PM)$/i;
+const DATETIME_12H_SECONDS = /^(\d{4})-(\d{2})-(\d{2}) (0?[1-9]|1[0-2]):([0-5]\d):([0-5]\d) (AM|PM)$/i;
 
 const parseDatetimePartsToUtc = (
   year: number,
@@ -163,11 +152,7 @@ const parseDatetimePartsToUtc = (
   second: number,
   displayTimezone: string
 ): Dayjs | null => {
-  const calendarCheck = dayjs(
-    `${year}-${pad(month)}-${pad(day)}`,
-    "YYYY-MM-DD",
-    true
-  );
+  const calendarCheck = dayjs(`${year}-${pad(month)}-${pad(day)}`, "YYYY-MM-DD", true);
   if (!calendarCheck.isValid()) {
     return null;
   }
@@ -180,17 +165,11 @@ export const isCompleteDatetimeString = (
   ampm = false
 ): boolean => {
   if (ampm) {
-    const twelveOk =
-      timePrecision === "seconds"
-        ? DATETIME_12H_SECONDS.test(text)
-        : DATETIME_12H_MINUTES.test(text);
+    const twelveOk = timePrecision === "seconds" ? DATETIME_12H_SECONDS.test(text) : DATETIME_12H_MINUTES.test(text);
     if (twelveOk) {
       return true;
     }
-    const twentyFour =
-      timePrecision === "seconds"
-        ? DATETIME_24H_SECONDS.exec(text)
-        : DATETIME_24H_MINUTES.exec(text);
+    const twentyFour = timePrecision === "seconds" ? DATETIME_24H_SECONDS.exec(text) : DATETIME_24H_MINUTES.exec(text);
     if (!twentyFour) {
       return false;
     }
@@ -198,9 +177,7 @@ export const isCompleteDatetimeString = (
     // Hours 1-12 without a meridian are ambiguous in ampm mode (wait for AM/PM).
     return isUnambiguous24hHour(hour);
   }
-  return timePrecision === "seconds"
-    ? DATETIME_24H_SECONDS.test(text)
-    : DATETIME_24H_MINUTES.test(text);
+  return timePrecision === "seconds" ? DATETIME_24H_SECONDS.test(text) : DATETIME_24H_MINUTES.test(text);
 };
 
 export const parseDatetimeString = (
@@ -210,10 +187,7 @@ export const parseDatetimeString = (
   ampm = false
 ): Dayjs | null => {
   if (ampm) {
-    const twelve =
-      timePrecision === "seconds"
-        ? DATETIME_12H_SECONDS.exec(text)
-        : DATETIME_12H_MINUTES.exec(text);
+    const twelve = timePrecision === "seconds" ? DATETIME_12H_SECONDS.exec(text) : DATETIME_12H_MINUTES.exec(text);
     if (twelve) {
       const year = Number(twelve[1]);
       const month = Number(twelve[2]);
@@ -222,15 +196,7 @@ export const parseDatetimeString = (
       const minute = Number(twelve[5]);
       const second = timePrecision === "seconds" ? Number(twelve[6]) : 0;
       const meridian = timePrecision === "seconds" ? twelve[7]! : twelve[6]!;
-      return parseDatetimePartsToUtc(
-        year,
-        month,
-        day,
-        hour12To24(hour12, meridian),
-        minute,
-        second,
-        displayTimezone
-      );
+      return parseDatetimePartsToUtc(year, month, day, hour12To24(hour12, meridian), minute, second, displayTimezone);
     }
   }
 
@@ -238,10 +204,7 @@ export const parseDatetimeString = (
     return null;
   }
 
-  const twentyFour =
-    timePrecision === "seconds"
-      ? DATETIME_24H_SECONDS.exec(text)
-      : DATETIME_24H_MINUTES.exec(text);
+  const twentyFour = timePrecision === "seconds" ? DATETIME_24H_SECONDS.exec(text) : DATETIME_24H_MINUTES.exec(text);
   if (!twentyFour) {
     return null;
   }
@@ -256,11 +219,7 @@ export const parseDatetimeString = (
 };
 
 /** Keep digits (and optional AM/PM when ampm) and insert date/time separators. */
-export const formatDatetimeInput = (
-  text: string,
-  timePrecision: TimePrecision = "minutes",
-  ampm = false
-): string => {
+export const formatDatetimeInput = (text: string, timePrecision: TimePrecision = "minutes", ampm = false): string => {
   const { body, meridian } = ampm ? extractMeridianSuffix(text) : { body: text, meridian: "" };
   const digits = body.replace(/\D/g, "");
   let year = "";
@@ -348,8 +307,7 @@ export const formatDatetimeInput = (
   if (ampm && meridian) {
     const hourValue = Number(hour);
     const looks12h = hour.length === 2 && hourValue >= 1 && hourValue <= 12;
-    const timeComplete =
-      timePrecision === "seconds" ? Boolean(second && second.length === 2) : minute.length === 2;
+    const timeComplete = timePrecision === "seconds" ? Boolean(second && second.length === 2) : minute.length === 2;
     if (looks12h && (timeComplete || meridian.length === 2)) {
       result = `${result} ${meridian}`;
     }
@@ -358,21 +316,12 @@ export const formatDatetimeInput = (
   return result;
 };
 
-export const utcToDisplayCalendarDate = (
-  value: Dayjs,
-  displayTimezone: string
-): Dayjs => {
+export const utcToDisplayCalendarDate = (value: Dayjs, displayTimezone: string): Dayjs => {
   const dateStr = toZonedDayjs(value, displayTimezone).format("YYYY-MM-DD");
-  return calendarStringToDayjs(
-    dateStr,
-    displayTimezone === "system" ? undefined : displayTimezone
-  );
+  return calendarStringToDayjs(dateStr, displayTimezone === "system" ? undefined : displayTimezone);
 };
 
-export const utcToDisplayTimeOfDay = (
-  value: Dayjs,
-  displayTimezone: string
-): Dayjs => {
+export const utcToDisplayTimeOfDay = (value: Dayjs, displayTimezone: string): Dayjs => {
   const zoned = toZonedDayjs(value, displayTimezone);
   return createTimeOfDay(zoned.hour(), zoned.minute(), zoned.second());
 };
@@ -382,10 +331,7 @@ export const applyDatePreservingTime = (
   nextCalendarDate: Dayjs,
   displayTimezone: string
 ): Dayjs => {
-  const dateStr = dayjsToCalendarString(
-    nextCalendarDate,
-    displayTimezone === "system" ? undefined : displayTimezone
-  );
+  const dateStr = dayjsToCalendarString(nextCalendarDate, displayTimezone === "system" ? undefined : displayTimezone);
   const [year, month, day] = dateStr.split("-").map(Number);
 
   let hour = 0;
@@ -433,9 +379,7 @@ export const applyTimePreservingDate = (
   );
 };
 
-export const toDayjsBound = (
-  value: Dayjs | Date | string | null | undefined
-): Dayjs | undefined => {
+export const toDayjsBound = (value: Dayjs | Date | string | null | undefined): Dayjs | undefined => {
   if (value == null) {
     return undefined;
   }

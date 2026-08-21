@@ -25,16 +25,12 @@ describe("ComboBox", () => {
   });
 
   it("applies inputClassName on the input", () => {
-    render(
-      <ComboBox id="framework-input" options={options} inputClassName="input-custom" />
-    );
+    render(<ComboBox id="framework-input" options={options} inputClassName="input-custom" />);
     expect(document.getElementById("framework-input")).toHaveClass("input-custom");
   });
 
   it("forwards labelClassName to the FormField label", () => {
-    render(
-      <ComboBox id="framework-label" label="Framework" options={options} labelClassName="text-on-primary" />
-    );
+    render(<ComboBox id="framework-label" label="Framework" options={options} labelClassName="text-on-primary" />);
     expect(screen.getByText("Framework")).toHaveClass("text-on-primary");
   });
 
