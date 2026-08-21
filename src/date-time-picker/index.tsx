@@ -177,19 +177,21 @@ export default function DateTimePicker({
     setOpen(false);
   };
 
-  const calendarValue = selectedValue != null && selectedValue.isValid() ? utcToDisplayCalendarDate(selectedValue, displayTimezone) : null;
-  const timeValue = selectedValue != null && selectedValue.isValid() ? utcToDisplayTimeOfDay(selectedValue, displayTimezone) : null;
+  const calendarValue =
+    selectedValue != null && selectedValue.isValid() ? utcToDisplayCalendarDate(selectedValue, displayTimezone) : null;
+  const timeValue =
+    selectedValue != null && selectedValue.isValid() ? utcToDisplayTimeOfDay(selectedValue, displayTimezone) : null;
 
   const iconButtonClassName = cn(
     "inline-flex items-center justify-center rounded-md transition-colors",
     CONTROL_ADORNMENT_BUTTON_CLASSES[size],
     textMuted,
-    disabled && "cursor-not-allowed",
+    disabled && "cursor-not-allowed"
   );
   const footerActionClassName = cn(
     "h-8 rounded-md px-3 text-sm font-medium text-primary transition-colors",
     "hover:bg-primary/10",
-    disabled && "cursor-not-allowed opacity-40",
+    disabled && "cursor-not-allowed opacity-40"
   );
 
   return (
@@ -258,61 +260,46 @@ export default function DateTimePicker({
         offset={8}
         className={cn("flex flex-col", surfacePanel, "rounded-2xl")}
       >
-          <div className="flex flex-col gap-2 p-2 sm:flex-row">
-            <DateCalendar
-              value={calendarValue}
-              onChange={handleCalendarChange}
-              timezone={timezone}
-              minDate={minDate ?? undefined}
-              maxDate={maxDate ?? undefined}
-              weekStartsOn={weekStartsOn}
-              labels={labels}
-              disabled={disabled}
-            />
-            <DigitalTimeSurface
-              value={timeValue}
-              onChange={handleTimeChange}
-              variant={variant}
-              minuteStep={minuteStep}
-              ampm={ampm}
-              timePrecision={timePrecision}
-              disabled={disabled}
-            />
-          </div>
+        <div className="flex flex-col gap-2 p-2 sm:flex-row">
+          <DateCalendar
+            value={calendarValue}
+            onChange={handleCalendarChange}
+            timezone={timezone}
+            minDate={minDate ?? undefined}
+            maxDate={maxDate ?? undefined}
+            weekStartsOn={weekStartsOn}
+            labels={labels}
+            disabled={disabled}
+          />
+          <DigitalTimeSurface
+            value={timeValue}
+            onChange={handleTimeChange}
+            variant={variant}
+            minuteStep={minuteStep}
+            ampm={ampm}
+            timePrecision={timePrecision}
+            disabled={disabled}
+          />
+        </div>
 
-          {showSubmitButton ? (
-            <div className="flex flex-col">
-              <div className="border-t border-outline-variant" />
-              <div className="flex items-center justify-between gap-2 px-3 py-2">
-                <button
-                  type="button"
-                  className={footerActionClassName}
-                  onClick={handleNow}
-                  disabled={disabled}
-                >
-                  {nowLabel}
+        {showSubmitButton ? (
+          <div className="flex flex-col">
+            <div className="border-t border-outline-variant" />
+            <div className="flex items-center justify-between gap-2 px-3 py-2">
+              <button type="button" className={footerActionClassName} onClick={handleNow} disabled={disabled}>
+                {nowLabel}
+              </button>
+              <div className="flex items-center gap-1">
+                <button type="button" className={footerActionClassName} onClick={handleCancel} disabled={disabled}>
+                  {cancelLabel}
                 </button>
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    className={footerActionClassName}
-                    onClick={handleCancel}
-                    disabled={disabled}
-                  >
-                    {cancelLabel}
-                  </button>
-                  <button
-                    type="button"
-                    className={footerActionClassName}
-                    onClick={handleSubmit}
-                    disabled={disabled}
-                  >
-                    {submitLabel}
-                  </button>
-                </div>
+                <button type="button" className={footerActionClassName} onClick={handleSubmit} disabled={disabled}>
+                  {submitLabel}
+                </button>
               </div>
             </div>
-          ) : null}
+          </div>
+        ) : null}
       </FloatingSurface>
     </div>
   );

@@ -48,11 +48,7 @@ const Banner: FC<BannerProps> = ({ variant, message, onDismiss, labels, classNam
   return (
     <div
       role="status"
-      className={cn(
-        "flex w-full items-center gap-3 rounded-none border-b px-4 py-2.5",
-        styles.container,
-        className
-      )}
+      className={cn("flex w-full items-center gap-3 rounded-none border-b px-4 py-2.5", styles.container, className)}
     >
       <SeverityIcon variant={variant} className={cn("size-5 shrink-0 fill-current", styles.icon)} />
       <div className={cn("min-w-0 flex-1 text-sm break-words", alertMessage)}>{message}</div>

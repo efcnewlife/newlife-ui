@@ -67,10 +67,10 @@ Stories live next to components as `*.stories.tsx`. Tests live under `tests/`.
 
 Use the **Color theme** toolbar (top bar) to toggle **Light** or **Dark** M3 role mappings from `theme/reference.css`:
 
-| Preset | What it does |
-|--------|----------------|
-| **Light** | Default roles from `reference.css` |
-| **Dark** | Adds `.dark` on `<html>` for dark role remap |
+| Preset    | What it does                                 |
+| --------- | -------------------------------------------- |
+| **Light** | Default roles from `reference.css`           |
+| **Dark**  | Adds `.dark` on `<html>` for dark role remap |
 
 Implementation: `.storybook/apply-storybook-theme.ts` toggles the `dark` class on `<html>`. Per-story default:
 

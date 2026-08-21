@@ -7,7 +7,12 @@ import DateField from "../date-field";
 import { FloatingSurface } from "../floating-surface";
 import type { Dayjs } from "../lib/dayjs";
 import type { PickerChangeMeta } from "../picker/types";
-import { CONTROL_ADORNMENT_BUTTON_CLASSES, CONTROL_ADORNMENT_ICON_CLASSES, type ControlSize, textMuted } from "../theme/role-classes";
+import {
+  CONTROL_ADORNMENT_BUTTON_CLASSES,
+  CONTROL_ADORNMENT_ICON_CLASSES,
+  type ControlSize,
+  textMuted,
+} from "../theme/role-classes";
 
 export interface DatePickerLabels extends DateCalendarLabels {
   clear?: string;
@@ -104,7 +109,7 @@ export default function DatePicker({
     "inline-flex items-center justify-center rounded-md transition-colors",
     CONTROL_ADORNMENT_BUTTON_CLASSES[size],
     textMuted,
-    disabled && "cursor-not-allowed",
+    disabled && "cursor-not-allowed"
   );
 
   return (

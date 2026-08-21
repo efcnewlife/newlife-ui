@@ -24,7 +24,7 @@ describe("Banner", () => {
             Maintenance tonight. <a href="/status">Status page</a>
           </>
         }
-      />,
+      />
     );
     expect(screen.getByRole("status")).toHaveTextContent("Maintenance tonight.");
     expect(screen.getByRole("link", { name: "Status page" })).toHaveAttribute("href", "/status");
@@ -47,7 +47,14 @@ describe("Banner", () => {
   it("uses labels.dismiss as the dismiss control name", async () => {
     const user = userEvent.setup();
     const onDismiss = vi.fn();
-    render(<Banner variant="warning" message="Optional notice" onDismiss={onDismiss} labels={{ dismiss: "Close announcement" }} />);
+    render(
+      <Banner
+        variant="warning"
+        message="Optional notice"
+        onDismiss={onDismiss}
+        labels={{ dismiss: "Close announcement" }}
+      />
+    );
 
     await user.click(screen.getByRole("button", { name: "Close announcement" }));
     expect(onDismiss).toHaveBeenCalledTimes(1);

@@ -16,13 +16,7 @@ describe("TimePicker", () => {
   });
 
   it("does not expose the legacy native-string value API", () => {
-    render(
-      <TimePicker
-        id="start-time"
-        label="Start time"
-        value={dayjs("1970-01-01T09:30:00")}
-      />
-    );
+    render(<TimePicker id="start-time" label="Start time" value={dayjs("1970-01-01T09:30:00")} />);
 
     const input = screen.getByLabelText("Start time");
     expect(input).not.toHaveAttribute("type", "time");
@@ -33,14 +27,7 @@ describe("TimePicker", () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
-    render(
-      <TimePicker
-        id="start-time"
-        label="Start time"
-        value={null}
-        onChange={onChange}
-      />
-    );
+    render(<TimePicker id="start-time" label="Start time" value={null} onChange={onChange} />);
 
     await user.type(screen.getByLabelText("Start time"), "08:15");
     const [value, meta] = onChange.mock.calls.at(-1)!;
@@ -58,14 +45,7 @@ describe("TimePicker", () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
-    render(
-      <TimePicker
-        id="start-time"
-        label="Start time"
-        value={dayjs("1970-01-01T14:30:00")}
-        onChange={onChange}
-      />
-    );
+    render(<TimePicker id="start-time" label="Start time" value={dayjs("1970-01-01T14:30:00")} onChange={onChange} />);
 
     await user.click(screen.getByRole("button", { name: /open time picker/i }));
     const hours = screen.getByRole("listbox", { name: /hours/i });
@@ -73,9 +53,7 @@ describe("TimePicker", () => {
     expect(screen.getByRole("listbox", { name: /minutes/i })).toBeInTheDocument();
 
     await user.click(
-      Array.from(hours.querySelectorAll('[role="option"]')).find(
-        (option) => option.textContent === "15"
-      )!
+      Array.from(hours.querySelectorAll('[role="option"]')).find((option) => option.textContent === "15")!
     );
 
     expect(onChange).toHaveBeenCalled();
@@ -121,12 +99,7 @@ describe("TimePicker", () => {
     const user = userEvent.setup();
 
     render(
-      <TimePicker
-        id="start-time"
-        label="Start time"
-        value={dayjs("1970-01-01T09:00:00")}
-        timePrecision="seconds"
-      />
+      <TimePicker id="start-time" label="Start time" value={dayjs("1970-01-01T09:00:00")} timePrecision="seconds" />
     );
 
     await user.click(screen.getByRole("button", { name: /open time picker/i }));
@@ -138,13 +111,7 @@ describe("TimePicker", () => {
     const onChange = vi.fn();
 
     render(
-      <TimePicker
-        id="start-time"
-        label="Start time"
-        value={dayjs("1970-01-01T09:00:00")}
-        ampm
-        onChange={onChange}
-      />
+      <TimePicker id="start-time" label="Start time" value={dayjs("1970-01-01T09:00:00")} ampm onChange={onChange} />
     );
 
     await user.click(screen.getByRole("button", { name: /open time picker/i }));
@@ -156,15 +123,7 @@ describe("TimePicker", () => {
   });
 
   it("forwards ampm and format to the composed TimeField text", () => {
-    render(
-      <TimePicker
-        id="start-time"
-        label="Start time"
-        value={dayjs("1970-01-01T14:30:00")}
-        ampm
-        format="h:mm A"
-      />
-    );
+    render(<TimePicker id="start-time" label="Start time" value={dayjs("1970-01-01T14:30:00")} ampm format="h:mm A" />);
 
     expect(screen.getByLabelText("Start time")).toHaveValue("2:30 PM");
   });
@@ -174,12 +133,7 @@ describe("TimePicker", () => {
     const onChange = vi.fn();
 
     const { rerender } = render(
-      <TimePicker
-        id="start-time"
-        label="Start time"
-        value={dayjs("1970-01-01T14:30:00")}
-        onChange={onChange}
-      />
+      <TimePicker id="start-time" label="Start time" value={dayjs("1970-01-01T14:30:00")} onChange={onChange} />
     );
 
     await user.click(screen.getByRole("button", { name: "Clear" }));
@@ -203,13 +157,7 @@ describe("TimePicker", () => {
   it("defaults clearable, minuteStep, ampm, and timePrecision", async () => {
     const user = userEvent.setup();
 
-    render(
-      <TimePicker
-        id="start-time"
-        label="Start time"
-        value={dayjs("1970-01-01T14:30:00")}
-      />
-    );
+    render(<TimePicker id="start-time" label="Start time" value={dayjs("1970-01-01T14:30:00")} />);
 
     expect(screen.getByRole("button", { name: "Clear" })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /open time picker/i }));
@@ -217,30 +165,21 @@ describe("TimePicker", () => {
     expect(hours).toBeInTheDocument();
     expect(screen.queryByRole("listbox", { name: /seconds/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("listbox", { name: /meridiem/i })).not.toBeInTheDocument();
-    expect(
-      Array.from(hours.querySelectorAll('[role="option"]')).some(
-        (option) => option.textContent === "01"
-      )
-    ).toBe(true);
+    expect(Array.from(hours.querySelectorAll('[role="option"]')).some((option) => option.textContent === "01")).toBe(
+      true
+    );
   });
 
   it("merges className with clear padding", () => {
     render(
-      <TimePicker
-        id="start-time"
-        label="Start time"
-        value={dayjs("1970-01-01T14:30:00")}
-        className="host-class"
-      />
+      <TimePicker id="start-time" label="Start time" value={dayjs("1970-01-01T14:30:00")} className="host-class" />
     );
     expect(screen.getByLabelText("Start time")).toHaveClass("host-class", "pr-16");
   });
 
   it("forwards Control size xs to the field without shrinking hour options", async () => {
     const user = userEvent.setup();
-    render(
-      <TimePicker id="start-time" label="Start time" value={dayjs("1970-01-01T14:30:00")} size="xs" />
-    );
+    render(<TimePicker id="start-time" label="Start time" value={dayjs("1970-01-01T14:30:00")} size="xs" />);
     expect(screen.getByLabelText("Start time")).toHaveClass("h-8", "text-xs", "px-2.5");
 
     await user.click(screen.getByRole("button", { name: /open time picker/i }));

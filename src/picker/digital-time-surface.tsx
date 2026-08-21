@@ -119,7 +119,7 @@ const TimeColumn = ({ label, options, selected, disabled, onSelect }: TimeColumn
                   "w-full",
                   calendarGridOption,
                   isSelected && calendarGridOptionSelected,
-                  disabled && "cursor-not-allowed opacity-40",
+                  disabled && "cursor-not-allowed opacity-40"
                 )}
                 onClick={() => onSelect(option.value)}
               >
@@ -179,7 +179,7 @@ export default function DigitalTimeSurface({
                     "w-full text-left",
                     calendarGridOption,
                     isSelected && calendarGridOptionSelected,
-                    disabled && "cursor-not-allowed opacity-40",
+                    disabled && "cursor-not-allowed opacity-40"
                   )}
                   onClick={() => emit(option.hour(), option.minute(), option.second())}
                 >
@@ -207,7 +207,9 @@ export default function DigitalTimeSurface({
           value: hour,
           label: pad(hour),
         }))}
-        onSelect={(nextHour) => emit(toHour24(Number(nextHour), isPm, ampm), parts.minute, timePrecision === "seconds" ? parts.second : 0)}
+        onSelect={(nextHour) =>
+          emit(toHour24(Number(nextHour), isPm, ampm), parts.minute, timePrecision === "seconds" ? parts.second : 0)
+        }
       />
       <TimeColumn
         label="Minutes"
@@ -241,7 +243,11 @@ export default function DigitalTimeSurface({
             { value: "PM", label: "PM" },
           ]}
           onSelect={(nextMeridiem) =>
-            emit(toHour24(selectedDisplayHour, nextMeridiem === "PM", true), parts.minute, timePrecision === "seconds" ? parts.second : 0)
+            emit(
+              toHour24(selectedDisplayHour, nextMeridiem === "PM", true),
+              parts.minute,
+              timePrecision === "seconds" ? parts.second : 0
+            )
           }
         />
       ) : null}

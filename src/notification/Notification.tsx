@@ -62,7 +62,8 @@ const Notification: React.FC<NotificationProps> = ({ variant, title, description
   };
 
   const getActionButtonStyles = (actionVariant: "primary" | "secondary" | "danger" = "primary"): string => {
-    const baseStyles = "px-3 py-1.5 text-xs font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2";
+    const baseStyles =
+      "px-3 py-1.5 text-xs font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2";
     const styles = {
       primary: notificationActionPrimary,
       secondary: notificationActionSecondary,

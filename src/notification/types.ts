@@ -1,11 +1,6 @@
 export type NotificationVariant = "success" | "info" | "warning" | "error";
 export type NotificationPosition =
-  | "top-left"
-  | "top-center"
-  | "top-right"
-  | "bottom-left"
-  | "bottom-center"
-  | "bottom-right";
+  "top-left" | "top-center" | "top-right" | "bottom-left" | "bottom-center" | "bottom-right";
 
 export interface NotificationAction {
   label: string;

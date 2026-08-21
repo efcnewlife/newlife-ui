@@ -28,7 +28,7 @@ function OptionCheckbox({ checked, disabled }: { checked: boolean; disabled?: bo
       className={cn(
         "flex size-5 shrink-0 items-center justify-center rounded border transition-colors",
         checked ? comboboxCheckboxChecked : comboboxCheckboxUnchecked,
-        disabled && "opacity-50",
+        disabled && "opacity-50"
       )}
       role="checkbox"
       aria-checked={checked}
@@ -215,7 +215,7 @@ export const Select: React.FC<SelectProps> = ({
     "relative flex w-full items-center overflow-hidden rounded-lg border appearance-none shadow-theme-xs focus:outline-hidden focus:ring-3",
     stateClasses,
     CONTROL_SIZE_CLASSES[size],
-    className,
+    className
   );
 
   return (
@@ -246,7 +246,10 @@ export const Select: React.FC<SelectProps> = ({
                 <div className="flex items-center gap-1 flex-wrap">
                   {multiple ? (
                     selectedOptions.map((option) => (
-                      <span key={option.value} className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-md ${tagPrimary}`}>
+                      <span
+                        key={option.value}
+                        className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-md ${tagPrimary}`}
+                      >
                         {option.icon}
                         {option.label}
                         <button
@@ -297,7 +300,7 @@ export const Select: React.FC<SelectProps> = ({
                     textMuted,
                     "transition-transform duration-200",
                     CONTROL_ADORNMENT_ICON_CLASSES[size],
-                    isOpen && "rotate-180",
+                    isOpen && "rotate-180"
                   )}
                   aria-hidden="true"
                 />
@@ -349,7 +352,7 @@ export const Select: React.FC<SelectProps> = ({
                         isSelected && !isFocused && selectOptionActive,
                         option.disabled && cn(textMuted, "cursor-not-allowed opacity-60"),
                         index === 0 && !searchable && "rounded-t-lg",
-                        index === filteredOptions.length - 1 && "rounded-b-lg",
+                        index === filteredOptions.length - 1 && "rounded-b-lg"
                       )}
                       onClick={() => handleOptionClick(option)}
                       onMouseEnter={() => !option.disabled && setFocusedIndex(index)}

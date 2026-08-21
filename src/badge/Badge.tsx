@@ -16,14 +16,7 @@ import {
 
 type BadgeVariant = "light" | "solid";
 type BadgeSize = "sm" | "md";
-type BadgeColor =
-  | "primary"
-  | "success"
-  | "error"
-  | "warning"
-  | "info"
-  | "light"
-  | "dark";
+type BadgeColor = "primary" | "success" | "error" | "warning" | "info" | "light" | "dark";
 
 interface BadgeProps {
   variant?: BadgeVariant;
@@ -34,16 +27,8 @@ interface BadgeProps {
   children: ReactNode;
 }
 
-const Badge: FC<BadgeProps> = ({
-  variant = "light",
-  color = "primary",
-  size = "md",
-  startIcon,
-  endIcon,
-  children,
-}) => {
-  const baseStyles =
-    "inline-flex items-center px-2.5 py-0.5 justify-center gap-1 rounded-full font-medium";
+const Badge: FC<BadgeProps> = ({ variant = "light", color = "primary", size = "md", startIcon, endIcon, children }) => {
+  const baseStyles = "inline-flex items-center px-2.5 py-0.5 justify-center gap-1 rounded-full font-medium";
 
   const sizeStyles = {
     sm: "text-theme-xs",

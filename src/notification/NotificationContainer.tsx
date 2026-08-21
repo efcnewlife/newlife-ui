@@ -5,14 +5,17 @@ const NotificationContainer: React.FC = () => {
   const { notifications, removeNotification } = useNotification();
 
   // Group notifications by position
-  const notificationsByPosition = notifications.reduce((acc, notification) => {
-    const position = notification.position || "bottom-right";
-    if (!acc[position]) {
-      acc[position] = [];
-    }
-    acc[position].push(notification);
-    return acc;
-  }, {} as Record<string, typeof notifications>);
+  const notificationsByPosition = notifications.reduce(
+    (acc, notification) => {
+      const position = notification.position || "bottom-right";
+      if (!acc[position]) {
+        acc[position] = [];
+      }
+      acc[position].push(notification);
+      return acc;
+    },
+    {} as Record<string, typeof notifications>
+  );
 
   return (
     <>

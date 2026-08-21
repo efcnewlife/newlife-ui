@@ -30,15 +30,7 @@ describe("DateCalendar", () => {
 
     const headers = screen.getByRole("row", { name: /weekday/i });
     const cells = within(headers).getAllByRole("columnheader");
-    expect(cells.map((cell) => cell.textContent)).toEqual([
-      "S",
-      "M",
-      "T",
-      "W",
-      "TH",
-      "F",
-      "S",
-    ]);
+    expect(cells.map((cell) => cell.textContent)).toEqual(["S", "M", "T", "W", "TH", "F", "S"]);
   });
 
   it("shifts weekday headers when weekStartsOn is Monday", () => {
@@ -46,33 +38,18 @@ describe("DateCalendar", () => {
 
     const headers = screen.getByRole("row", { name: /weekday/i });
     const cells = within(headers).getAllByRole("columnheader");
-    expect(cells.map((cell) => cell.textContent)).toEqual([
-      "M",
-      "T",
-      "W",
-      "TH",
-      "F",
-      "S",
-      "S",
-    ]);
+    expect(cells.map((cell) => cell.textContent)).toEqual(["M", "T", "W", "TH", "F", "S", "S"]);
   });
 
   it("shows submit chrome only when showSubmitButton is true and invokes onSubmit", async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
 
-    const { rerender, container } = render(
-      <DateCalendar value={dayjs("2026-08-10")} onSubmit={onSubmit} />
-    );
+    const { rerender, container } = render(<DateCalendar value={dayjs("2026-08-10")} onSubmit={onSubmit} />);
     expect(screen.queryByRole("button", { name: "Done" })).not.toBeInTheDocument();
 
     rerender(
-      <DateCalendar
-        value={dayjs("2026-08-10")}
-        showSubmitButton
-        onSubmit={onSubmit}
-        labels={{ submit: "Apply" }}
-      />
+      <DateCalendar value={dayjs("2026-08-10")} showSubmitButton onSubmit={onSubmit} labels={{ submit: "Apply" }} />
     );
 
     const submit = screen.getByRole("button", { name: "Apply" });
@@ -87,18 +64,11 @@ describe("DateCalendar", () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
-    const { rerender } = render(
-      <DateCalendar value={dayjs("2026-08-10")} onChange={onChange} />
-    );
+    const { rerender } = render(<DateCalendar value={dayjs("2026-08-10")} onChange={onChange} />);
     expect(screen.queryByRole("button", { name: "Today" })).not.toBeInTheDocument();
 
     rerender(
-      <DateCalendar
-        value={dayjs("2026-08-10")}
-        showTodayButton
-        onChange={onChange}
-        labels={{ today: "今天" }}
-      />
+      <DateCalendar value={dayjs("2026-08-10")} showTodayButton onChange={onChange} labels={{ today: "今天" }} />
     );
 
     await user.click(screen.getByRole("button", { name: "今天" }));

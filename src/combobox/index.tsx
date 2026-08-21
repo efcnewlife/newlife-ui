@@ -107,7 +107,7 @@ function OptionCheckbox({ checked, disabled }: { checked: boolean; disabled?: bo
       className={cn(
         "flex size-5 shrink-0 items-center justify-center rounded border transition-colors",
         checked ? comboboxCheckboxChecked : comboboxCheckboxUnchecked,
-        disabled && "opacity-50",
+        disabled && "opacity-50"
       )}
       role="checkbox"
       aria-checked={checked}
@@ -191,12 +191,16 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
   })();
 
   const canCreate =
-    allowCreate && query.length > 0 && !filteredOptions.some((option) => option.label.toLowerCase() === query.toLowerCase());
+    allowCreate &&
+    query.length > 0 &&
+    !filteredOptions.some((option) => option.label.toLowerCase() === query.toLowerCase());
 
   const handleSelect = (option: ComboBoxOption<T>) => {
     if (option.disabled) return;
     if (multiple) {
-      const next = valueArray.includes(option.value) ? valueArray.filter((v) => v !== option.value) : [...valueArray, option.value];
+      const next = valueArray.includes(option.value)
+        ? valueArray.filter((v) => v !== option.value)
+        : [...valueArray, option.value];
       (onChange as (v: T[] | null) => void)?.(next.length > 0 ? next : null);
     } else {
       (onChange as (v: T | null) => void)?.(option.value);
@@ -277,7 +281,9 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
       return;
     }
 
-    const allOptions = canCreate ? [{ value: null, label: query } as ComboBoxOption<T>, ...filteredOptions] : filteredOptions;
+    const allOptions = canCreate
+      ? [{ value: null, label: query } as ComboBoxOption<T>, ...filteredOptions]
+      : filteredOptions;
 
     switch (e.key) {
       case "ArrowDown":
@@ -341,10 +347,12 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
     stateClasses,
     CONTROL_SIZE_CLASSES[size],
     rightPadding,
-    inputClassName,
+    inputClassName
   );
 
-  const allOptions = canCreate ? [{ value: null, label: query } as ComboBoxOption<T>, ...filteredOptions] : filteredOptions;
+  const allOptions = canCreate
+    ? [{ value: null, label: query } as ComboBoxOption<T>, ...filteredOptions]
+    : filteredOptions;
 
   return (
     <FormField
@@ -400,7 +408,12 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
               aria-label="Toggle options"
             >
               <MdKeyboardArrowDown
-                className={cn(textMuted, "transition-transform duration-200", CONTROL_ADORNMENT_ICON_CLASSES[size], isOpen && "rotate-180")}
+                className={cn(
+                  textMuted,
+                  "transition-transform duration-200",
+                  CONTROL_ADORNMENT_ICON_CLASSES[size],
+                  isOpen && "rotate-180"
+                )}
                 aria-hidden="true"
               />
             </button>
@@ -415,7 +428,7 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
           placement="bottom-start"
           offset={4}
           className={cn(
-            `w-full overflow-auto rounded-lg py-1 text-base shadow-theme-lg outline outline-black/5 sm:text-sm ${surfacePanel}`,
+            `w-full overflow-auto rounded-lg py-1 text-base shadow-theme-lg outline outline-black/5 sm:text-sm ${surfacePanel}`
           )}
         >
           <div role="listbox">
@@ -433,7 +446,7 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
                       className={cn(
                         "cursor-default flex items-center gap-2 px-3 py-2 select-none transition-colors",
                         focusedIndex === 0 ? comboboxOptionFocused : comboboxOptionDefault,
-                        "hover:bg-primary hover:text-on-primary",
+                        "hover:bg-primary hover:text-on-primary"
                       )}
                       onClick={handleCreate}
                       onMouseEnter={() => setFocusedIndex(0)}
@@ -458,7 +471,7 @@ export const ComboBox = <T = any,>(props: ComboBoxProps<T>) => {
                             : option.disabled
                               ? `${textMuted} cursor-not-allowed opacity-60`
                               : comboboxOptionDefault,
-                          !option.disabled && "hover:bg-primary hover:text-on-primary",
+                          !option.disabled && "hover:bg-primary hover:text-on-primary"
                         )}
                         onClick={() => !option.disabled && handleSelect(option)}
                         onMouseEnter={() => !option.disabled && setFocusedIndex(optionIndex)}

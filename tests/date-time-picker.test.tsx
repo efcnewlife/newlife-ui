@@ -16,7 +16,7 @@ describe("DateTimePicker", () => {
 
   it("renders a trailing calendar icon", () => {
     const { container } = render(
-      <DateTimePicker id="starts-at" label="Starts at" value={dayjs.utc("2026-06-20T15:30:00.000Z")} timezone="UTC" />,
+      <DateTimePicker id="starts-at" label="Starts at" value={dayjs.utc("2026-06-20T15:30:00.000Z")} timezone="UTC" />
     );
 
     expect(container.querySelector("svg")).not.toBeNull();
@@ -26,7 +26,9 @@ describe("DateTimePicker", () => {
   it("opens side-by-side DateCalendar and digital time surfaces", async () => {
     const user = userEvent.setup();
 
-    render(<DateTimePicker id="starts-at" label="Starts at" value={dayjs.utc("2026-06-20T15:30:00.000Z")} timezone="UTC" />);
+    render(
+      <DateTimePicker id="starts-at" label="Starts at" value={dayjs.utc("2026-06-20T15:30:00.000Z")} timezone="UTC" />
+    );
 
     await user.click(screen.getByRole("button", { name: /open calendar/i }));
 
@@ -53,7 +55,7 @@ describe("DateTimePicker", () => {
       expect.objectContaining({
         source: "view",
         validationError: null,
-      }),
+      })
     );
   });
 
@@ -61,7 +63,16 @@ describe("DateTimePicker", () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
-    render(<DateTimePicker id="starts-at" label="Starts at" value={null} defaultValue={null} timezone="UTC" onChange={onChange} />);
+    render(
+      <DateTimePicker
+        id="starts-at"
+        label="Starts at"
+        value={null}
+        defaultValue={null}
+        timezone="UTC"
+        onChange={onChange}
+      />
+    );
 
     await user.click(screen.getByRole("button", { name: /open calendar/i }));
     // Calendar opens on the current month when empty; pick a day in view.
@@ -77,12 +88,20 @@ describe("DateTimePicker", () => {
     const onChange = vi.fn();
 
     render(
-      <DateTimePicker id="starts-at" label="Starts at" value={dayjs.utc("2026-06-20T15:30:00.000Z")} timezone="UTC" onChange={onChange} />,
+      <DateTimePicker
+        id="starts-at"
+        label="Starts at"
+        value={dayjs.utc("2026-06-20T15:30:00.000Z")}
+        timezone="UTC"
+        onChange={onChange}
+      />
     );
 
     await user.click(screen.getByRole("button", { name: /open calendar/i }));
     const hours = screen.getByRole("listbox", { name: /hours/i });
-    await user.click(Array.from(hours.querySelectorAll('[role="option"]')).find((option) => option.textContent === "16")!);
+    await user.click(
+      Array.from(hours.querySelectorAll('[role="option"]')).find((option) => option.textContent === "16")!
+    );
 
     const [nextValue, meta] = onChange.mock.calls.at(-1)!;
     expect(nextValue.toISOString()).toBe("2026-06-20T16:30:00.000Z");
@@ -100,7 +119,7 @@ describe("DateTimePicker", () => {
         timezone="UTC"
         variant="digital"
         minuteStep={30}
-      />,
+      />
     );
 
     await user.click(screen.getByRole("button", { name: /open calendar/i }));
@@ -119,7 +138,9 @@ describe("DateTimePicker", () => {
     const onChange = vi.fn();
     const value = dayjs.utc("2026-06-20T15:30:00.000Z");
 
-    render(<DateTimePicker id="starts-at" label="Starts at" value={value} timezone="UTC" clearable onChange={onChange} />);
+    render(
+      <DateTimePicker id="starts-at" label="Starts at" value={value} timezone="UTC" clearable onChange={onChange} />
+    );
 
     await user.click(screen.getByRole("button", { name: "Clear" }));
 
@@ -128,7 +149,13 @@ describe("DateTimePicker", () => {
 
   it("shows clear for uncontrolled defaultValue", () => {
     render(
-      <DateTimePicker id="starts-at" label="Starts at" defaultValue={dayjs.utc("2026-06-20T15:30:00.000Z")} timezone="UTC" clearable />,
+      <DateTimePicker
+        id="starts-at"
+        label="Starts at"
+        defaultValue={dayjs.utc("2026-06-20T15:30:00.000Z")}
+        timezone="UTC"
+        clearable
+      />
     );
 
     expect(screen.getByRole("button", { name: "Clear" })).toBeInTheDocument();
@@ -140,11 +167,22 @@ describe("DateTimePicker", () => {
     const minDateTime = dayjs.utc("2026-06-20T12:00:00.000Z");
     const value = dayjs.utc("2026-06-20T15:00:00.000Z");
 
-    render(<DateTimePicker id="starts-at" label="Starts at" value={value} timezone="UTC" minDateTime={minDateTime} onChange={onChange} />);
+    render(
+      <DateTimePicker
+        id="starts-at"
+        label="Starts at"
+        value={value}
+        timezone="UTC"
+        minDateTime={minDateTime}
+        onChange={onChange}
+      />
+    );
 
     await user.click(screen.getByRole("button", { name: /open calendar/i }));
     const hours = screen.getByRole("listbox", { name: /hours/i });
-    await user.click(Array.from(hours.querySelectorAll('[role="option"]')).find((option) => option.textContent === "00")!);
+    await user.click(
+      Array.from(hours.querySelectorAll('[role="option"]')).find((option) => option.textContent === "00")!
+    );
 
     expect(onChange).toHaveBeenCalled();
     const withError = onChange.mock.calls.find((call) => call[1]?.validationError === "minDateTime");
@@ -158,11 +196,22 @@ describe("DateTimePicker", () => {
     const maxDateTime = dayjs.utc("2026-06-20T12:00:00.000Z");
     const value = dayjs.utc("2026-06-20T10:00:00.000Z");
 
-    render(<DateTimePicker id="starts-at" label="Starts at" value={value} timezone="UTC" maxDateTime={maxDateTime} onChange={onChange} />);
+    render(
+      <DateTimePicker
+        id="starts-at"
+        label="Starts at"
+        value={value}
+        timezone="UTC"
+        maxDateTime={maxDateTime}
+        onChange={onChange}
+      />
+    );
 
     await user.click(screen.getByRole("button", { name: /open calendar/i }));
     const hours = screen.getByRole("listbox", { name: /hours/i });
-    await user.click(Array.from(hours.querySelectorAll('[role="option"]')).find((option) => option.textContent === "23")!);
+    await user.click(
+      Array.from(hours.querySelectorAll('[role="option"]')).find((option) => option.textContent === "23")!
+    );
 
     expect(onChange).toHaveBeenCalled();
     const withError = onChange.mock.calls.find((call) => call[1]?.validationError === "maxDateTime");
@@ -183,7 +232,7 @@ describe("DateTimePicker", () => {
         showSubmitButton
         onSubmit={onSubmit}
         onChange={onChange}
-      />,
+      />
     );
 
     await user.click(screen.getByRole("button", { name: /open calendar/i }));
@@ -211,7 +260,7 @@ describe("DateTimePicker", () => {
         timezone="UTC"
         showSubmitButton
         onSubmit={onSubmit}
-      />,
+      />
     );
 
     await user.click(screen.getByRole("button", { name: /open calendar/i }));
@@ -233,7 +282,7 @@ describe("DateTimePicker", () => {
         timezone="UTC"
         showSubmitButton
         onChange={onChange}
-      />,
+      />
     );
 
     await user.click(screen.getByRole("button", { name: /open calendar/i }));
@@ -246,7 +295,7 @@ describe("DateTimePicker", () => {
     expect(meta).toEqual(
       expect.objectContaining({
         source: "view",
-      }),
+      })
     );
   });
 
@@ -262,7 +311,7 @@ describe("DateTimePicker", () => {
         timezone="UTC"
         ampm
         onChange={onChange}
-      />,
+      />
     );
 
     await user.click(screen.getByRole("button", { name: /open calendar/i }));
@@ -282,7 +331,7 @@ describe("DateTimePicker", () => {
         timezone="UTC"
         ampm
         format="MMM D, YYYY h:mm A"
-      />,
+      />
     );
 
     expect(screen.getByLabelText("Starts at")).toHaveValue("Jun 20, 2026 3:30 PM");
@@ -292,7 +341,13 @@ describe("DateTimePicker", () => {
     const user = userEvent.setup();
 
     render(
-      <DateTimePicker id="starts-at" label="Starts at" value={dayjs.utc("2026-06-20T15:00:00.000Z")} timezone="UTC" minuteStep={15} />,
+      <DateTimePicker
+        id="starts-at"
+        label="Starts at"
+        value={dayjs.utc("2026-06-20T15:00:00.000Z")}
+        timezone="UTC"
+        minuteStep={15}
+      />
     );
 
     await user.click(screen.getByRole("button", { name: /open calendar/i }));
@@ -310,7 +365,7 @@ describe("DateTimePicker", () => {
         timezone="UTC"
         size="xs"
         className="host-class"
-      />,
+      />
     );
     expect(screen.getByLabelText("Starts at")).toHaveClass("h-8", "text-xs", "px-2.5", "host-class", "pr-16");
   });

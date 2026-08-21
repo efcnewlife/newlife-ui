@@ -48,11 +48,7 @@ export const IconOnly: Story = {
 export const Secondary: Story = {
   args: {
     variant: "secondary",
-    buttons: [
-      { text: "Day", active: true },
-      { text: "Week" },
-      { text: "Month", disabled: true },
-    ],
+    buttons: [{ text: "Day", active: true }, { text: "Week" }, { text: "Month", disabled: true }],
   },
   render: (args) => <ButtonGroup {...args} />,
 };

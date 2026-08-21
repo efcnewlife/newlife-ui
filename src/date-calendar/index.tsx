@@ -2,12 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { cn } from "../cn";
 import { dayjs, type Dayjs } from "../lib/dayjs";
-import {
-  calendarStringToDayjs,
-  dayjsToCalendarString,
-  toDayjsBound,
-  validateCalendarDate,
-} from "../picker/datetime";
+import { calendarStringToDayjs, dayjsToCalendarString, toDayjsBound, validateCalendarDate } from "../picker/datetime";
 import type { PickerChangeMeta } from "../picker/types";
 import {
   accentPrimarySolid,
@@ -70,10 +65,7 @@ const rotateWeekdayLabels = (weekStartsOn: WeekStartsOn): string[] => {
   return [...WEEKDAY_LABELS.slice(weekStartsOn), ...WEEKDAY_LABELS.slice(0, weekStartsOn)];
 };
 
-const buildMonthGrid = (
-  viewMonth: Dayjs,
-  weekStartsOn: WeekStartsOn
-): Dayjs[] => {
+const buildMonthGrid = (viewMonth: Dayjs, weekStartsOn: WeekStartsOn): Dayjs[] => {
   const startOfMonth = viewMonth.startOf("month");
   const startOffset = (startOfMonth.day() - weekStartsOn + 7) % 7;
   const gridStart = startOfMonth.subtract(startOffset, "day");
@@ -108,9 +100,7 @@ export default function DateCalendar({
   const [uncontrolledValue, setUncontrolledValue] = useState<Dayjs | null>(defaultValue);
   const selectedValue = isControlled ? value : uncontrolledValue;
 
-  const [viewMonth, setViewMonth] = useState<Dayjs>(() =>
-    (selectedValue ?? dayjs()).startOf("month")
-  );
+  const [viewMonth, setViewMonth] = useState<Dayjs>(() => (selectedValue ?? dayjs()).startOf("month"));
   const [internalView, setInternalView] = useState<DateCalendarView>(defaultView);
   const view = viewProp ?? internalView;
 
@@ -146,14 +136,8 @@ export default function DateCalendar({
     onChange?.(resolved, { validationError, source: "view" });
   };
 
-  const weekdayLabels = useMemo(
-    () => rotateWeekdayLabels(weekStartsOn),
-    [weekStartsOn]
-  );
-  const calendarDays = useMemo(
-    () => buildMonthGrid(viewMonth, weekStartsOn),
-    [viewMonth, weekStartsOn]
-  );
+  const weekdayLabels = useMemo(() => rotateWeekdayLabels(weekStartsOn), [weekStartsOn]);
+  const calendarDays = useMemo(() => buildMonthGrid(viewMonth, weekStartsOn), [viewMonth, weekStartsOn]);
 
   const headerLabel =
     view === "day"
@@ -208,11 +192,7 @@ export default function DateCalendar({
 
   return (
     <div
-      className={cn(
-        "inline-flex w-72 flex-col items-center gap-2.5 rounded-2xl py-3.5",
-        surfacePanel,
-        className
-      )}
+      className={cn("inline-flex w-72 flex-col items-center gap-2.5 rounded-2xl py-3.5", surfacePanel, className)}
       data-disabled={disabled || undefined}
     >
       <div className="flex w-64 items-center justify-between">
@@ -271,10 +251,7 @@ export default function DateCalendar({
             {calendarDays.map((day) => {
               const isOutside = day.month() !== viewMonth.month();
               const dayKey = dayjsToCalendarString(day, timezone);
-              const selectedKey =
-                selectedValue != null
-                  ? dayjsToCalendarString(selectedValue, timezone)
-                  : null;
+              const selectedKey = selectedValue != null ? dayjsToCalendarString(selectedValue, timezone) : null;
               const isSelected = selectedKey === dayKey;
               const ariaLabel = day.format("MMMM D, YYYY");
 
@@ -310,9 +287,7 @@ export default function DateCalendar({
               type="button"
               className={cn(
                 calendarGridOption,
-                viewMonth.month() === monthIndex
-                  ? calendarGridOptionSelected
-                  : textOnSurface
+                viewMonth.month() === monthIndex ? calendarGridOptionSelected : textOnSurface
               )}
               disabled={disabled}
               onClick={() => {
@@ -336,9 +311,7 @@ export default function DateCalendar({
                 type="button"
                 className={cn(
                   calendarGridOption,
-                  viewMonth.year() === year
-                    ? calendarGridOptionSelected
-                    : textOnSurface
+                  viewMonth.year() === year ? calendarGridOptionSelected : textOnSurface
                 )}
                 disabled={disabled}
                 onClick={() => {
@@ -377,10 +350,7 @@ export default function DateCalendar({
               {showSubmitButton ? (
                 <button
                   type="button"
-                  className={cn(
-                    "h-8 min-w-16 rounded-md px-3 text-center text-xs font-bold",
-                    accentPrimarySolid
-                  )}
+                  className={cn("h-8 min-w-16 rounded-md px-3 text-center text-xs font-bold", accentPrimarySolid)}
                   onClick={onSubmit}
                   disabled={disabled}
                 >

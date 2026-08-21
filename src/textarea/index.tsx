@@ -1,12 +1,7 @@
 import React from "react";
 import FormField from "../form-field";
 import { cn } from "../cn";
-import {
-  textareaBase,
-  textareaDisabled,
-  textareaError,
-  textareaSuccess,
-} from "../theme/role-classes";
+import { textareaBase, textareaDisabled, textareaError, textareaSuccess } from "../theme/role-classes";
 
 interface TextareaProps {
   id: string;
@@ -56,14 +51,7 @@ const TextArea: React.FC<TextareaProps> = ({
   }
 
   return (
-    <FormField
-      id={id}
-      label={label}
-      required={required}
-      error={error}
-      hint={hint}
-      wrapperClassName={wrapperClassName}
-    >
+    <FormField id={id} label={label} required={required} error={error} hint={hint} wrapperClassName={wrapperClassName}>
       <div className="relative">
         <textarea
           id={id}

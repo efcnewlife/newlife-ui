@@ -33,7 +33,12 @@ export type { DateRangePickerLabels, DateRangePickerProps, DateRangePickerValue 
 export { default as DateTimeField } from "./date-time-field";
 export type { DateTimeFieldProps, DateTimeFieldTimePrecision } from "./date-time-field";
 export { default as DateTimePicker } from "./date-time-picker";
-export type { DateTimePickerLabels, DateTimePickerProps, DateTimePickerTimePrecision, DateTimePickerValue } from "./date-time-picker";
+export type {
+  DateTimePickerLabels,
+  DateTimePickerProps,
+  DateTimePickerTimePrecision,
+  DateTimePickerValue,
+} from "./date-time-picker";
 export { Dropdown } from "./dropdown/Dropdown";
 export { DropdownItem } from "./dropdown/DropdownItem";
 export type { DropdownLinkComponentProps } from "./dropdown/DropdownItem";

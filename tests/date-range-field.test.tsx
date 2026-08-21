@@ -9,11 +9,7 @@ import type { DateRangeValue } from "../src/picker/date-range";
 describe("DateRangeField", () => {
   it("renders a controlled complete range without a calendar icon", () => {
     const { container } = render(
-      <DateRangeField
-        id="range"
-        label="Date range"
-        value={{ start: dayjs("2026-08-10"), end: dayjs("2026-08-15") }}
-      />
+      <DateRangeField id="range" label="Date range" value={{ start: dayjs("2026-08-10"), end: dayjs("2026-08-15") }} />
     );
 
     expect(screen.getByLabelText("Date range")).toHaveValue("2026-08-10 – 2026-08-15");
@@ -21,21 +17,13 @@ describe("DateRangeField", () => {
   });
 
   it("displays half-selection with a trailing separator", () => {
-    render(
-      <DateRangeField
-        id="range"
-        label="Date range"
-        value={{ start: dayjs("2026-08-10"), end: null }}
-      />
-    );
+    render(<DateRangeField id="range" label="Date range" value={{ start: dayjs("2026-08-10"), end: null }} />);
 
     expect(screen.getByLabelText("Date range")).toHaveValue("2026-08-10 – ");
   });
 
   it("shows FormField label and error", () => {
-    render(
-      <DateRangeField id="range" label="Date range" error="Range is required" required />
-    );
+    render(<DateRangeField id="range" label="Date range" error="Range is required" required />);
 
     expect(screen.getByText("Date range")).toBeInTheDocument();
     expect(screen.getByText("Range is required")).toBeInTheDocument();
@@ -45,9 +33,7 @@ describe("DateRangeField", () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
-    render(
-      <DateRangeField id="range" label="Date range" value={null} onChange={onChange} />
-    );
+    render(<DateRangeField id="range" label="Date range" value={null} onChange={onChange} />);
 
     const input = screen.getByLabelText("Date range");
     await user.clear(input);
@@ -56,18 +42,14 @@ describe("DateRangeField", () => {
     const [value, meta] = onChange.mock.calls.at(-1)!;
     expect(value.start.format("YYYY-MM-DD")).toBe("2026-08-10");
     expect(value.end.format("YYYY-MM-DD")).toBe("2026-08-15");
-    expect(meta).toEqual(
-      expect.objectContaining({ source: "field", validationError: null })
-    );
+    expect(meta).toEqual(expect.objectContaining({ source: "field", validationError: null }));
   });
 
   it("parses a single date as half-selection", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
-    render(
-      <DateRangeField id="range" label="Date range" value={null} onChange={onChange} />
-    );
+    render(<DateRangeField id="range" label="Date range" value={null} onChange={onChange} />);
 
     await user.type(screen.getByLabelText("Date range"), "2026-08-10");
 

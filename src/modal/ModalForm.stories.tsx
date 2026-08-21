@@ -157,8 +157,8 @@ export const BookingWithFloatingSurfaces: Story = {
         >
           <div className="space-y-5">
             <p className="text-sm text-on-surface-variant">
-              Sticky footer stays visible while the body scrolls. Open Select, ComboBox, or pickers near
-              the bottom — Floating surfaces should paint above the footer.
+              Sticky footer stays visible while the body scrolls. Open Select, ComboBox, or pickers near the bottom —
+              Floating surfaces should paint above the footer.
             </p>
 
             <ComboBox<string>
@@ -297,7 +297,7 @@ export const ValidationErrors: Story = {
               id="invalid-room"
               label="Room"
               value={room}
-              onChange={(next) => setRoom(Array.isArray(next) ? next[0] ?? null : next)}
+              onChange={(next) => setRoom(Array.isArray(next) ? (next[0] ?? null) : next)}
               options={roomOptions}
               required
               error="Select at least one room"
@@ -350,20 +350,20 @@ export const LongScrollBody: Story = {
         >
           <div className="space-y-4">
             <p className="text-sm text-on-surface-variant">
-              Scroll the body — the footer actions stay pinned. The room Select at the end should still open
-              above the footer.
+              Scroll the body — the footer actions stay pinned. The room Select at the end should still open above the
+              footer.
             </p>
             {Array.from({ length: 8 }, (_, index) => (
               <p key={index} className="text-sm text-on-surface">
-                Section {index + 1}. Facility bookings must follow ministry approval rules, quiet hours, and
-                cleanup expectations. Repeated violations may suspend booking privileges for the ministry.
+                Section {index + 1}. Facility bookings must follow ministry approval rules, quiet hours, and cleanup
+                expectations. Repeated violations may suspend booking privileges for the ministry.
               </p>
             ))}
             <Select
               id="long-form-room"
               label="Primary room"
               value={room}
-              onChange={(next) => setRoom(Array.isArray(next) ? next[0] ?? null : next)}
+              onChange={(next) => setRoom(Array.isArray(next) ? (next[0] ?? null) : next)}
               options={roomOptions}
               required
             />

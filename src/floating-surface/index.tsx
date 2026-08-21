@@ -15,14 +15,7 @@ import { floatingSurfaceStackManager } from "./stack";
 export const FLOATING_SURFACE_Z_INDEX = 100_000;
 
 export type FloatingSurfacePlacement =
-  | "bottom-start"
-  | "bottom-end"
-  | "bottom"
-  | "top"
-  | "top-start"
-  | "top-end"
-  | "left"
-  | "right";
+  "bottom-start" | "bottom-end" | "bottom" | "top" | "top-start" | "top-end" | "left" | "right";
 
 export interface FloatingSurfaceProps {
   open: boolean;
@@ -201,11 +194,7 @@ export function FloatingSurface({
       if (surfaceRef.current?.contains(target) || anchorRef.current?.contains(target)) {
         return;
       }
-      if (
-        ignoreOutsidePressSelector &&
-        target instanceof Element &&
-        target.closest(ignoreOutsidePressSelector)
-      ) {
+      if (ignoreOutsidePressSelector && target instanceof Element && target.closest(ignoreOutsidePressSelector)) {
         return;
       }
       // Nested portaled surfaces (Select inside Dropdown) register above this one.

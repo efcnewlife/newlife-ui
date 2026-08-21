@@ -11,12 +11,7 @@ interface DropdownProps {
   className?: string;
 }
 
-export const Dropdown: React.FC<DropdownProps> = ({
-  isOpen,
-  onClose,
-  children,
-  className = "",
-}) => {
+export const Dropdown: React.FC<DropdownProps> = ({ isOpen, onClose, children, className = "" }) => {
   const sentinelRef = useRef<HTMLSpanElement | null>(null);
   const anchorRef = useRef<HTMLElement | null>(null);
   const [anchorReady, setAnchorReady] = useState(false);

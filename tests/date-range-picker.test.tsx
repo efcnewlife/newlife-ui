@@ -9,20 +9,14 @@ import type { DateRangeValue } from "../src/picker/date-range";
 describe("DateRangePicker", () => {
   it("renders a controlled range in the field", () => {
     render(
-      <DateRangePicker
-        id="range"
-        label="Date range"
-        value={{ start: dayjs("2026-08-10"), end: dayjs("2026-08-15") }}
-      />
+      <DateRangePicker id="range" label="Date range" value={{ start: dayjs("2026-08-10"), end: dayjs("2026-08-15") }} />
     );
 
     expect(screen.getByLabelText("Date range")).toHaveValue("2026-08-10 – 2026-08-15");
   });
 
   it("renders a trailing calendar icon", () => {
-    const { container } = render(
-      <DateRangePicker id="range" label="Date range" value={null} />
-    );
+    const { container } = render(<DateRangePicker id="range" label="Date range" value={null} />);
 
     expect(container.querySelector("svg")).not.toBeNull();
     expect(screen.getByRole("button", { name: /open calendar/i })).toBeInTheDocument();

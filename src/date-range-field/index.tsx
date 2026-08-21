@@ -59,9 +59,7 @@ export default function DateRangeField({
   endAdornment,
 }: DateRangeFieldProps) {
   const isControlled = value !== undefined;
-  const [uncontrolledValue, setUncontrolledValue] = useState<DateRangeValue | null>(
-    defaultValue
-  );
+  const [uncontrolledValue, setUncontrolledValue] = useState<DateRangeValue | null>(defaultValue);
   const selectedValue = isControlled ? value : uncontrolledValue;
   const [text, setText] = useState(() => formatDateRangeDisplay(selectedValue, timezone));
 
@@ -128,10 +126,7 @@ export default function DateRangeField({
         />
         {endAdornment ? (
           <span
-            className={cn(
-              "pointer-events-none absolute inset-y-0 right-3 flex items-center",
-              disabled && "opacity-40"
-            )}
+            className={cn("pointer-events-none absolute inset-y-0 right-3 flex items-center", disabled && "opacity-40")}
           >
             <span className="pointer-events-auto flex items-center">{endAdornment}</span>
           </span>

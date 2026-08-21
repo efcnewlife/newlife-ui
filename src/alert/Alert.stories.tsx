@@ -38,7 +38,9 @@ export const Success: Story = {
 };
 
 export const Sizes: Story = {
-  render: (args) => <SizeStack sizes={ALERT_SIZES} className="max-w-lg" render={(size) => <Alert {...args} size={size} />} />,
+  render: (args) => (
+    <SizeStack sizes={ALERT_SIZES} className="max-w-lg" render={(size) => <Alert {...args} size={size} />} />
+  ),
 };
 
 export const Error: Story = {
@@ -124,5 +126,7 @@ export const LongMessage: Story = {
 };
 
 export const LongMessageFiveLines: Story = {
-  render: (args) => <Alert {...args} variant="info" title="Release notes" message={longMessage} messageLines={5} width="lg" />,
+  render: (args) => (
+    <Alert {...args} variant="info" title="Release notes" message={longMessage} messageLines={5} width="lg" />
+  ),
 };

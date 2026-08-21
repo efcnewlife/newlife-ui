@@ -10,11 +10,7 @@ const meta: Meta<typeof Popover> = {
   args: {
     title: "Filters",
     trigger: <Button variant="outline">Open popover</Button>,
-    children: (
-      <div className="p-4 text-sm text-on-surface">
-        Popover body content goes here.
-      </div>
-    ),
+    children: <div className="p-4 text-sm text-on-surface">Popover body content goes here.</div>,
   },
 };
 

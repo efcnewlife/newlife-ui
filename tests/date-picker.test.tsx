@@ -35,7 +35,7 @@ describe("DatePicker", () => {
       expect.objectContaining({
         source: "view",
         validationError: null,
-      }),
+      })
     );
   });
 
@@ -47,7 +47,7 @@ describe("DatePicker", () => {
         value={dayjs("2026-06-20")}
         // @ts-expect-error mode is removed from the public API
         mode="range"
-      />,
+      />
     );
 
     expect(screen.queryByText(/to/i)).not.toBeInTheDocument();
@@ -57,7 +57,9 @@ describe("DatePicker", () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
-    const { rerender } = render(<DatePicker id="start-date" label="Start date" value={dayjs("2026-06-20")} onChange={onChange} />);
+    const { rerender } = render(
+      <DatePicker id="start-date" label="Start date" value={dayjs("2026-06-20")} onChange={onChange} />
+    );
 
     await user.click(screen.getByRole("button", { name: "Clear" }));
     expect(onChange).toHaveBeenCalledWith(null, {
@@ -65,15 +67,33 @@ describe("DatePicker", () => {
       source: "field",
     });
 
-    rerender(<DatePicker id="start-date" label="Start date" value={dayjs("2026-06-20")} clearable={false} onChange={onChange} />);
+    rerender(
+      <DatePicker
+        id="start-date"
+        label="Start date"
+        value={dayjs("2026-06-20")}
+        clearable={false}
+        onChange={onChange}
+      />
+    );
     expect(screen.queryByRole("button", { name: "Clear" })).not.toBeInTheDocument();
   });
 
   it("merges className with clear padding and still applies className when clear is hidden", () => {
-    const { rerender } = render(<DatePicker id="start-date" label="Start date" value={dayjs("2026-06-20")} className="host-class" />);
+    const { rerender } = render(
+      <DatePicker id="start-date" label="Start date" value={dayjs("2026-06-20")} className="host-class" />
+    );
     expect(screen.getByLabelText("Start date")).toHaveClass("host-class", "pr-16");
 
-    rerender(<DatePicker id="start-date" label="Start date" value={dayjs("2026-06-20")} clearable={false} className="host-class" />);
+    rerender(
+      <DatePicker
+        id="start-date"
+        label="Start date"
+        value={dayjs("2026-06-20")}
+        clearable={false}
+        className="host-class"
+      />
+    );
     expect(screen.getByLabelText("Start date")).toHaveClass("host-class");
     expect(screen.getByLabelText("Start date")).not.toHaveClass("pr-16");
   });

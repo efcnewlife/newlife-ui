@@ -22,13 +22,7 @@ export const Default: Story = {
       start: dayjs("2026-08-10"),
       end: dayjs("2026-08-15"),
     });
-    return (
-      <DateRangeCalendar
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next)}
-      />
-    );
+    return <DateRangeCalendar {...args} value={value} onChange={(next) => setValue(next)} />;
   },
 };
 
@@ -51,13 +45,7 @@ export const WithShortcuts: Story = {
   },
   render: (args) => {
     const [value, setValue] = useState<DateRangeValue | null>(null);
-    return (
-      <DateRangeCalendar
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next)}
-      />
-    );
+    return <DateRangeCalendar {...args} value={value} onChange={(next) => setValue(next)} />;
   },
 };
 
@@ -80,13 +68,7 @@ export const ShortcutsOnRight: Story = {
   },
   render: (args) => {
     const [value, setValue] = useState<DateRangeValue | null>(null);
-    return (
-      <DateRangeCalendar
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next)}
-      />
-    );
+    return <DateRangeCalendar {...args} value={value} onChange={(next) => setValue(next)} />;
   },
 };
 
@@ -100,13 +82,7 @@ export const WithSubmit: Story = {
       start: dayjs("2026-08-10"),
       end: dayjs("2026-08-12"),
     });
-    return (
-      <DateRangeCalendar
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next)}
-      />
-    );
+    return <DateRangeCalendar {...args} value={value} onChange={(next) => setValue(next)} />;
   },
 };
 
@@ -141,13 +117,6 @@ export const WithShortcutsAndSubmit: Story = {
       start: dayjs("2026-08-10"),
       end: dayjs("2026-08-15"),
     });
-    return (
-      <DateRangeCalendar
-        {...args}
-        value={value}
-        onChange={(next) => setValue(next)}
-        onSubmit={() => undefined}
-      />
-    );
+    return <DateRangeCalendar {...args} value={value} onChange={(next) => setValue(next)} onSubmit={() => undefined} />;
   },
 };

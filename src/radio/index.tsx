@@ -11,7 +11,16 @@ interface RadioProps {
   disabled?: boolean;
 }
 
-const Radio: React.FC<RadioProps> = ({ id, name, value, checked, label, onChange, className = "", disabled = false }) => {
+const Radio: React.FC<RadioProps> = ({
+  id,
+  name,
+  value,
+  checked,
+  label,
+  onChange,
+  className = "",
+  disabled = false,
+}) => {
   return (
     <label
       htmlFor={id}

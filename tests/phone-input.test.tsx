@@ -22,9 +22,7 @@ describe("PhoneInput", () => {
   });
 
   it("forwards labelClassName to the FormField label", () => {
-    render(
-      <PhoneInput id="phone-label" label="Phone" countries={countries} labelClassName="text-on-primary" />
-    );
+    render(<PhoneInput id="phone-label" label="Phone" countries={countries} labelClassName="text-on-primary" />);
     expect(screen.getByText("Phone")).toHaveClass("text-on-primary");
   });
 });

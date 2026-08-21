@@ -7,11 +7,7 @@ import DateRangeField from "../date-range-field";
 import { FloatingSurface } from "../floating-surface";
 import type { Dayjs } from "../lib/dayjs";
 import type { WeekStartsOn } from "../date-calendar";
-import {
-  isCompleteDateRange,
-  type DateRangeShortcut,
-  type DateRangeValue,
-} from "../picker/date-range";
+import { isCompleteDateRange, type DateRangeShortcut, type DateRangeValue } from "../picker/date-range";
 import type { PickerChangeMeta } from "../picker/types";
 import {
   CONTROL_ADORNMENT_BUTTON_CLASSES,
@@ -81,24 +77,16 @@ export default function DateRangePicker({
   labels,
 }: DateRangePickerProps) {
   const isControlled = value !== undefined;
-  const [uncontrolledValue, setUncontrolledValue] = useState<DateRangeValue | null>(
-    defaultValue
-  );
+  const [uncontrolledValue, setUncontrolledValue] = useState<DateRangeValue | null>(defaultValue);
   const selectedValue = isControlled ? value : uncontrolledValue;
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
-  const hasValue =
-    selectedValue != null &&
-    selectedValue.start != null &&
-    selectedValue.start.isValid();
+  const hasValue = selectedValue != null && selectedValue.start != null && selectedValue.start.isValid();
   const showClear = clearable && !disabled && hasValue;
   const clearLabel = labels?.clear ?? "Clear";
   const dismissSurface = useCallback(() => setOpen(false), []);
 
-  const maybeCloseAfterComplete = (
-    next: DateRangeValue | null,
-    meta: PickerChangeMeta
-  ) => {
+  const maybeCloseAfterComplete = (next: DateRangeValue | null, meta: PickerChangeMeta) => {
     if (showSubmitButton) {
       return;
     }
@@ -183,10 +171,7 @@ export default function DateRangePicker({
               aria-label="Open calendar"
               aria-expanded={open}
               disabled={disabled}
-              className={cn(
-                iconButtonClassName,
-                "hover:bg-surface-variant hover:text-on-surface"
-              )}
+              className={cn(iconButtonClassName, "hover:bg-surface-variant hover:text-on-surface")}
               onClick={() => {
                 if (!disabled) {
                   setOpen((current) => !current);

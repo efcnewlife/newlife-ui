@@ -13,20 +13,14 @@ function ModalWithSelect({ onClose }: { onClose: () => void }) {
   const [value, setValue] = useState<string | number | null>(null);
 
   return (
-    <Modal
-      isOpen
-      onClose={onClose}
-      title="Create booking"
-      className="p-4 max-w-lg"
-      footer={<Button>Save</Button>}
-    >
+    <Modal isOpen onClose={onClose} title="Create booking" className="p-4 max-w-lg" footer={<Button>Save</Button>}>
       <div className="space-y-24 pb-8">
         <p>Spacer so the select sits near the footer.</p>
         <Select
           id="room"
           label="Room"
           value={value}
-          onChange={(next) => setValue(Array.isArray(next) ? next[0] ?? null : next)}
+          onChange={(next) => setValue(Array.isArray(next) ? (next[0] ?? null) : next)}
           options={[
             { value: "a", label: "Room A" },
             { value: "b", label: "Room B" },

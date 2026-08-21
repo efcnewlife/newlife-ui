@@ -82,8 +82,8 @@ export const Validation: Story = {
           }}
         />
         <p className="text-sm text-on-surface-variant">
-          Type digits only (for example <code>20260815</code>); dashes are inserted automatically. Incomplete or out-of-range values set{" "}
-          <code>meta.validationError</code>, which hosts map to <code>error</code>.
+          Type digits only (for example <code>20260815</code>); dashes are inserted automatically. Incomplete or
+          out-of-range values set <code>meta.validationError</code>, which hosts map to <code>error</code>.
         </p>
         <pre className="rounded-lg bg-surface-variant p-3 text-xs text-on-surface">
           {JSON.stringify(
@@ -93,7 +93,7 @@ export const Validation: Story = {
               source: meta?.source ?? null,
             },
             null,
-            2,
+            2
           )}
         </pre>
       </div>

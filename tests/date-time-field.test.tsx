@@ -9,12 +9,7 @@ describe("DateTimeField", () => {
   it("renders a controlled UTC value using the timezone prop for display without a calendar icon", () => {
     const value = dayjs.utc("2026-06-20T15:30:00.000Z");
     const { container } = render(
-      <DateTimeField
-        id="starts-at"
-        label="Starts at"
-        value={value}
-        timezone="America/New_York"
-      />
+      <DateTimeField id="starts-at" label="Starts at" value={value} timezone="America/New_York" />
     );
 
     // 15:30 UTC -> 11:30 America/New_York (EDT, UTC-4)
@@ -23,14 +18,7 @@ describe("DateTimeField", () => {
   });
 
   it("shows FormField label and error", () => {
-    render(
-      <DateTimeField
-        id="starts-at"
-        label="Starts at"
-        error="Start time is required"
-        required
-      />
-    );
+    render(<DateTimeField id="starts-at" label="Starts at" error="Start time is required" required />);
 
     expect(screen.getByText("Starts at")).toBeInTheDocument();
     expect(screen.getByText("Start time is required")).toBeInTheDocument();
@@ -40,15 +28,7 @@ describe("DateTimeField", () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
-    render(
-      <DateTimeField
-        id="starts-at"
-        label="Starts at"
-        value={null}
-        timezone="UTC"
-        onChange={onChange}
-      />
-    );
+    render(<DateTimeField id="starts-at" label="Starts at" value={null} timezone="UTC" onChange={onChange} />);
 
     await user.type(screen.getByLabelText("Starts at"), "202606201530");
 
@@ -91,15 +71,7 @@ describe("DateTimeField", () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
-    render(
-      <DateTimeField
-        id="starts-at"
-        label="Starts at"
-        value={null}
-        timezone="UTC"
-        onChange={onChange}
-      />
-    );
+    render(<DateTimeField id="starts-at" label="Starts at" value={null} timezone="UTC" onChange={onChange} />);
 
     await user.type(screen.getByLabelText("Starts at"), "20260620");
 
@@ -141,9 +113,7 @@ describe("DateTimeField", () => {
     const onChange = vi.fn();
 
     const Harness = () => {
-      const [value, setValue] = useState<Dayjs | null>(
-        dayjs.utc("2026-06-20T15:30:00.000Z")
-      );
+      const [value, setValue] = useState<Dayjs | null>(dayjs.utc("2026-06-20T15:30:00.000Z"));
       return (
         <DateTimeField
           id="starts-at"
@@ -179,23 +149,13 @@ describe("DateTimeField", () => {
 
   it("displays a controlled value in 12-hour shape when ampm is true", () => {
     const value = dayjs.utc("2026-06-20T15:30:00.000Z");
-    render(
-      <DateTimeField
-        id="starts-at"
-        label="Starts at"
-        value={value}
-        timezone="UTC"
-        ampm
-      />
-    );
+    render(<DateTimeField id="starts-at" label="Starts at" value={value} timezone="UTC" ampm />);
 
     expect(screen.getByLabelText("Starts at")).toHaveValue("2026-06-20 03:30 PM");
   });
 
   it("uses text inputMode when ampm is true and numeric when false", () => {
-    const { rerender } = render(
-      <DateTimeField id="starts-at" label="Starts at" value={null} ampm />
-    );
+    const { rerender } = render(<DateTimeField id="starts-at" label="Starts at" value={null} ampm />);
     expect(screen.getByLabelText("Starts at")).not.toHaveAttribute("inputMode", "numeric");
 
     rerender(<DateTimeField id="starts-at" label="Starts at" value={null} />);
@@ -206,16 +166,7 @@ describe("DateTimeField", () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
-    render(
-      <DateTimeField
-        id="starts-at"
-        label="Starts at"
-        value={null}
-        timezone="UTC"
-        ampm
-        onChange={onChange}
-      />
-    );
+    render(<DateTimeField id="starts-at" label="Starts at" value={null} timezone="UTC" ampm onChange={onChange} />);
 
     await user.type(screen.getByLabelText("Starts at"), "202606200330PM");
 
@@ -279,10 +230,7 @@ describe("DateTimeField", () => {
 
     render(<Harness />);
 
-    expect(screen.getByLabelText("Starts at")).toHaveAttribute(
-      "placeholder",
-      "YYYY-MM-DD hh:mm A"
-    );
+    expect(screen.getByLabelText("Starts at")).toHaveAttribute("placeholder", "YYYY-MM-DD hh:mm A");
 
     await user.type(screen.getByLabelText("Starts at"), "202606200200PM");
 
@@ -295,14 +243,7 @@ describe("DateTimeField", () => {
   it("renders committed values with format while ampm still selects the clock surface contract", () => {
     const value = dayjs.utc("2026-06-20T15:30:00.000Z");
     render(
-      <DateTimeField
-        id="starts-at"
-        label="Starts at"
-        value={value}
-        timezone="UTC"
-        ampm
-        format="MMM D, YYYY h:mm A"
-      />
+      <DateTimeField id="starts-at" label="Starts at" value={value} timezone="UTC" ampm format="MMM D, YYYY h:mm A" />
     );
 
     expect(screen.getByLabelText("Starts at")).toHaveValue("Jun 20, 2026 3:30 PM");

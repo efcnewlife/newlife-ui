@@ -11,7 +11,14 @@ interface SelectOptionProps {
   children?: React.ReactNode;
 }
 
-export const SelectOption: React.FC<SelectOptionProps> = ({ value, label, disabled = false, icon, className = "", children }) => {
+export const SelectOption: React.FC<SelectOptionProps> = ({
+  value,
+  label,
+  disabled = false,
+  icon,
+  className = "",
+  children,
+}) => {
   return (
     <div
       className={cn(
