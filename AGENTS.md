@@ -32,14 +32,16 @@ This document helps AI agents quickly understand **`@efcnewlife/newlife-ui`**: p
 
 ```bash
 pnpm install
+./scripts/install-git-hooks.sh   # once per clone
 pnpm run typecheck
 pnpm run build
 pnpm run test
+./scripts/check-branch-name.test.sh
 pnpm run storybook          # http://localhost:6006
 pnpm run build-storybook
 ```
 
-CI (`.github/workflows/ci.yml`) runs `typecheck` and `build` on PRs to `main` and pushes to `main`.
+CI (`.github/workflows/ci.yml`) runs `typecheck` and `build` on PRs to `main` and pushes to `main`. PRs also run `.github/workflows/branch-name.yml` (`Branch name` check).
 
 Copy consumer auth for local install of published packages: PAT with `read:packages` → `NODE_AUTH_TOKEN` (see README).
 
@@ -222,6 +224,9 @@ Prefer Testing Library queries; assert accessible names and critical props rathe
 
 - Land work on `main` **via Pull Request** only (see `.cursor/rules/standard.mdc`).
 - Agents: do **not** `git commit` / `push` / `tag` / merge to `main` unless the user explicitly asks.
+- After clone: `./scripts/install-git-hooks.sh` (sets `core.hooksPath=.githooks`).
+- Branch names: `{type}/{issue-number}-{short-description}` (`feat` `fix` `hotfix` `refactor` `perf` `test` `docs` `chore` `build` `ci`); exceptions `release/x.y.z`, `spike/{short-description}`, `main` / `develop`. Enforced by pre-push + `.github/workflows/branch-name.yml`. Emergency: `git push --no-verify`. Prefer making the `Branch name` check required in GitHub branch protection.
+- Verify checker: `./scripts/check-branch-name.test.sh`
 
 ### Release (default)
 
