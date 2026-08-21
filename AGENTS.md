@@ -6,25 +6,25 @@ This document helps AI agents quickly understand **`@efcnewlife/newlife-ui`**: p
 
 ## 1. What This Project Is
 
-| Item | Value |
-| ---- | ----- |
-| **Purpose** | Shared React UI component library for Newlife Portal consumers |
-| **Package** | `@efcnewlife/newlife-ui` (GitHub Packages) |
-| **Framework** | React 18–19 (peer), TypeScript |
-| **Styling** | Tailwind CSS v4 **class names**; design tokens / `@theme` live in the **host** app |
-| **Color model** | M3-aligned **color roles** (`bg-primary`, `text-on-surface`, …) via `src/theme/role-classes.ts` |
-| **Build** | `tsup` → ESM + `.d.ts` in `dist/` |
-| **Package manager** | `pnpm` only (`packageManager` in `package.json`) |
-| **Dev UI** | Storybook 8 |
-| **Tests** | Vitest + Testing Library |
+| Item                | Value                                                                                           |
+| ------------------- | ----------------------------------------------------------------------------------------------- |
+| **Purpose**         | Shared React UI component library for Newlife Portal consumers                                  |
+| **Package**         | `@efcnewlife/newlife-ui` (GitHub Packages)                                                      |
+| **Framework**       | React 18–19 (peer), TypeScript                                                                  |
+| **Styling**         | Tailwind CSS v4 **class names**; design tokens / `@theme` live in the **host** app              |
+| **Color model**     | M3-aligned **color roles** (`bg-primary`, `text-on-surface`, …) via `src/theme/role-classes.ts` |
+| **Build**           | `tsup` → ESM + `.d.ts` in `dist/`                                                               |
+| **Package manager** | `pnpm` only (`packageManager` in `package.json`)                                                |
+| **Dev UI**          | Storybook 8                                                                                     |
+| **Tests**           | Vitest + Testing Library                                                                        |
 
 ### Related repositories
 
-| Repo | Role |
-| ---- | ---- |
-| `newlife-portal-frontend` | Primary host / admin SPA consumer |
-| `newlife-docs` | Product / host theme integration docs |
-| `newlife-core-api` | Backend API (not a consumer of this package) |
+| Repo                      | Role                                         |
+| ------------------------- | -------------------------------------------- |
+| `newlife-portal-frontend` | Primary host / admin SPA consumer            |
+| `newlife-docs`            | Product / host theme integration docs        |
+| `newlife-core-api`        | Backend API (not a consumer of this package) |
 
 ---
 
@@ -36,12 +36,16 @@ pnpm install
 pnpm run typecheck
 pnpm run build
 pnpm run test
+pnpm run format:check
 ./scripts/check-branch-name.test.sh
+./scripts/format-staged.test.sh
 pnpm run storybook          # http://localhost:6006
 pnpm run build-storybook
 ```
 
-CI (`.github/workflows/ci.yml`) runs `typecheck` and `build` on PRs to `main` and pushes to `main`. PRs also run `.github/workflows/branch-name.yml` (`Branch name` check).
+CI (`.github/workflows/ci.yml`) runs `typecheck`, `build`, `test`, and `build-storybook` on PRs to `main` and pushes to `main`. PRs also run `.github/workflows/branch-name.yml` (`Branch name` check). Add `format:check` to CI in the follow-up full-tree Prettier apply PR.
+
+After hooks install, `.githooks/pre-commit` formats **staged** Prettier targets via `scripts/format-staged.sh` and re-stages. Emergency: `git commit --no-verify`. See ADR 0008.
 
 Copy consumer auth for local install of published packages: PAT with `read:packages` → `NODE_AUTH_TOKEN` (see README).
 
@@ -90,24 +94,24 @@ Stories live **next to** components as `*.stories.tsx` (e.g. `src/button/Button.
 
 Package exports (see `package.json`):
 
-| Export | Path |
-| ------ | ---- |
-| `.` | `dist/index.js` + `dist/index.d.ts` |
-| `./theme/reference.css` | Full primitives + role mappings |
+| Export                       | Path                                            |
+| ---------------------------- | ----------------------------------------------- |
+| `.`                          | `dist/index.js` + `dist/index.d.ts`             |
+| `./theme/reference.css`      | Full primitives + role mappings                 |
 | `./theme/required-roles.css` | Roles only (host already has brand/gray scales) |
 
 `tsup` marks these as **external** (must be peer/host-provided): `react`, `react-dom`, `react-icons`.
 
 ### Component catalog (high level)
 
-| Area | Examples |
-| ---- | -------- |
-| **Primitives** | `Button`, `Badge`, `Spinner`, `Label`, `ProgressBar`, `Slider` |
-| **Form** | `FormField`, `Input`, `TextArea`, `Checkbox`, `Radio`, `Switch`, `Select`, `ComboBox`, `PhoneInput`, `FileInput`, `DateCalendar`, `DateField`, `DatePicker`, `DateTimeField`, `DateTimePicker`, `TimeField`, `TimePicker` |
-| **Overlay** | `Modal`, `ModalForm`, `Popover`, `Tooltip`, `Dropdown` / `DropdownItem` |
-| **Feedback** | `Alert`, `Notification*` + `notificationManager` |
-| **Layout / data** | `Tabs`, `Table*`, `ButtonGroup` |
-| **Utils** | `cn`, `useHtmlDarkClass` |
+| Area              | Examples                                                                                                                                                                                                                  |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Primitives**    | `Button`, `Badge`, `Spinner`, `Label`, `ProgressBar`, `Slider`                                                                                                                                                            |
+| **Form**          | `FormField`, `Input`, `TextArea`, `Checkbox`, `Radio`, `Switch`, `Select`, `ComboBox`, `PhoneInput`, `FileInput`, `DateCalendar`, `DateField`, `DatePicker`, `DateTimeField`, `DateTimePicker`, `TimeField`, `TimePicker` |
+| **Overlay**       | `Modal`, `ModalForm`, `Popover`, `Tooltip`, `Dropdown` / `DropdownItem`                                                                                                                                                   |
+| **Feedback**      | `Alert`, `Notification*` + `notificationManager`                                                                                                                                                                          |
+| **Layout / data** | `Tabs`, `Table*`, `ButtonGroup`                                                                                                                                                                                           |
+| **Utils**         | `cn`, `useHtmlDarkClass`                                                                                                                                                                                                  |
 
 ---
 
@@ -130,14 +134,14 @@ Package exports (see `package.json`):
 
 ### Naming and files
 
-| Kind | Convention | Example |
-| ---- | ---------- | ------- |
-| Folder under `src/` | `kebab-case` | `date-picker/`, `buttons-group/` |
-| Component / public types | `PascalCase` | `DatePicker`, `FormFieldProps` |
-| Utils / hooks | `camelCase` | `cn`, `useHtmlDarkClass` |
-| Public module entry | `index.tsx` or `index.ts` | `src/input/index.tsx` |
-| Stories | `*.stories.tsx` beside source | `Input.stories.tsx` |
-| Comments / default copy | English only | Use `labels` props for i18n |
+| Kind                     | Convention                    | Example                          |
+| ------------------------ | ----------------------------- | -------------------------------- |
+| Folder under `src/`      | `kebab-case`                  | `date-picker/`, `buttons-group/` |
+| Component / public types | `PascalCase`                  | `DatePicker`, `FormFieldProps`   |
+| Utils / hooks            | `camelCase`                   | `cn`, `useHtmlDarkClass`         |
+| Public module entry      | `index.tsx` or `index.ts`     | `src/input/index.tsx`            |
+| Stories                  | `*.stories.tsx` beside source | `Input.stories.tsx`              |
+| Comments / default copy  | English only                  | Use `labels` props for i18n      |
 
 ### Form fields pattern
 
@@ -203,11 +207,11 @@ Default strings in components are English. For host-translated UI, expose a `lab
 
 ## 9. Testing
 
-| Location | Role |
-| -------- | ---- |
-| `tests/*.test.tsx` | Component / hook unit tests |
-| `tests/smoke/components.test.tsx` | Broad import/render smoke |
-| `tests/render.tsx`, `tests/setup.ts` | Shared test helpers |
+| Location                             | Role                        |
+| ------------------------------------ | --------------------------- |
+| `tests/*.test.tsx`                   | Component / hook unit tests |
+| `tests/smoke/components.test.tsx`    | Broad import/render smoke   |
+| `tests/render.tsx`, `tests/setup.ts` | Shared test helpers         |
 
 ```bash
 pnpm run test
@@ -241,46 +245,46 @@ Tag name **must** equal `package.json` version and the `## [x.y.z]` header.
 
 ## 11. Do NOT (Agent Guardrails)
 
-| Action | Reason |
-| ------ | ------ |
-| Ship a duplicate host Tailwind `@theme` inside components | Tokens belong to the host |
-| Use primitive color scales when a role exists | Breaks M3 contract / dark mode |
-| Skip `src/index.ts` re-export for public APIs | Consumers cannot import the symbol |
-| Add heavy runtime deps without need | Library size and peer surface |
-| Apply `newlife-core-api` Python/Poetry/Alembic conventions here | Wrong stack |
-| Commit / push / tag without explicit user request | Automation policy |
-| Treat local `main` merge as release | Must go through PR + tag workflow |
+| Action                                                          | Reason                             |
+| --------------------------------------------------------------- | ---------------------------------- |
+| Ship a duplicate host Tailwind `@theme` inside components       | Tokens belong to the host          |
+| Use primitive color scales when a role exists                   | Breaks M3 contract / dark mode     |
+| Skip `src/index.ts` re-export for public APIs                   | Consumers cannot import the symbol |
+| Add heavy runtime deps without need                             | Library size and peer surface      |
+| Apply `newlife-core-api` Python/Poetry/Alembic conventions here | Wrong stack                        |
+| Commit / push / tag without explicit user request               | Automation policy                  |
+| Treat local `main` merge as release                             | Must go through PR + tag workflow  |
 
 ---
 
 ## 12. Key Files Index
 
-| File | Why read it |
-| ---- | ----------- |
-| `README.md` | Install, host Tailwind/`@source`, theme CSS, peers |
-| `.cursor/rules/standard.mdc` | Naming, git, release rules |
-| `src/index.ts` | Canonical public exports |
-| `src/theme/role-classes.ts` | Shared M3 role class maps |
-| `src/form-field/index.tsx` | Form chrome pattern |
-| `theme/token-contract.md` | Host token / role contract |
-| `theme/reference.css` | Default primitives + roles |
-| `CHANGELOG.md` | Consumer-facing change history |
-| `tsup.config.ts` | Bundle entry and externals |
-| `package.json` | Version, peers, exports, scripts |
+| File                         | Why read it                                        |
+| ---------------------------- | -------------------------------------------------- |
+| `README.md`                  | Install, host Tailwind/`@source`, theme CSS, peers |
+| `.cursor/rules/standard.mdc` | Naming, git, release rules                         |
+| `src/index.ts`               | Canonical public exports                           |
+| `src/theme/role-classes.ts`  | Shared M3 role class maps                          |
+| `src/form-field/index.tsx`   | Form chrome pattern                                |
+| `theme/token-contract.md`    | Host token / role contract                         |
+| `theme/reference.css`        | Default primitives + roles                         |
+| `CHANGELOG.md`               | Consumer-facing change history                     |
+| `tsup.config.ts`             | Bundle entry and externals                         |
+| `package.json`               | Version, peers, exports, scripts                   |
 
 ---
 
 ## 13. Mental Model for AI Agents
 
-| Task type | Start here |
-| --------- | ---------- |
-| New UI component | Mirror a similar folder under `src/` → stories → tests → `src/index.ts` → Unreleased changelog |
-| Restyle existing control | `role-classes.ts` + component `index.tsx`; check Storybook light/dark |
-| Form field behavior | `FormField` + closest sibling (`Input`, `DatePicker`, …) |
-| Host integration / theme break | `theme/token-contract.md`, `README.md` Host app setup |
-| Notification API | `src/notification/` |
-| Release | `CHANGELOG.md` + `package.json` version; do not tag unless asked |
-| Spec / tickets for library work | GitHub Issues via `docs/agents/issue-tracker.md` |
+| Task type                       | Start here                                                                                     |
+| ------------------------------- | ---------------------------------------------------------------------------------------------- |
+| New UI component                | Mirror a similar folder under `src/` → stories → tests → `src/index.ts` → Unreleased changelog |
+| Restyle existing control        | `role-classes.ts` + component `index.tsx`; check Storybook light/dark                          |
+| Form field behavior             | `FormField` + closest sibling (`Input`, `DatePicker`, …)                                       |
+| Host integration / theme break  | `theme/token-contract.md`, `README.md` Host app setup                                          |
+| Notification API                | `src/notification/`                                                                            |
+| Release                         | `CHANGELOG.md` + `package.json` version; do not tag unless asked                               |
+| Spec / tickets for library work | GitHub Issues via `docs/agents/issue-tracker.md`                                               |
 
 **Prefer minimal diffs.** Match existing component patterns before introducing new abstractions.
 
