@@ -26,6 +26,12 @@ export interface MarkdownEditorLabels {
   blockquote?: string;
   code?: string;
   table?: string;
+  tableInsertTitle?: string;
+  tableAddRowBelow?: string;
+  tableAddColumnRight?: string;
+  tableDeleteRow?: string;
+  tableDeleteColumn?: string;
+  tableDelete?: string;
   horizontalRule?: string;
   linkPrompt?: string;
 }
@@ -54,6 +60,12 @@ export const DEFAULT_MARKDOWN_EDITOR_LABELS: Required<MarkdownEditorLabels> = {
   blockquote: "Blockquote",
   code: "Code",
   table: "Table",
+  tableInsertTitle: "Insert table",
+  tableAddRowBelow: "Add row below",
+  tableAddColumnRight: "Add column right",
+  tableDeleteRow: "Delete row",
+  tableDeleteColumn: "Delete column",
+  tableDelete: "Delete table",
   horizontalRule: "Horizontal rule",
   linkPrompt: "Enter link URL",
 };

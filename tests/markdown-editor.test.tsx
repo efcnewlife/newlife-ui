@@ -25,18 +25,28 @@ const ControlledSourceEditor: FC<{ onChange?: (value: string) => void }> = ({ on
   );
 };
 
-const ControlledEditEditor: FC<{ initial: string; onChange?: (value: string) => void }> = ({ initial, onChange }) => {
+const ControlledEditEditor: FC<{
+  initial: string;
+  onChange?: (value: string) => void;
+  profile?: "legal" | "standard";
+}> = ({ initial, onChange, profile = "legal" }) => {
   const [value, setValue] = useState(initial);
   return (
     <MarkdownEditor
       id="body"
       value={value}
+      profile={profile}
       onChange={(next) => {
         setValue(next);
         onChange?.(next);
       }}
     />
   );
+};
+
+const insertTableFromPicker = async (user: ReturnType<typeof userEvent.setup>, rows: number, cols: number) => {
+  await user.click(screen.getByRole("button", { name: "Table" }));
+  await user.click(screen.getByRole("gridcell", { name: `${rows} × ${cols}` }));
 };
 
 describe("MarkdownEditor", () => {
@@ -153,5 +163,72 @@ describe("MarkdownEditor", () => {
     const tooltip = screen.getByRole("tooltip", { name: "Bold" });
     expect(toolbar).toContainElement(tooltip);
     expect(tooltip).toHaveClass("z-50");
+  });
+
+  it("shows table editing controls in Edit mode when the cursor is inside a table", async () => {
+    const user = userEvent.setup();
+
+    render(<MarkdownEditor id="body" value="" profile="standard" />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Table" })).toBeInTheDocument();
+    });
+
+    expect(screen.queryByRole("button", { name: "Add row below" })).toBeNull();
+
+    await insertTableFromPicker(user, 3, 3);
+
+    await waitFor(() => {
+      expect(document.querySelector("table")).not.toBeNull();
+      expect(screen.getByRole("button", { name: "Add row below" })).toBeInTheDocument();
+    });
+
+    expect(screen.getByRole("button", { name: "Add column right" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Delete table" })).toBeInTheDocument();
+  });
+
+  it("adds a table row from the Edit toolbar without using Source mode", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+
+    render(<ControlledEditEditor initial="" onChange={onChange} profile="standard" />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Table" })).toBeInTheDocument();
+    });
+
+    await insertTableFromPicker(user, 3, 3);
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Add row below" })).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole("button", { name: "Add row below" }));
+
+    await waitFor(() => {
+      expect(document.querySelectorAll("tr").length).toBe(4);
+    });
+
+    await waitFor(() => {
+      const markdown = String(onChange.mock.calls.at(-1)?.[0] ?? "");
+      expect(markdown).toContain("|");
+    });
+  });
+
+  it("inserts a table with the size selected from the picker grid", async () => {
+    const user = userEvent.setup();
+
+    render(<MarkdownEditor id="body" value="" profile="standard" />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Table" })).toBeInTheDocument();
+    });
+
+    await insertTableFromPicker(user, 2, 4);
+
+    await waitFor(() => {
+      expect(document.querySelectorAll("tr").length).toBe(2);
+      expect(document.querySelectorAll("tr")[0]?.querySelectorAll("th, td").length).toBe(4);
+    });
   });
 });

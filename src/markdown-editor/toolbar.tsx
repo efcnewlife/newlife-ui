@@ -1,7 +1,9 @@
 import type { Editor } from "@tiptap/react";
+import { useEditorState } from "@tiptap/react";
 import type { FC, ReactNode } from "react";
 import {
   MdCode,
+  MdDeleteOutline,
   MdFormatBold,
   MdFormatItalic,
   MdFormatListBulleted,
@@ -10,10 +12,14 @@ import {
   MdFormatStrikethrough,
   MdHorizontalRule,
   MdLink,
-  MdTableChart,
+  MdRemoveCircleOutline,
+  MdTableRows,
+  MdViewColumn,
+  MdViewWeek,
 } from "react-icons/md";
 import { cn } from "../cn";
 import { accentPrimaryContainer, borderOutlineVariant, textOnSurface } from "../theme/role-classes";
+import TableInsertPicker from "./table-insert-picker";
 import { DEFAULT_MARKDOWN_EDITOR_LABELS, type MarkdownEditorLabels, type MarkdownProfile } from "./types";
 
 export interface MarkdownEditorToolbarProps {
@@ -117,6 +123,10 @@ const MarkdownEditorToolbar: FC<MarkdownEditorToolbarProps> = ({
   };
 
   const headingLevel = activeHeadingLevel(editor);
+  const isInTable = useEditorState({
+    editor,
+    selector: ({ editor: current }) => current?.isActive("table") ?? false,
+  });
 
   return (
     <div
@@ -275,17 +285,14 @@ const MarkdownEditorToolbar: FC<MarkdownEditorToolbarProps> = ({
         <>
           <ToolbarDivider />
           <ToolbarGroup>
-            <ToolbarIconButton
+            <TableInsertPicker
               label={resolved.table}
+              insertTitle={resolved.tableInsertTitle}
               disabled={isDisabled}
-              onClick={() =>
-                runWhenEnabled(() =>
-                  editor!.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
-                )
+              onInsert={(rows, cols) =>
+                runWhenEnabled(() => editor!.chain().focus().insertTable({ rows, cols, withHeaderRow: true }).run())
               }
-            >
-              <MdTableChart />
-            </ToolbarIconButton>
+            />
             <ToolbarIconButton
               label={resolved.horizontalRule}
               disabled={isDisabled}
@@ -294,6 +301,49 @@ const MarkdownEditorToolbar: FC<MarkdownEditorToolbarProps> = ({
               <MdHorizontalRule />
             </ToolbarIconButton>
           </ToolbarGroup>
+
+          {isInTable && (
+            <>
+              <ToolbarDivider />
+              <ToolbarGroup>
+                <ToolbarIconButton
+                  label={resolved.tableAddRowBelow}
+                  disabled={isDisabled}
+                  onClick={() => runWhenEnabled(() => editor!.chain().focus().addRowAfter().run())}
+                >
+                  <MdTableRows />
+                </ToolbarIconButton>
+                <ToolbarIconButton
+                  label={resolved.tableAddColumnRight}
+                  disabled={isDisabled}
+                  onClick={() => runWhenEnabled(() => editor!.chain().focus().addColumnAfter().run())}
+                >
+                  <MdViewColumn />
+                </ToolbarIconButton>
+                <ToolbarIconButton
+                  label={resolved.tableDeleteRow}
+                  disabled={isDisabled}
+                  onClick={() => runWhenEnabled(() => editor!.chain().focus().deleteRow().run())}
+                >
+                  <MdRemoveCircleOutline />
+                </ToolbarIconButton>
+                <ToolbarIconButton
+                  label={resolved.tableDeleteColumn}
+                  disabled={isDisabled}
+                  onClick={() => runWhenEnabled(() => editor!.chain().focus().deleteColumn().run())}
+                >
+                  <MdViewWeek />
+                </ToolbarIconButton>
+                <ToolbarIconButton
+                  label={resolved.tableDelete}
+                  disabled={isDisabled}
+                  onClick={() => runWhenEnabled(() => editor!.chain().focus().deleteTable().run())}
+                >
+                  <MdDeleteOutline />
+                </ToolbarIconButton>
+              </ToolbarGroup>
+            </>
+          )}
         </>
       )}
     </div>
