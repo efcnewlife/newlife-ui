@@ -83,3 +83,31 @@ _Avoid_: dropdown (as the umbrella term), overlay panel (ambiguous with Modal), 
 **Control size**:
 A density step on a single-line form control (Input, PhoneInput, Select, ComboBox, DateField, TimeField, DateTimeField, DateRangeField, and the pickers built on those fields). Steps are xs, sm, md (the default), and lg. It sizes the control shell and in-shell adornments only. It does not size the floating surface and does not size the label.
 _Avoid_: Button size (a different contract; not unified with this scale), using className as the official compact density, FileInput / TextArea as part of this scale until they join it, Tailwind font-size names (`base`, `xl`, `2xl`) as control size steps
+
+**Markdown string**:
+The canonical controlled value for Markdown editing and preview surfaces: a Unicode string of Markdown source. Hosts persist and exchange this string; HTML and editor document JSON are not the public value contract.
+_Avoid_: HTML body as the library value, ProseMirror/Tiptap JSON as the public contract, treating rich-text HTML and Markdown as interchangeable without an explicit conversion boundary
+
+**MarkdownEditor**:
+A form control in `@efcnewlife/newlife-ui` for authoring a Markdown string. It wraps FormField chrome (`label`, `error`, `hint`, `required`, `disabled`) like TextArea. Controlled API is `value` plus `onChange(markdown: string)`. Authoring modes are a three-way segment: Edit (WYSIWYG + toolbar), Source (raw Markdown string), and Preview (read-only via MarkdownPreview) — one mode at a time. Feature surface is selected by a Markdown profile.
+_Avoid_: RichTextEditor (as the product name when the contract is Markdown), HTML WYSIWYG as the stored contract, TextArea alone as this product, baking host business document kinds into the library, a second preview renderer that diverges from MarkdownPreview, split-pane Source|Preview as the default v1 chrome, DOM `ChangeEvent` as the MarkdownEditor onChange contract
+
+**MarkdownPreview**:
+A read-only surface in `@efcnewlife/newlife-ui` that renders a Markdown string as safe, styled content. It is not an editor, has no toolbar, and does not mutate the string. MarkdownEditor's Preview mode composes this surface. Intended for member-facing or any host read path that must display Markdown without editing. Rendering follows the active Markdown profile: disallowed or unknown constructs (including raw HTML) are not executed; Source may still hold those characters in the Markdown string.
+_Avoid_: MarkdownEditor (when only rendering is needed), raw `dangerouslySetInnerHTML` of untrusted HTML as the product, requiring edit chrome to show Markdown
+
+**Markdown profile**:
+A named, library-defined set of allowed Markdown constructs and matching toolbar/commands for MarkdownEditor / MarkdownPreview. v1 ships two built-ins: **`legal`** (default) and **`standard`**. Hosts select a profile; they do not invent ad-hoc mark sets in v1.
+_Avoid_: per-host arbitrary extension soup as the v1 public API, implying every profile may store HTML or images, treating underline as CommonMark without an explicit profile decision
+
+**`legal` Markdown profile**:
+The default Markdown profile: headings `h1`–`h6`, bold, italic, strike, links, ordered and unordered lists, blockquote, inline code, and fenced code blocks. No tables, no images, no raw HTML, no underline.
+_Avoid_: tables or images in the legal profile, underline as a legal toolbar action, restricting heading depth below `h1`–`h6` without an explicit profile change
+
+**`standard` Markdown profile**:
+A wider built-in Markdown profile: everything in `legal` (including headings `h1`–`h6`), plus GFM tables and thematic breaks (horizontal rules). Still no images, no raw HTML, no underline.
+_Avoid_: calling `standard` a full CMS or GFM-everything profile, images or HTML under `standard`
+
+**Markdown editor mode**:
+Which authoring surface MarkdownEditor shows: `edit` (true WYSIWYG document editing with toolbar — not a syntax-insert textarea), `source` (raw Markdown string), or `preview` (MarkdownPreview). Exactly one mode is active. Hosts may control mode via optional `mode` + `onModeChange`; when omitted, the editor keeps internal mode state defaulting to `edit`. WYSIWYG commands only introduce constructs allowed by the active Markdown profile. Source may accept any string into `value`; Preview does not execute raw HTML or profile-disallowed rendering.
+_Avoid_: simultaneous edit+preview as the v1 default, implying Source is censored to the profile on every keystroke, calling a toolbar-augmented textarea "WYSIWYG Edit mode", requiring mode to be controlled

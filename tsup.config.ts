@@ -8,5 +8,13 @@ export default defineConfig({
   clean: true,
   treeshake: true,
   splitting: false,
-  external: ["react", "react-dom", "react/jsx-runtime", "react-icons", "react-icons/md"],
+  external: [
+    "react",
+    "react-dom",
+    "react/jsx-runtime",
+    "react-icons",
+    "react-icons/md",
+    /^@tiptap\//,
+    "tiptap-markdown",
+  ],
 });

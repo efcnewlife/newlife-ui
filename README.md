@@ -139,6 +139,20 @@ Ensure these match your app:
 - `react`, `react-dom`
 - `react-icons`
 
+#### MarkdownEditor (optional peers)
+
+`MarkdownPreview` needs no extra peers (render packages are library dependencies). Hosts that import **MarkdownEditor** must also install these peers (versions should stay on the same major as the library’s documented range):
+
+```bash
+pnpm add @tiptap/core @tiptap/react @tiptap/pm @tiptap/starter-kit \
+  @tiptap/extension-link @tiptap/extension-placeholder \
+  @tiptap/extension-table @tiptap/extension-table-row \
+  @tiptap/extension-table-header @tiptap/extension-table-cell \
+  tiptap-markdown
+```
+
+These peers are marked `optional` in `peerDependenciesMeta` so Preview-only installs are not forced to add Tiptap.
+
 ### Notifications
 
 `NotificationProvider`, `NotificationContainer`, `useNotification`, and `notificationManager` are exported from this package so there is a single global registration for imperative `notificationManager.show(...)`.
@@ -154,4 +168,9 @@ Pass a `labels` prop for translated placeholder, aria, and empty states (default
 
 ### Form fields
 
-Composite inputs (`Input`, `TextArea`, `PhoneInput`, `Select`, `ComboBox`, `DatePicker`, `TimePicker`) wrap label, control, and messages in a single DOM node via **`FormField`**. Use **`wrapperClassName`** for field-level layout (e.g. `space-y-1.5`); **`className`** still applies to the native input or trigger as before. Export **`FormField`** directly when building custom fields in host apps.
+Composite inputs (`Input`, `TextArea`, `PhoneInput`, `Select`, `ComboBox`, `DatePicker`, `TimePicker`, `MarkdownEditor`) wrap label, control, and messages in a single DOM node via **`FormField`**. Use **`wrapperClassName`** for field-level layout (e.g. `space-y-1.5`); **`className`** still applies to the native input or trigger as before. Export **`FormField`** directly when building custom fields in host apps.
+
+### Markdown
+
+- **MarkdownPreview** — read-only safe render (`profile="legal" | "standard"`, default `legal`).
+- **MarkdownEditor** — `value` / `onChange(markdown: string)`, Edit | Source | Preview modes, same profiles. Pass a `labels` bag for mode and toolbar accessible names (English defaults).
