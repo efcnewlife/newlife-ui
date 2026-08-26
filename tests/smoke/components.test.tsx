@@ -20,6 +20,8 @@ import { DropdownItem } from "../../src/dropdown/DropdownItem";
 import FileInput from "../../src/file-input";
 import Input from "../../src/input";
 import Label from "../../src/label";
+import MarkdownEditor from "../../src/markdown-editor";
+import MarkdownPreview from "../../src/markdown-preview";
 import { Modal } from "../../src/modal";
 import { ModalForm } from "../../src/modal/modal-form";
 import Notification from "../../src/notification/Notification";
@@ -48,6 +50,8 @@ describe("component smoke renders", () => {
         <Label htmlFor="name">Name</Label>
         <Input id="name" label="Name" />
         <TextArea id="message" label="Message" />
+        <MarkdownPreview value="Hello **world**" />
+        <MarkdownEditor id="markdown" label="Markdown" value="Hello" />
         <Checkbox label="Checked" checked onChange={() => undefined} id="checked" />
         <Radio id="r1" name="group" value="a" label="A" checked onChange={() => undefined} />
         <Switch label="Switch" />

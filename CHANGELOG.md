@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **MarkdownPreview**: read-only safe render of a Markdown string with profiles `legal` (default) and `standard`. Raw HTML is not executed. Preview markdown packages (`react-markdown`, `remark-gfm`, `rehype-sanitize`) ship as library dependencies. See ADR 0009.
+- **MarkdownEditor**: FormField-shaped authoring of a Markdown string with Edit / Source / Preview modes, optional controlled `mode` / `onModeChange` (default `edit`), and true WYSIWYG Edit via Tiptap. Preview mode composes MarkdownPreview. See ADR 0009 and ADR 0010.
+
+### Host app / consumers
+
+- Hosts that use **MarkdownEditor** must install the documented Tiptap peer dependencies (marked optional so Preview-only hosts need not install them). See README Peer dependencies.
+
 ## [0.5.0] - 2026-08-19
 
 ### Summary
