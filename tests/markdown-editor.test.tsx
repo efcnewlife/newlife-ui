@@ -113,6 +113,15 @@ describe("MarkdownEditor", () => {
     });
   });
 
+  it("renders heading and blockquote as rich blocks in Edit mode", async () => {
+    render(<MarkdownEditor id="body" value={"# Title\n\n> Quoted line"} />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("heading", { level: 1, name: "Title" })).toBeInTheDocument();
+    });
+    expect(screen.getByText("Quoted line").closest("blockquote")).not.toBeNull();
+  });
+
   it("shows table and horizontal rule toolbar actions only for standard profile", async () => {
     const { rerender } = render(<MarkdownEditor id="body" value="" profile="legal" />);
     await waitFor(() => {
@@ -126,5 +135,23 @@ describe("MarkdownEditor", () => {
       expect(screen.getByRole("button", { name: "Table" })).toBeInTheDocument();
     });
     expect(screen.getByRole("button", { name: "Horizontal rule" })).toBeInTheDocument();
+  });
+
+  it("shows compact toolbar tooltips above the editor content layer", async () => {
+    const user = userEvent.setup();
+    const { container } = render(<MarkdownEditor id="body" value="Hello" />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Bold" })).toBeInTheDocument();
+    });
+
+    const toolbar = container.querySelector('[role="toolbar"]');
+    expect(toolbar).toHaveClass("z-10");
+
+    await user.hover(screen.getByRole("button", { name: "Bold" }));
+
+    const tooltip = screen.getByRole("tooltip", { name: "Bold" });
+    expect(toolbar).toContainElement(tooltip);
+    expect(tooltip).toHaveClass("z-50");
   });
 });

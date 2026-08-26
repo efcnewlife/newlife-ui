@@ -108,11 +108,11 @@ export default function Tooltip({
         dismissOnOutsidePress={false}
         className="pointer-events-none"
       >
-        <div className={`relative ${contentClassName}`}>
+        <div className="relative">
           <div
             className={`drop-shadow-4xl rounded-lg px-3 py-3 text-xs font-medium ${
               wrapContent ? "text-pretty" : "whitespace-nowrap"
-            } ${bubbleClass}`}
+            } ${bubbleClass} ${contentClassName}`}
           >
             {content}
           </div>

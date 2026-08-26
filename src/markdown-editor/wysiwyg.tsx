@@ -1,6 +1,7 @@
 import { EditorContent, useEditor, type Editor } from "@tiptap/react";
 import { useEffect, type FC } from "react";
 import { cn } from "../cn";
+import { markdownProseClasses } from "../markdown/prose-classes";
 import { borderOutlineVariant, textareaBase } from "../theme/role-classes";
 import { buildEditorExtensions } from "./extensions";
 import MarkdownEditorToolbar from "./toolbar";
@@ -43,7 +44,13 @@ const MarkdownWysiwyg: FC<MarkdownWysiwygProps> = ({
         attributes: {
           id,
           class: cn(
-            "min-h-40 px-4 py-2.5 text-sm outline-none focus:outline-none",
+            "min-h-40 px-4 py-3 outline-none focus:outline-none",
+            markdownProseClasses,
+            "[&_.is-empty::before]:pointer-events-none",
+            "[&_.is-empty::before]:float-left",
+            "[&_.is-empty::before]:h-0",
+            "[&_.is-empty::before]:text-on-surface-variant",
+            "[&_.is-empty::before]:content-[attr(data-placeholder)]",
             disabled && "cursor-not-allowed opacity-50"
           ),
           "aria-label": resolved.editor,
@@ -69,7 +76,7 @@ const MarkdownWysiwyg: FC<MarkdownWysiwygProps> = ({
   }, [editor, value]);
 
   return (
-    <div className={cn("overflow-hidden rounded-lg border bg-surface", borderOutlineVariant, className)}>
+    <div className={cn("rounded-lg border bg-surface", borderOutlineVariant, className)}>
       <MarkdownEditorToolbar
         editor={editor}
         profile={profile}
@@ -77,7 +84,9 @@ const MarkdownWysiwyg: FC<MarkdownWysiwygProps> = ({
         labels={labels}
         headingSelectId={`${id}-heading`}
       />
-      <EditorContent editor={editor} className={cn(textareaBase, "rounded-none border-0 shadow-none focus:ring-0")} />
+      <div className="relative z-0 rounded-b-lg">
+        <EditorContent editor={editor} className={cn(textareaBase, "rounded-none border-0 shadow-none focus:ring-0")} />
+      </div>
     </div>
   );
 };

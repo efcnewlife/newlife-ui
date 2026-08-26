@@ -8,6 +8,7 @@ import TableRow from "@tiptap/extension-table-row";
 import StarterKit from "@tiptap/starter-kit";
 import { Markdown } from "tiptap-markdown";
 import type { MarkdownProfile } from "../markdown-preview";
+import { TabIndent } from "./tab-indent";
 
 export const buildEditorExtensions = (profile: MarkdownProfile, placeholder: string): AnyExtension[] => {
   const extensions: AnyExtension[] = [
@@ -29,6 +30,7 @@ export const buildEditorExtensions = (profile: MarkdownProfile, placeholder: str
       transformPastedText: true,
       transformCopiedText: true,
     }),
+    TabIndent,
   ];
 
   if (profile === "standard") {
