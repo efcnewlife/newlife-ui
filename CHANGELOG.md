@@ -6,10 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-08-26
+
+### Summary
+
+**MarkdownEditor** and **MarkdownPreview** for profile-aware Markdown authoring and safe read-only rendering. Edit mode is true WYSIWYG (Tiptap); standard profile adds GFM tables with a size picker and in-editor row/column controls.
+
 ### Added
 
 - **MarkdownPreview**: read-only safe render of a Markdown string with profiles `legal` (default) and `standard`. Raw HTML is not executed. Preview markdown packages (`react-markdown`, `remark-gfm`, `rehype-sanitize`) ship as library dependencies. See ADR 0009.
-- **MarkdownEditor**: FormField-shaped authoring of a Markdown string with Edit / Source / Preview modes, optional controlled `mode` / `onModeChange` (default `edit`), and true WYSIWYG Edit via Tiptap. Preview mode composes MarkdownPreview. See ADR 0009 and ADR 0010.
+- **MarkdownEditor**: FormField-shaped authoring of a Markdown string with Edit / Source / Preview modes, optional controlled `mode` / `onModeChange` (default `edit`), icon toolbar with CSS tooltips, shared prose styling in Edit/Preview, Tab/list indent, and true WYSIWYG Edit via Tiptap. Standard profile: table insert size picker (6×6) and in-editor add/delete row/column controls. Preview mode composes MarkdownPreview. See ADR 0009 and ADR 0010.
 
 ### Host app / consumers
 
