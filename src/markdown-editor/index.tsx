@@ -51,7 +51,7 @@ const MarkdownEditor: FC<MarkdownEditorProps> = ({
   required = false,
   disabled = false,
   profile = "legal",
-  mode: controlled_mode,
+  mode: controlledMode,
   onModeChange,
   className,
   wrapperClassName,
@@ -59,28 +59,28 @@ const MarkdownEditor: FC<MarkdownEditorProps> = ({
   labels = {},
   placeholder,
 }) => {
-  const resolved_labels = { ...DEFAULT_MARKDOWN_EDITOR_LABELS, ...labels };
-  const [uncontrolled_mode, set_uncontrolled_mode] = useState<MarkdownEditorMode>("edit");
-  const mode = controlled_mode ?? uncontrolled_mode;
+  const resolvedLabels = { ...DEFAULT_MARKDOWN_EDITOR_LABELS, ...labels };
+  const [uncontrolledMode, setUncontrolledMode] = useState<MarkdownEditorMode>("edit");
+  const mode = controlledMode ?? uncontrolledMode;
 
-  const set_mode = (next: MarkdownEditorMode) => {
-    if (controlled_mode === undefined) {
-      set_uncontrolled_mode(next);
+  const setMode = (next: MarkdownEditorMode) => {
+    if (controlledMode === undefined) {
+      setUncontrolledMode(next);
     }
     onModeChange?.(next);
   };
 
-  const mode_labels: Record<MarkdownEditorMode, string> = {
-    edit: resolved_labels.modeEdit,
-    source: resolved_labels.modeSource,
-    preview: resolved_labels.modePreview,
+  const modeLabels: Record<MarkdownEditorMode, string> = {
+    edit: resolvedLabels.modeEdit,
+    source: resolvedLabels.modeSource,
+    preview: resolvedLabels.modePreview,
   };
 
-  let source_class_name = cn(textareaBase, "min-h-40 font-mono", className);
+  let sourceClassName = cn(textareaBase, "min-h-40 font-mono", className);
   if (disabled) {
-    source_class_name = cn(source_class_name, textareaDisabled);
+    sourceClassName = cn(sourceClassName, textareaDisabled);
   } else if (error) {
-    source_class_name = cn(source_class_name, textareaError);
+    sourceClassName = cn(sourceClassName, textareaError);
   }
 
   return (
@@ -96,28 +96,28 @@ const MarkdownEditor: FC<MarkdownEditorProps> = ({
       <div className="space-y-2">
         <nav
           role="tablist"
-          aria-label={resolved_labels.modeGroup}
+          aria-label={resolvedLabels.modeGroup}
           className={cn("-mb-px flex flex-wrap gap-x-1 border-b", borderOutlineVariant)}
         >
           {MODE_ORDER.map((item) => {
-            const is_active = mode === item;
+            const isActive = mode === item;
             return (
               <button
                 key={item}
                 type="button"
                 role="tab"
                 id={`${id}-mode-${item}`}
-                aria-selected={is_active}
-                tabIndex={is_active ? 0 : -1}
+                aria-selected={isActive}
+                tabIndex={isActive ? 0 : -1}
                 disabled={disabled && item !== "preview"}
                 className={cn(
                   "inline-flex items-center border-b-2 px-3 py-2 text-sm font-medium transition-colors",
-                  is_active ? tabActive : tabInactive,
+                  isActive ? tabActive : tabInactive,
                   disabled && item !== "preview" && "cursor-not-allowed opacity-50"
                 )}
-                onClick={() => set_mode(item)}
+                onClick={() => setMode(item)}
               >
-                {mode_labels[item]}
+                {modeLabels[item]}
               </button>
             );
           })}
@@ -142,17 +142,14 @@ const MarkdownEditor: FC<MarkdownEditorProps> = ({
             value={value}
             disabled={disabled}
             placeholder={placeholder}
-            className={source_class_name}
+            className={sourceClassName}
             rows={10}
             onChange={(event) => onChange?.(event.target.value)}
           />
         )}
 
         {mode === "preview" && (
-          <div
-            className={cn("min-h-40 rounded-lg border px-4 py-2.5", borderOutlineVariant, className)}
-            data-testid={`${id}-preview`}
-          >
+          <div className={cn("min-h-40 rounded-lg border px-4 py-2.5", borderOutlineVariant, className)}>
             <MarkdownPreview value={value} profile={profile} />
           </div>
         )}

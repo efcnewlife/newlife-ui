@@ -9,7 +9,7 @@ import StarterKit from "@tiptap/starter-kit";
 import { Markdown } from "tiptap-markdown";
 import type { MarkdownProfile } from "../markdown-preview";
 
-export const build_editor_extensions = (profile: MarkdownProfile, placeholder: string): AnyExtension[] => {
+export const buildEditorExtensions = (profile: MarkdownProfile, placeholder: string): AnyExtension[] => {
   const extensions: AnyExtension[] = [
     StarterKit.configure({
       heading: { levels: [1, 2, 3, 4, 5, 6] },

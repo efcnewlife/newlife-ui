@@ -36,11 +36,11 @@ const LEGAL_TAGS = [
 
 const STANDARD_TAGS = [...LEGAL_TAGS, "table", "thead", "tbody", "tr", "th", "td", "hr"] as const;
 
-const build_sanitize_schema = (profile: MarkdownProfile) => {
-  const tag_names = profile === "standard" ? [...STANDARD_TAGS] : [...LEGAL_TAGS];
+const buildSanitizeSchema = (profile: MarkdownProfile) => {
+  const tagNames = profile === "standard" ? [...STANDARD_TAGS] : [...LEGAL_TAGS];
   return {
     ...defaultSchema,
-    tagNames: tag_names,
+    tagNames,
     attributes: {
       ...defaultSchema.attributes,
       a: [...(defaultSchema.attributes?.a ?? []), "target", "rel"],
@@ -49,7 +49,7 @@ const build_sanitize_schema = (profile: MarkdownProfile) => {
   };
 };
 
-const preview_prose_classes = cn(
+const previewProseClasses = cn(
   textOnSurface,
   "text-sm leading-relaxed",
   "[&_h1]:mb-3 [&_h1]:text-2xl [&_h1]:font-semibold",
@@ -75,11 +75,11 @@ const preview_prose_classes = cn(
 );
 
 const MarkdownPreview: FC<MarkdownPreviewProps> = ({ value, profile = "legal", className }) => {
-  const sanitize_schema = build_sanitize_schema(profile);
+  const sanitizeSchema = buildSanitizeSchema(profile);
 
   return (
-    <div className={cn(preview_prose_classes, className)} data-markdown-profile={profile}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[[rehypeSanitize, sanitize_schema]]}>
+    <div className={cn(previewProseClasses, className)} data-markdown-profile={profile}>
+      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[[rehypeSanitize, sanitizeSchema]]}>
         {value}
       </ReactMarkdown>
     </div>

@@ -2,9 +2,9 @@ import { EditorContent, useEditor, type Editor } from "@tiptap/react";
 import { useEffect, type FC } from "react";
 import { cn } from "../cn";
 import { borderOutlineVariant, textareaBase } from "../theme/role-classes";
-import { build_editor_extensions } from "./extensions";
+import { buildEditorExtensions } from "./extensions";
 import MarkdownEditorToolbar from "./toolbar";
-import type { MarkdownEditorLabels, MarkdownProfile } from "./types";
+import { DEFAULT_MARKDOWN_EDITOR_LABELS, type MarkdownEditorLabels, type MarkdownProfile } from "./types";
 
 export interface MarkdownWysiwygProps {
   value: string;
@@ -17,7 +17,7 @@ export interface MarkdownWysiwygProps {
   placeholder?: string;
 }
 
-const get_markdown = (editor: Editor): string => {
+const getMarkdown = (editor: Editor): string => {
   const storage = editor.storage as { markdown?: { getMarkdown?: () => string } };
   return storage.markdown?.getMarkdown?.() ?? "";
 };
@@ -29,13 +29,14 @@ const MarkdownWysiwyg: FC<MarkdownWysiwygProps> = ({
   disabled = false,
   id,
   className,
-  labels,
+  labels = {},
   placeholder = "Write Markdown...",
 }) => {
+  const resolved = { ...DEFAULT_MARKDOWN_EDITOR_LABELS, ...labels };
   const editor = useEditor(
     {
       immediatelyRender: false,
-      extensions: build_editor_extensions(profile, placeholder),
+      extensions: buildEditorExtensions(profile, placeholder),
       content: value,
       editable: !disabled,
       editorProps: {
@@ -43,14 +44,13 @@ const MarkdownWysiwyg: FC<MarkdownWysiwygProps> = ({
           id,
           class: cn(
             "min-h-40 px-4 py-2.5 text-sm outline-none focus:outline-none",
-            "prose-mirror",
             disabled && "cursor-not-allowed opacity-50"
           ),
-          "aria-label": "Markdown rich text editor",
+          "aria-label": resolved.editor,
         },
       },
       onUpdate: ({ editor: current }) => {
-        onChange?.(get_markdown(current));
+        onChange?.(getMarkdown(current));
       },
     },
     [profile]
@@ -63,7 +63,7 @@ const MarkdownWysiwyg: FC<MarkdownWysiwygProps> = ({
 
   useEffect(() => {
     if (!editor) return;
-    const current = get_markdown(editor);
+    const current = getMarkdown(editor);
     if (current === value) return;
     editor.commands.setContent(value);
   }, [editor, value]);

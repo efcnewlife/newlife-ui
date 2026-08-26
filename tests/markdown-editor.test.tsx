@@ -6,19 +6,19 @@ import MarkdownEditor from "../src/markdown-editor";
 
 beforeAll(() => {
   if (!document.elementFromPoint) {
-    document.elementFromPoint = () => document.querySelector(".ProseMirror");
+    document.elementFromPoint = () => screen.queryByLabelText("Markdown rich text editor");
   }
 });
 
 const ControlledSourceEditor: FC<{ onChange?: (value: string) => void }> = ({ onChange }) => {
-  const [value, set_value] = useState("");
+  const [value, setValue] = useState("");
   return (
     <MarkdownEditor
       id="body"
       mode="source"
       value={value}
       onChange={(next) => {
-        set_value(next);
+        setValue(next);
         onChange?.(next);
       }}
     />
@@ -26,13 +26,13 @@ const ControlledSourceEditor: FC<{ onChange?: (value: string) => void }> = ({ on
 };
 
 const ControlledEditEditor: FC<{ initial: string; onChange?: (value: string) => void }> = ({ initial, onChange }) => {
-  const [value, set_value] = useState(initial);
+  const [value, setValue] = useState(initial);
   return (
     <MarkdownEditor
       id="body"
       value={value}
       onChange={(next) => {
-        set_value(next);
+        setValue(next);
         onChange?.(next);
       }}
     />
@@ -56,25 +56,25 @@ describe("MarkdownEditor", () => {
 
   it("supports controlled mode and onModeChange", async () => {
     const user = userEvent.setup();
-    const on_mode_change = vi.fn();
-    const { rerender } = render(<MarkdownEditor id="body" value="Hello" mode="edit" onModeChange={on_mode_change} />);
+    const onModeChange = vi.fn();
+    const { rerender } = render(<MarkdownEditor id="body" value="Hello" mode="edit" onModeChange={onModeChange} />);
 
     await user.click(screen.getByRole("tab", { name: "Source" }));
-    expect(on_mode_change).toHaveBeenCalledWith("source");
+    expect(onModeChange).toHaveBeenCalledWith("source");
 
-    rerender(<MarkdownEditor id="body" value="Hello" mode="source" onModeChange={on_mode_change} />);
+    rerender(<MarkdownEditor id="body" value="Hello" mode="source" onModeChange={onModeChange} />);
     expect(screen.getByRole("tab", { name: "Source" })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByRole("textbox")).toHaveValue("Hello");
   });
 
   it("emits onChange with a Markdown string from Source mode", async () => {
     const user = userEvent.setup();
-    const on_change = vi.fn();
-    render(<ControlledSourceEditor onChange={on_change} />);
+    const onChange = vi.fn();
+    render(<ControlledSourceEditor onChange={onChange} />);
 
     await user.type(screen.getByRole("textbox"), "Hi");
-    expect(on_change).toHaveBeenCalled();
-    expect(on_change.mock.calls.at(-1)?.[0]).toBe("Hi");
+    expect(onChange).toHaveBeenCalled();
+    expect(onChange.mock.calls.at(-1)?.[0]).toBe("Hi");
   });
 
   it("Preview mode composes MarkdownPreview rendering", async () => {
@@ -84,25 +84,21 @@ describe("MarkdownEditor", () => {
     expect(screen.getByText("world").tagName).toBe("STRONG");
   });
 
-  it("disables Source editing and toolbar actions when disabled", async () => {
+  it("disables Source editing when disabled", async () => {
     const user = userEvent.setup();
-    const on_change = vi.fn();
-    render(<MarkdownEditor id="body" value="Hello" mode="source" disabled onChange={on_change} />);
+    const onChange = vi.fn();
+    render(<MarkdownEditor id="body" value="Hello" mode="source" disabled onChange={onChange} />);
     expect(screen.getByRole("textbox")).toBeDisabled();
     await user.type(screen.getByRole("textbox"), "x");
-    expect(on_change).not.toHaveBeenCalled();
+    expect(onChange).not.toHaveBeenCalled();
   });
 
   it("applies bold from the Edit toolbar into the Markdown string", async () => {
     const user = userEvent.setup();
-    const on_change = vi.fn();
-    render(<ControlledEditEditor initial="Hello" onChange={on_change} />);
+    const onChange = vi.fn();
+    render(<ControlledEditEditor initial="Hello" onChange={onChange} />);
 
-    await waitFor(() => {
-      expect(document.querySelector(".ProseMirror")).not.toBeNull();
-    });
-
-    const editor = document.querySelector(".ProseMirror") as HTMLElement;
+    const editor = await screen.findByLabelText("Markdown rich text editor");
     editor.focus();
     const selection = window.getSelection();
     const range = document.createRange();
@@ -112,7 +108,7 @@ describe("MarkdownEditor", () => {
     await user.click(screen.getByRole("button", { name: "Bold" }));
 
     await waitFor(() => {
-      const markdown = String(on_change.mock.calls.at(-1)?.[0] ?? "");
+      const markdown = String(onChange.mock.calls.at(-1)?.[0] ?? "");
       expect(markdown).toMatch(/\*\*Hello\*\*|__Hello__/);
     });
   });

@@ -35,4 +35,13 @@ describe("MarkdownPreview", () => {
     rerender(<MarkdownPreview value={"Above\n\n---\n\nBelow"} profile="standard" />);
     expect(document.querySelector("hr")).not.toBeNull();
   });
+
+  it("does not richly render images under either profile", () => {
+    const imageMd = "Hello ![alt](https://example.com/x.png) there";
+    const { rerender } = render(<MarkdownPreview value={imageMd} profile="legal" />);
+    expect(document.querySelector("img")).toBeNull();
+
+    rerender(<MarkdownPreview value={imageMd} profile="standard" />);
+    expect(document.querySelector("img")).toBeNull();
+  });
 });

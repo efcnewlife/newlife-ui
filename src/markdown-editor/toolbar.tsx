@@ -12,13 +12,23 @@ export interface MarkdownEditorToolbarProps {
   headingSelectId?: string;
 }
 
-const toolbar_button_class = cn(
+const toolbarButtonClass = cn(
   "inline-flex items-center justify-center rounded-md px-2 py-1 text-xs font-medium",
   buttonOutline,
   "disabled:cursor-not-allowed disabled:opacity-40"
 );
 
-const toolbar_active_class = "bg-primary-container text-on-primary-container ring-primary";
+const toolbarActiveClass = "bg-primary-container text-on-primary-container ring-primary";
+
+const HEADING_LEVELS = [1, 2, 3, 4, 5, 6] as const;
+
+const activeHeadingLevel = (editor: Editor | null): string => {
+  if (!editor) return "paragraph";
+  for (const level of HEADING_LEVELS) {
+    if (editor.isActive("heading", { level })) return String(level);
+  }
+  return "paragraph";
+};
 
 const MarkdownEditorToolbar: FC<MarkdownEditorToolbarProps> = ({
   editor,
@@ -28,32 +38,20 @@ const MarkdownEditorToolbar: FC<MarkdownEditorToolbarProps> = ({
   headingSelectId = "markdown-heading",
 }) => {
   const resolved = { ...DEFAULT_MARKDOWN_EDITOR_LABELS, ...labels };
-  const is_disabled = disabled || !editor;
+  const isDisabled = disabled || !editor;
 
-  const run = (action: () => void) => {
-    if (is_disabled || !editor) return;
+  const runWhenEnabled = (action: () => void) => {
+    if (isDisabled || !editor) return;
     action();
   };
 
-  const heading_level = editor?.isActive("heading", { level: 1 })
-    ? "1"
-    : editor?.isActive("heading", { level: 2 })
-      ? "2"
-      : editor?.isActive("heading", { level: 3 })
-        ? "3"
-        : editor?.isActive("heading", { level: 4 })
-          ? "4"
-          : editor?.isActive("heading", { level: 5 })
-            ? "5"
-            : editor?.isActive("heading", { level: 6 })
-              ? "6"
-              : "paragraph";
+  const headingLevel = activeHeadingLevel(editor);
 
   return (
     <div
       className={cn("flex flex-wrap items-center gap-1 border-b px-2 py-1.5", borderOutlineVariant)}
       role="toolbar"
-      aria-label="Markdown formatting"
+      aria-label={resolved.toolbar}
     >
       <label className={cn("sr-only")} htmlFor={headingSelectId}>
         {resolved.heading}
@@ -62,11 +60,11 @@ const MarkdownEditorToolbar: FC<MarkdownEditorToolbarProps> = ({
         id={headingSelectId}
         aria-label={resolved.heading}
         className={cn("rounded-md border bg-surface px-2 py-1 text-xs", borderOutlineVariant, textMuted)}
-        disabled={is_disabled}
-        value={heading_level}
+        disabled={isDisabled}
+        value={headingLevel}
         onChange={(event) => {
           const next = event.target.value;
-          run(() => {
+          runWhenEnabled(() => {
             if (next === "paragraph") {
               editor!.chain().focus().setParagraph().run();
               return;
@@ -79,22 +77,22 @@ const MarkdownEditorToolbar: FC<MarkdownEditorToolbarProps> = ({
           });
         }}
       >
-        <option value="paragraph">Paragraph</option>
-        <option value="1">Heading 1</option>
-        <option value="2">Heading 2</option>
-        <option value="3">Heading 3</option>
-        <option value="4">Heading 4</option>
-        <option value="5">Heading 5</option>
-        <option value="6">Heading 6</option>
+        <option value="paragraph">{resolved.paragraph}</option>
+        <option value="1">{resolved.heading1}</option>
+        <option value="2">{resolved.heading2}</option>
+        <option value="3">{resolved.heading3}</option>
+        <option value="4">{resolved.heading4}</option>
+        <option value="5">{resolved.heading5}</option>
+        <option value="6">{resolved.heading6}</option>
       </select>
 
       <button
         type="button"
         aria-label={resolved.bold}
         aria-pressed={editor?.isActive("bold") ?? false}
-        className={cn(toolbar_button_class, editor?.isActive("bold") && toolbar_active_class)}
-        disabled={is_disabled}
-        onClick={() => run(() => editor!.chain().focus().toggleBold().run())}
+        className={cn(toolbarButtonClass, editor?.isActive("bold") && toolbarActiveClass)}
+        disabled={isDisabled}
+        onClick={() => runWhenEnabled(() => editor!.chain().focus().toggleBold().run())}
       >
         B
       </button>
@@ -102,9 +100,9 @@ const MarkdownEditorToolbar: FC<MarkdownEditorToolbarProps> = ({
         type="button"
         aria-label={resolved.italic}
         aria-pressed={editor?.isActive("italic") ?? false}
-        className={cn(toolbar_button_class, editor?.isActive("italic") && toolbar_active_class)}
-        disabled={is_disabled}
-        onClick={() => run(() => editor!.chain().focus().toggleItalic().run())}
+        className={cn(toolbarButtonClass, editor?.isActive("italic") && toolbarActiveClass)}
+        disabled={isDisabled}
+        onClick={() => runWhenEnabled(() => editor!.chain().focus().toggleItalic().run())}
       >
         I
       </button>
@@ -112,9 +110,9 @@ const MarkdownEditorToolbar: FC<MarkdownEditorToolbarProps> = ({
         type="button"
         aria-label={resolved.strike}
         aria-pressed={editor?.isActive("strike") ?? false}
-        className={cn(toolbar_button_class, editor?.isActive("strike") && toolbar_active_class)}
-        disabled={is_disabled}
-        onClick={() => run(() => editor!.chain().focus().toggleStrike().run())}
+        className={cn(toolbarButtonClass, editor?.isActive("strike") && toolbarActiveClass)}
+        disabled={isDisabled}
+        onClick={() => runWhenEnabled(() => editor!.chain().focus().toggleStrike().run())}
       >
         S
       </button>
@@ -122,10 +120,10 @@ const MarkdownEditorToolbar: FC<MarkdownEditorToolbarProps> = ({
         type="button"
         aria-label={resolved.link}
         aria-pressed={editor?.isActive("link") ?? false}
-        className={cn(toolbar_button_class, editor?.isActive("link") && toolbar_active_class)}
-        disabled={is_disabled}
+        className={cn(toolbarButtonClass, editor?.isActive("link") && toolbarActiveClass)}
+        disabled={isDisabled}
         onClick={() =>
-          run(() => {
+          runWhenEnabled(() => {
             const previous = editor!.getAttributes("link").href as string | undefined;
             const url = window.prompt(resolved.linkPrompt, previous ?? "https://");
             if (url === null) return;
@@ -143,9 +141,9 @@ const MarkdownEditorToolbar: FC<MarkdownEditorToolbarProps> = ({
         type="button"
         aria-label={resolved.unorderedList}
         aria-pressed={editor?.isActive("bulletList") ?? false}
-        className={cn(toolbar_button_class, editor?.isActive("bulletList") && toolbar_active_class)}
-        disabled={is_disabled}
-        onClick={() => run(() => editor!.chain().focus().toggleBulletList().run())}
+        className={cn(toolbarButtonClass, editor?.isActive("bulletList") && toolbarActiveClass)}
+        disabled={isDisabled}
+        onClick={() => runWhenEnabled(() => editor!.chain().focus().toggleBulletList().run())}
       >
         UL
       </button>
@@ -153,9 +151,9 @@ const MarkdownEditorToolbar: FC<MarkdownEditorToolbarProps> = ({
         type="button"
         aria-label={resolved.orderedList}
         aria-pressed={editor?.isActive("orderedList") ?? false}
-        className={cn(toolbar_button_class, editor?.isActive("orderedList") && toolbar_active_class)}
-        disabled={is_disabled}
-        onClick={() => run(() => editor!.chain().focus().toggleOrderedList().run())}
+        className={cn(toolbarButtonClass, editor?.isActive("orderedList") && toolbarActiveClass)}
+        disabled={isDisabled}
+        onClick={() => runWhenEnabled(() => editor!.chain().focus().toggleOrderedList().run())}
       >
         OL
       </button>
@@ -163,9 +161,9 @@ const MarkdownEditorToolbar: FC<MarkdownEditorToolbarProps> = ({
         type="button"
         aria-label={resolved.blockquote}
         aria-pressed={editor?.isActive("blockquote") ?? false}
-        className={cn(toolbar_button_class, editor?.isActive("blockquote") && toolbar_active_class)}
-        disabled={is_disabled}
-        onClick={() => run(() => editor!.chain().focus().toggleBlockquote().run())}
+        className={cn(toolbarButtonClass, editor?.isActive("blockquote") && toolbarActiveClass)}
+        disabled={isDisabled}
+        onClick={() => runWhenEnabled(() => editor!.chain().focus().toggleBlockquote().run())}
       >
         Quote
       </button>
@@ -174,13 +172,13 @@ const MarkdownEditorToolbar: FC<MarkdownEditorToolbarProps> = ({
         aria-label={resolved.code}
         aria-pressed={(editor?.isActive("code") || editor?.isActive("codeBlock")) ?? false}
         className={cn(
-          toolbar_button_class,
-          (editor?.isActive("code") || editor?.isActive("codeBlock")) && toolbar_active_class
+          toolbarButtonClass,
+          (editor?.isActive("code") || editor?.isActive("codeBlock")) && toolbarActiveClass
         )}
-        disabled={is_disabled}
+        disabled={isDisabled}
         onClick={() =>
-          run(() => {
-            if (editor!.isActive("codeBlock")) {
+          runWhenEnabled(() => {
+            if (editor!.isActive("codeBlock") || editor!.state.selection.empty) {
               editor!.chain().focus().toggleCodeBlock().run();
               return;
             }
@@ -196,10 +194,10 @@ const MarkdownEditorToolbar: FC<MarkdownEditorToolbarProps> = ({
           <button
             type="button"
             aria-label={resolved.table}
-            className={toolbar_button_class}
-            disabled={is_disabled}
+            className={toolbarButtonClass}
+            disabled={isDisabled}
             onClick={() =>
-              run(() => editor!.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run())
+              runWhenEnabled(() => editor!.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run())
             }
           >
             Table
@@ -207,9 +205,9 @@ const MarkdownEditorToolbar: FC<MarkdownEditorToolbarProps> = ({
           <button
             type="button"
             aria-label={resolved.horizontalRule}
-            className={toolbar_button_class}
-            disabled={is_disabled}
-            onClick={() => run(() => editor!.chain().focus().setHorizontalRule().run())}
+            className={toolbarButtonClass}
+            disabled={isDisabled}
+            onClick={() => runWhenEnabled(() => editor!.chain().focus().setHorizontalRule().run())}
           >
             HR
           </button>

@@ -7,7 +7,16 @@ export interface MarkdownEditorLabels {
   modeSource?: string;
   modePreview?: string;
   modeGroup?: string;
+  toolbar?: string;
+  editor?: string;
   heading?: string;
+  paragraph?: string;
+  heading1?: string;
+  heading2?: string;
+  heading3?: string;
+  heading4?: string;
+  heading5?: string;
+  heading6?: string;
   bold?: string;
   italic?: string;
   strike?: string;
@@ -26,7 +35,16 @@ export const DEFAULT_MARKDOWN_EDITOR_LABELS: Required<MarkdownEditorLabels> = {
   modeSource: "Source",
   modePreview: "Preview",
   modeGroup: "Markdown editor mode",
+  toolbar: "Markdown formatting",
+  editor: "Markdown rich text editor",
   heading: "Heading",
+  paragraph: "Paragraph",
+  heading1: "Heading 1",
+  heading2: "Heading 2",
+  heading3: "Heading 3",
+  heading4: "Heading 4",
+  heading5: "Heading 5",
+  heading6: "Heading 6",
   bold: "Bold",
   italic: "Italic",
   strike: "Strike",
