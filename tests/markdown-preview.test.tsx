@@ -16,14 +16,14 @@ describe("MarkdownPreview", () => {
   });
 
   it("does not richly render tables under the legal profile", () => {
-    const table_md = "| A | B |\n| --- | --- |\n| 1 | 2 |";
-    render(<MarkdownPreview value={table_md} profile="legal" />);
+    const tableMd = "| A | B |\n| --- | --- |\n| 1 | 2 |";
+    render(<MarkdownPreview value={tableMd} profile="legal" />);
     expect(document.querySelector("table")).toBeNull();
   });
 
   it("renders GFM tables under the standard profile", () => {
-    const table_md = "| A | B |\n| --- | --- |\n| 1 | 2 |";
-    render(<MarkdownPreview value={table_md} profile="standard" />);
+    const tableMd = "| A | B |\n| --- | --- |\n| 1 | 2 |";
+    render(<MarkdownPreview value={tableMd} profile="standard" />);
     expect(document.querySelector("table")).not.toBeNull();
     expect(screen.getByText("1")).toBeInTheDocument();
   });
