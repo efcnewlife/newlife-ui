@@ -284,7 +284,7 @@ Tag name **must** equal `package.json` version and the `## [x.y.z]` header.
 | Host integration / theme break  | `theme/token-contract.md`, `README.md` Host app setup                                          |
 | Notification API                | `src/notification/`                                                                            |
 | Release                         | `CHANGELOG.md` + `package.json` version; do not tag unless asked                               |
-| Spec / tickets for library work | GitHub Issues via `docs/agents/issue-tracker.md`                                               |
+| Spec / tickets for library work | GitHub + Linear via `docs/agents/issue-tracker.md`                                             |
 
 **Prefer minimal diffs.** Match existing component patterns before introducing new abstractions.
 
@@ -294,7 +294,11 @@ Tag name **must** equal `package.json` version and the `## [x.y.z]` header.
 
 ### Issue tracker
 
-Issues live in this repo's GitHub Issues (via `gh`). See `docs/agents/issue-tracker.md`.
+Issues are created in the owning GitHub repository via `gh`. After synchronization, use Linear for reading, updating, commenting, managing dependencies, and closing issues. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default label names: needs-triage, needs-info, ready-for-agent, ready-for-human, wontfix. See `docs/agents/triage-labels.md`.
 
 ### Domain docs
 
